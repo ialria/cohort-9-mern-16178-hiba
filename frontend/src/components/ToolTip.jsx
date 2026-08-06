@@ -1,11 +1,20 @@
-
+import { cloneElement, useId } from "react";
 
 function Tooltip({ text, children }) {
+    const tooltipId = useId();
+
+  const child = cloneElement(children, {
+    "aria-describedby": tooltipId,
+  });
+
+
   return (
     <div className="group relative inline-block">
-      {children}
+      {child}
 
       <span
+      id={tooltipId}
+      role="tooltip"
         className="
           absolute
           left-1/2
@@ -24,6 +33,7 @@ function Tooltip({ text, children }) {
           opacity-0
           duration-200
           group-hover:opacity-100
+          group-focus-within:opacity-100
           pointer-events-none
           z-50
         "

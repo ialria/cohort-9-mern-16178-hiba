@@ -16,10 +16,10 @@ import {
   Moon
 } from "../../../icons/icons.jsx";
 import DashboardLayout from "../../../layouts/DashboardLayout.jsx";
-import SidebarLayout from "../../../layouts/SidebarLayout.jsx";
 import { useNotes } from "../../../context/NotesContext.jsx";
 import { useSidebar } from "../../../context/SidebarContext.jsx";
 import { Link } from "react-router-dom";
+import { useModal } from "../../../context/ModalContext.jsx";
 function Card({ children, className = "" }) {
   return (
     <div
@@ -55,6 +55,7 @@ function InnerElement({
 }
 
 function ProfileView() {
+  const {openLogoutModal}=useModal();
     const {collapsed}=useSidebar();
   const { notes } = useNotes();
   const favouriteNum = notes.filter(
@@ -268,23 +269,36 @@ function ProfileView() {
                   Account Actions
                 </p>          
             </InnerElement>
+
+<button type="button" aria-label="Sign out"  
+onClick={openLogoutModal}
+
+   className="w-full text-left">
+
                <InnerElement
-              icon={LogOut}
+
+icon={LogOut}
               iconSize={20}
               iconClassName="text-error"
               iconWrapperClass="bg-delete-bgLight"
             >
+
+
               <div className="flex items-center justify-between w-full">
                 <div className="flex items-start justify-center flex-col">
   <p className="text-sm font-semibold text-text">
                   Sign out
                 </p>
-                <span className="text-xs text-text-muted">Sign out from your account</span>
+                <span 
+                 className="text-xs text-text-muted">Sign out from your account</span>
                 </div>
               
                 <ChevronRight size={18} strokeWidth={1.5} className="text-text-muted text-sm" />
               </div>
+
             </InnerElement>
+              </button>
+
             </Card>
              </div>
       </main>

@@ -16,8 +16,9 @@ function TextArea({
     resize-none
     overflow-hidden
     bg-transparent
-    outline-none
-    
+    focus-visible:ring-2
+focus-visible:ring-primary
+focus-visible:outline-none
     align-tight
   ${className}
                 `}

@@ -24,7 +24,7 @@ function LogoutModal() {
       isOpen={showLogoutModal}
       onClose={closeLogoutModal}
     >
-      <div className="flex flex-col items-center">
+      <div className="flex flex-col items-center ">
 
         <div className="w-18 h-18 rounded-full bg-delete-bgLight flex items-center justify-center">
           <LogOut
@@ -36,7 +36,7 @@ function LogoutModal() {
 
     
 
-        <h2 className="mt-6 text-xl font-semibold text-text">
+        <h2 id="logout-title" className="mt-6 text-xl font-semibold text-text">
           Log Out
         </h2>
 

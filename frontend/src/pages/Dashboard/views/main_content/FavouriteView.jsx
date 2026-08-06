@@ -4,7 +4,7 @@ import NoteMenu from "../../components/note_components/NoteMenu.jsx";
 import {useSidebar} from "../../../../context/SidebarContext.jsx";
 function FavouriteView(){
     const {collapsed}=useSidebar();
-    const {notes, handleFavourite} = useNotes();
+    const {notes, handleFavourite, moveToTrash} = useNotes();
 const favouriteNotes=notes.filter(note=>note.favorite && !note.deleted);
     return (
      <section className={`grid grid-cols-1 gap-4 md:grid-cols-2  ${collapsed ? "md:gap-4" : "md:gap-6"} px-5 md:px-8`}>
@@ -21,6 +21,7 @@ const favouriteNotes=notes.filter(note=>note.favorite && !note.deleted);
                 MenuComponent={NoteMenu}
                 compact={true}
                 onFavourite={() => handleFavourite(note.id)}
+                 onDelete={() => moveToTrash(note.id)}
             />
         ))
         

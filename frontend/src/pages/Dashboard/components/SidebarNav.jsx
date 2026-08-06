@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 import { useSidebar } from "../../../context/SidebarContext.jsx";
 
 function SidebarNav({ showNavTitle }) {
-  const { collapsed, setCollapsed } = useSidebar();
+  const { collapsed, setCollapsed, drawerOpen, setDrawerOpen } = useSidebar();
 
   return (
     <div className="mt-6">

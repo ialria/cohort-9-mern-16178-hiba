@@ -1,7 +1,6 @@
 import { useParams } from "react-router-dom";
 import NoteToolBar from "../components/note_components/NoteToolBar";
-import ToolTip from "../../../components/ToolTip.jsx";
-import EditorToolButton from "../components/note_components/EditorToolButton.jsx";
+import EditorToolButton from "../../Dashboard/components/note_components/EditorToolButton.jsx";
 import TextArea from "../../../components/TextArea.jsx";
 
 import Button from "../../../components/Button";

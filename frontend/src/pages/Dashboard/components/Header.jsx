@@ -11,7 +11,13 @@ function Header() {
   // console.log(location);
   // console.log(location.pathname)
   const [isOpen, setIsOpen] = useState(false);
-  const currentItem = sidebarItems.find((item) => item.path === location.pathname);
+  // const currentItem = sidebarItems.find((item) => item.path === location.pathname);
+
+  const currentItem =
+  sidebarItems.find((item) => item.path === location.pathname) ??
+  (location.pathname.startsWith("/notes/")
+    ? sidebarItems.find((item) => item.id === "notes")
+    : undefined);
   const { setDrawerOpen } = useSidebar();
   const showSearch = currentItem.id === "notes";
   return (
@@ -23,9 +29,11 @@ function Header() {
         <h1 className="text-text md:block hidden text-3xl font-semibold">
           {currentItem.title}
         </h1>
-        <button
+        <button  aria-label="Toggle sidebar"
           onClick={() => setDrawerOpen(true)}
-          className="outline-none hover:bg-primary-light p-3 transition-all duration-150 rounded-full block md:hidden"
+          className="focus-visible:outline-none
+focus-visible:ring-2
+focus-visible:ring-primaryhover:bg-primary-light p-3 transition-all duration-150 rounded-full block md:hidden"
         >
           <Menu size={22} />
         </button>

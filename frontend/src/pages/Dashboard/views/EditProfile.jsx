@@ -75,7 +75,7 @@ function EditProfile() {
           </label>
           <input
             id="name"
-            type="email"
+            type="text"
           
             placeholder="Hiba"
             className="w-full border rounded-lg px-3 py-2 border-text-muted/40 bg-surface placeholder:text-text-muted"
