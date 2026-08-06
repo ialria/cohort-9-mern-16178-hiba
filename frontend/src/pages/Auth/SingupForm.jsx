@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Eye, EyeOff } from "lucide-react";
+import {Eye, EyeOff} from "../../icons/icons.jsx";
 import {Link} from 'react-router-dom'
 
 function SignupForm() {
@@ -10,7 +10,7 @@ function SignupForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [acceptedTerms,setAcceptedTerms]=useState(false);
+  // const [acceptedTerms,setAcceptedTerms]=useState(false); done maybe after backend
 
   function validateForm() {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -31,10 +31,10 @@ function SignupForm() {
     } else if (password !== confirmPassword) {
       newErrors.confirmPassword = "Passwords do not match.";
     }
-    if(!acceptedTerms)
-    {
-        newErrors.terms="Terms of Service not accepted";
-    }
+    // if(!acceptedTerms)
+    // {
+    //     newErrors.terms="Please accept the Terms of Service.";
+    // }
     return newErrors;
   }
 
@@ -49,16 +49,17 @@ function SignupForm() {
   }
 
   return (
-    <div className=" w-1/2 bg-[#FAF9F6] py-8 px-36">
+    <div className=" w-full md:w-1/2 bg-background min-h-screen py-10 px-6 md:px-10 lg:py-24 lg:px-24 xl:px-36">
+      
       <div className="mb-4">
-        <p className="text-2xl font-bold text-[#2B2733]">Create your account</p>
-        <p className="text-[#9891A3] text-sm">
+        <p className="text-2xl font-bold text-text">Create your account</p>
+        <p className="text-text-muted text-sm">
           Start organizing your thoughts today.
         </p>
       </div>
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
-          <label htmlFor="email" className="text-[#9891A3] text-xs">
+          <label htmlFor="email" className="text-text-muted text-xs">
             Email
           </label>
           <input
@@ -67,15 +68,15 @@ function SignupForm() {
             id="email"
             type="email"
             placeholder="you@example.com"
-            className={`w-full border rounded-lg px-3 py-2 bg-[#FFFFFF] placeholder:text-[#9891A3] ${
-              errors.email ? "border-red-400" : "border-[#EFEBF3]"}`}
+            className={`w-full border rounded-lg px-3 py-2 bg-surface placeholder:text-text-muted ${
+              errors.email ? "border-red-400" : "border-border"}`}
           />
           {errors.email && (
             <p className="text-red-500 text-xs">{errors.email}</p>
           )}
         </div>
         <div className="mb-4 ">
-          <label htmlFor="password" className="text-[#9891A3] text-xs">
+          <label htmlFor="password" className="text-text-muted text-xs">
             Password
           </label>
           <div className="relative">
@@ -85,15 +86,16 @@ function SignupForm() {
               id="password"
               type={showPassword ? "text" : "password"}
               placeholder="......."
-              className={`w-full border rounded-lg px-3 py-2 pr-10 bg-[#FFFFFF] placeholder:text-3xl ${
-              errors.password ? "border-red-400" : "border-[#EFEBF3]"}`}
+              className={`w-full border rounded-lg px-3 py-2 pr-10 bg-surface placeholder:text-text-muted placeholder:text-3xl ${
+              errors.password ? "border-red-400" : "border-border"}`}
             />
             <button
               type="button"
               onClick={() => {
                 setShowPassword((prev)=>!prev);
               }}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9891A3] cursor-pointer"
+                aria-label={showPassword ? "Hide password" : "Show password"}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted cursor-pointer"
             >
               {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}{" "}
             </button>
@@ -103,7 +105,7 @@ function SignupForm() {
           )}
         </div>
         <div className="mb-2">
-          <label htmlFor="confirmPassword" className="text-[#9891A3] text-xs">
+          <label htmlFor="confirmPassword" className="text-text-muted text-xs">
             Confirm Password
           </label>
           <div className="relative">
@@ -113,15 +115,16 @@ function SignupForm() {
               id="confirmPassword"
               type={showConfirmPassword ? "text" : "password"}
               placeholder="......."
-              className={`w-full border rounded-lg px-3 py-2 pr-10 bg-[#FFFFFF] placeholder:text-3xl ${
-              errors.confirmPassword ? "border-red-400" : "border-[#EFEBF3]"}`}
+              className={`w-full border rounded-lg px-3 py-2 pr-10 bg-surface placeholder:text-text-muted placeholder:text-3xl  ${
+              errors.confirmPassword ? "border-red-400" : "border-border"}`}
             />
             <button
               type="button"
               onClick={() => {
                 setShowConfirmPassword((prev)=>!prev);
               }}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-[#9891A3] cursor-pointer"
+                aria-label={showConfirmPassword ? "Hide confirm password" : "Show confirm password"}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted cursor-pointer"
             >
               {showConfirmPassword ? (
                 <EyeOff size={20} />
@@ -134,7 +137,7 @@ function SignupForm() {
             <p className="text-red-500 text-xs">{errors.confirmPassword}</p>
           )}
         </div>
-        <div className="mb-4 flex items-center">
+        {/* <div className="mb-4 flex items-center">
           <input
             type="checkbox"
             checked={acceptedTerms}
@@ -144,30 +147,37 @@ function SignupForm() {
           />
           <label htmlFor="terms" className="text-xs text-[#2B2733]">
             I agree to the{" "}
-            <a
-              href="/terms"
+            <Link to="/termsOfService"
+           
               className={`underline hover:no-underline ${
     errors.terms ? "text-red-500" : "text-[#2B2733]"
   }`}
             >
               {" "}
               Terms of Service
-            </a>{" "}
+            </Link>{" "}
             and{" "}
-            <a
-              href="/privacy"
+            <Link
+              to="/privacyPolicy"
               className={`text-[#362B4A] underline hover:no-underline ${
     errors.terms ? "text-red-500" : "text-[#2B2733]"
   }`}
             >
               Privacy Policy
-            </a>
+            </Link>
             .
           </label>
+          
         </div>
+              {errors.terms && (
+  <p className="text-red-500 text-xs mb-4">
+    {errors.terms}
+  </p>
+)} */}
+  
         <button
           type="submit"
-          className="w-full rounded-lg bg-[#362B4A] py-3 px-3 text-[#FAF9F6] mb-3 cursor-pointer"
+          className="w-full rounded-lg bg-primary py-3 px-3 text-background my-3 cursor-pointer"
         >
           Create Account
         </button>
@@ -178,17 +188,17 @@ function SignupForm() {
         <span className="text-sm text-gray-500">OR</span>
         <div className="flex-1 h-px bg-gray-300"></div>
       </div>
-      <button className="w-full rounded-lg bg-[#F1EDF6] py-3 px-3 text-[#7b7389] mb-2 text-sm cursor-pointer">
+      <button className="w-full rounded-lg bg-primary-light py-3 px-3 text-[#7b7389] mb-2 text-sm cursor-pointer">
         Continue with Google
       </button>
-      <button className="w-full rounded-lg bg-[#F1EDF6] py-3 px-3 text-[#7b7389] mb-4 text-sm cursor-pointer">
+      <button className="w-full rounded-lg bg-primary-light py-3 px-3 text-[#7b7389] mb-4 text-sm cursor-pointer">
         Continue with Github
       </button>
-      <p className="text-[#9891A3] text-sm text-center">
+      <p className="text-text-muted text-sm text-center">
   Already have an account?{" "}
   <Link
     to="/login"
-    className="text-[#2B2733] hover:underline"
+    className="text-text hover:underline"
   >
     Log in
   </Link>
