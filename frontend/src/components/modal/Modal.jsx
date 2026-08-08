@@ -1,17 +1,54 @@
 import { useEffect, useRef } from "react";
 function Modal({ isOpen, onClose, children }) {
 
-  const dialogRef = useRef(null);
-  const previousFocus = useRef(null);
-  useEffect(() => {
-    if (isOpen) {
-      previousFocus.current = document.activeElement;
-      dialogRef.current?.focus();
-    } else {
-      previousFocus.current?.focus();
+  const dialogReference = useRef(null);
+  const previousFocusElement = useRef(null);
+useEffect(() => {
+  if (!isOpen || !dialogReference.current) {
+    if (!isOpen) {
+      previousFocusElement.current?.focus();
     }
-  }, [isOpen]);
+    return;
+  }
 
+  previousFocusElement.current = document.activeElement;
+
+  const dialog = dialogReference.current;
+
+  const focusableElements = dialog.querySelectorAll(
+    'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+  );
+
+  const firstElement = focusableElements[0];
+  const lastElement = focusableElements[focusableElements.length - 1];
+
+  firstElement?.focus();
+
+  function handleTab(e) {
+    if (e.key !== "Tab") return;
+
+    if (focusableElements.length === 0) {
+      e.preventDefault();
+      return;
+    }
+
+    if (e.shiftKey && document.activeElement === firstElement) {
+      e.preventDefault();
+      lastElement.focus();
+    }
+
+    if (!e.shiftKey && document.activeElement === lastElement) {
+      e.preventDefault();
+      firstElement.focus();
+    }
+  }
+
+  dialog.addEventListener("keydown", handleTab);
+
+  return () => {
+    dialog.removeEventListener("keydown", handleTab);
+  };
+}, [isOpen]);
   useEffect(() => {
     function handleKeyDown(e) {
       if (e.key === "Escape") {
@@ -36,7 +73,7 @@ function Modal({ isOpen, onClose, children }) {
       />
 
       <div
-        ref={dialogRef}
+        ref={dialogReference}
         tabIndex={-1}
         role="dialog"
         aria-modal="true"

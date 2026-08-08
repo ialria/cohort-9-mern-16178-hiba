@@ -4,8 +4,13 @@ function Tooltip({ text, children }) {
     const tooltipId = useId();
 
   const child = cloneElement(children, {
-    "aria-describedby": tooltipId,
-  });
+  "aria-describedby": [
+    children.props["aria-describedby"],
+    tooltipId,
+  ]
+    .filter(Boolean)
+    .join(" "),
+})
 
 
   return (
