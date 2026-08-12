@@ -4,7 +4,6 @@ import { Menu, Camera } from "../../../icons/icons.jsx";
 import Button from "../../../components/Button";
 function EditProfile() {
   const { setDrawerOpen } = useSidebar();
- const {collapsed} =useSidebar();
   return (
     <div className="h-screen flex bg-background overflow-hidden">
       <SidebarLayout />

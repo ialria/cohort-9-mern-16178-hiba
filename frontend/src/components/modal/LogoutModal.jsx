@@ -13,7 +13,7 @@ function LogoutModal() {
   } = useModal();
 
   function handleLogout() {
-
+ localStorage.removeItem("token");
     closeLogoutModal();
     navigate("/login");
   }

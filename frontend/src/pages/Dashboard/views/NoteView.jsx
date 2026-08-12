@@ -2,10 +2,24 @@ import { useParams } from "react-router-dom";
 import NoteToolBar from "../components/note_components/NoteToolBar";
 import EditorToolButton from "../../Dashboard/components/note_components/EditorToolButton.jsx";
 import TextArea from "../../../components/TextArea.jsx";
-
+import ReactQuill from "react-quill-new";
+import "quill/dist/quill.snow.css";
+import { useState } from "react";
 import Button from "../../../components/Button";
 function NoteView() {
   const { noteId } = useParams();
+  const [content, setContent]=useState("");
+  const modules = {
+    toolbar: [
+        ["bold", "italic", "underline", "strike"],
+        [{ header: [1, 2, 3, false] }],
+        [{ list: "ordered" }, { list: "bullet" }],
+        [{ align: [] }],
+        ["blockquote", "code-block"],
+        ["link"],
+        ["clean"],
+    ],
+};
   return (
     <main className="h-screen bg-background flex flex-col">
       <NoteToolBar />
@@ -20,9 +34,9 @@ function NoteView() {
 
         </header>
       </article>
-<EditorToolButton />
+{/* <EditorToolButton /> */}
  <section className="px-10 md:px-22">
-           <TextArea rows={8} placeholder="Start typing ..." className="mt-6 text-base
+           <ReactQuill  theme="snow" value={content} modules={modules} onChange={setContent} placeholder="Start typing ..." className="mt-6 text-base
     text-text
     placeholder:text-text-muted" /> 
 </section>

@@ -6,6 +6,7 @@ function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loginError, setLoginError] = useState("");
   const [errors, setErrors] = useState({});
   const navigate=useNavigate();
 
@@ -26,8 +27,9 @@ function LoginForm() {
     return newErrors;
   }
 
-  function handleSubmit(e) {
+ async function handleSubmit(e) {
     e.preventDefault();
+      setLoginError("");
     const foundErrors = validateForm();
     if (Object.keys(foundErrors).length > 0) {
       setErrors(foundErrors);
@@ -35,7 +37,38 @@ function LoginForm() {
       return;
     }
     setErrors({});
-    navigate("/dashboard");
+  try{
+const response= await fetch("http://localhost:5000/api/auth/login",{
+  method:"POST",
+  headers:{
+    "Content-type":"application/json"
+  },
+  body:JSON.stringify({
+    email, password
+  })
+});
+
+const data=await response.json();
+if (!response.ok) {
+  setLoginError(data.message || "Invalid email or password.");
+  return;
+}
+
+
+  // console.log(data);
+
+    localStorage.setItem("token", data.token);
+  navigate("/dashboard");
+
+  }catch (error){
+    // console.log(error);
+        setErrors({
+      email: "Something went wrong. Please try again.",
+    });
+  }
+
+
+    
   }
 
   return (
@@ -55,7 +88,15 @@ function LoginForm() {
             id="email"
             type="email"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) =>{ setEmail(e.target.value);
+                setLoginError("");
+                  if (errors.email) {
+                setErrors((prev) => ({
+                  ...prev,
+                  email: "",
+                }));
+              }
+            }}
             placeholder="you@example.com"
             className={`w-full border rounded-lg px-3 py-2 bg-surface placeholder:text-text-muted ${
               errors.email ? "border-red-400" : "border-border"
@@ -74,7 +115,15 @@ function LoginForm() {
               id="password"
               type={showPassword ? "text" : "password"}
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) =>{ setPassword(e.target.value);
+                  setLoginError("");
+                    if (errors.password) {
+                setErrors((prev) => ({
+                  ...prev,
+                  password: "",
+                }));
+              }
+              }}
               placeholder="......."
               className={`w-full border rounded-lg px-3 py-2 pr-10 bg-surface placeholder:text-text-muted placeholder:text-3xl  ${
                 errors.password ? "border-red-400" : "border-border"
@@ -103,12 +152,23 @@ function LoginForm() {
         >
           Forgot password?
         </Link>
-        <button
-          type="submit"
-          className="w-full rounded-lg bg-primary py-3 px-3 text-background mb-4 cursor-pointer"
-        >
-          Log in
-        </button>
+<div className="clear-both" />
+
+<div className="relative">
+  {loginError && (
+    <p className="absolute bottom-full left-0 mb-1 text-red-500 text-xs">
+      {loginError}
+    </p>
+  )}
+
+  <button
+    type="submit"
+    className="w-full rounded-lg bg-primary py-3 px-3 text-background mb-4 cursor-pointer"
+  >
+    Log in
+  </button>
+</div>
+
         <p className="text-text-muted text-sm text-center">
           New here?{" "}
           <Link

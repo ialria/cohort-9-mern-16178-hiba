@@ -81,6 +81,7 @@ useEffect(() => {
         className="relative bg-surface rounded-3xl shadow-xl w-[90%] max-w-md p-8"
       >
         {children}
+        
       </div>
     </div>
   );

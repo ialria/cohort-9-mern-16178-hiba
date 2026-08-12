@@ -1,6 +1,5 @@
 import { Search, Menu } from "./../../../icons/icons.jsx";
 import { useState } from "react";
-import { Link } from "react-router-dom";
 import UserMenu from "./UserMenu.jsx";
 import { sidebarItems } from "../data/sidebarItems.js";
 import { useLocation } from "react-router-dom";
