@@ -9,7 +9,7 @@ function LoginForm() {
   const [loginError, setLoginError] = useState("");
   const [errors, setErrors] = useState({});
   const navigate=useNavigate();
-
+const [isSubmitting, setIsSubmitting] = useState(false);
   function validateForm() {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const newErrors = {};
@@ -21,8 +21,8 @@ function LoginForm() {
     }
     if (password.trim() === "") {
       newErrors.password = "Please enter your password.";
-    } else if (password.length < 6) {
-      newErrors.password = "Password must be at least 6 characters long";
+    } else if (password.length < 8) {
+      newErrors.password = "Password must be at least 8 characters long";
     }
     return newErrors;
   }
@@ -37,12 +37,14 @@ function LoginForm() {
       return;
     }
     setErrors({});
+      setIsSubmitting(true);
   try{
 const response= await fetch("http://localhost:5000/api/auth/login",{
   method:"POST",
   headers:{
     "Content-type":"application/json"
   },
+  credentials:"include",
   body:JSON.stringify({
     email, password
   })
@@ -54,17 +56,15 @@ if (!response.ok) {
   return;
 }
 
-
-  // console.log(data);
-
-    localStorage.setItem("token", data.token);
   navigate("/dashboard");
 
   }catch (error){
     // console.log(error);
-        setErrors({
-      email: "Something went wrong. Please try again.",
-    });
+        setLoginError(
+      "Something went wrong. Please try again."
+    );
+  }finally{
+   setIsSubmitting(false);
   }
 
 
@@ -163,6 +163,7 @@ if (!response.ok) {
 
   <button
     type="submit"
+    disabled={isSubmitting}
     className="w-full rounded-lg bg-primary py-3 px-3 text-background mb-4 cursor-pointer"
   >
     Log in

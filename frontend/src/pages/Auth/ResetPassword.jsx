@@ -2,20 +2,13 @@ import { useState } from "react";
 import { Eye, EyeOff , Lock, Check} from "../../icons/icons.jsx";
 import LeafletLogo from "../../icons/leaflet_logo.jsx";
 import Button from "../../components/Button.jsx";
-import { ZxcvbnFactory } from "@zxcvbn-ts/core";
-import * as zxcvbnCommonPackage from "@zxcvbn-ts/language-common";
-import * as zxcvbnEnPackage from "@zxcvbn-ts/language-en";
+import zxcvbn from "../../utils/passwordStrength.js";
+import PasswordStrength from "../../components/PasswordStrength.jsx";
 import { useSearchParams,useNavigate } from "react-router-dom";
-const zxcvbn = new ZxcvbnFactory({
-  translations: zxcvbnEnPackage.translations,
-  graphs: zxcvbnCommonPackage.adjacencyGraphs,
-  dictionary: {
-    ...zxcvbnCommonPackage.dictionary,
-    ...zxcvbnEnPackage.dictionary,
-  },
-});
+
 
 function ResetPassword(){
+    const [isSubmitting, setIsSubmitting] = useState(false);
 const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [errors, setErrors] = useState({});
@@ -61,6 +54,7 @@ const navigate=useNavigate();
   }
 
 setErrors({});
+setIsSubmitting(true);
   try {
     const response = await fetch(
       "http://localhost:5000/api/auth/reset-password",
@@ -93,6 +87,8 @@ setErrors({});
     setErrors({
       form: "Something went wrong. Please try again.",
     });
+  }finally{
+    setIsSubmitting(false);
   }
    
 }
@@ -133,6 +129,7 @@ setErrors({});
 
     <Button
       type="button"
+     
       onClick={() => navigate("/login")}
       className="rounded-lg w-full bg-primary text-surface mt-6"
     >
@@ -172,6 +169,7 @@ setErrors({});
                 }
               }}
               id="password"
+              autoComplete="new-password"
               type={showPassword ? "text" : "password"}
               placeholder="......."
               className={`w-full border rounded-lg px-3 py-2 pr-10 bg-surface placeholder:text-text-muted placeholder:text-3xl ${
@@ -189,48 +187,8 @@ setErrors({});
               {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}{" "}
             </button>
           </div>
-          {password && passwordStrength && (
-            <div className="mt-2 flex items-center justify-between">
-              <div className="flex gap-1.5">
-                {[0, 1, 2, 3, 4, 5, 6, 7].map((index) => {
-                  const filledCircles = Math.min(
-                    Math.ceil((passwordStrength.score + 1) * 1.6),
-                    8,
-                  );
-                  return (
-                    <span
-                      key={index}
-                      className={`h-2 w-2 rounded-full border ${
-                        index < filledCircles
-                          ? passwordStrength.score <= 1
-                            ? "bg-red-500 border-red-500"
-                            : passwordStrength.score === 2
-                              ? "bg-yellow-500 border-yellow-500"
-                              : "bg-green-500 border-green-500"
-                          : "bg-transparent border-text-muted/30"
-                      }`}
-                    />
-                  );
-                })}
-              </div>
+         <PasswordStrength passwordStrength={passwordStrength} />
 
-              <span
-                className={`text-xs font-medium ${
-                  passwordStrength.score <= 1
-                    ? "text-red-500"
-                    : passwordStrength.score === 2
-                      ? "text-yellow-500"
-                      : "text-green-500"
-                }`}
-              >
-                {passwordStrength.score === 0 && "Very weak"}
-                {passwordStrength.score === 1 && "Weak"}
-                {passwordStrength.score === 2 && "Fair"}
-                {passwordStrength.score === 3 && "Strong"}
-                {passwordStrength.score === 4 && "Very strong"}
-              </span>
-            </div>
-          )}
           {errors.password && (
             <p className="text-red-500 text-xs">{errors.password}</p>
           )}
@@ -252,6 +210,7 @@ setErrors({});
                 }
               }}
               id="confirmPassword"
+              autoComplete="new-password"
               type={showConfirmPassword ? "text" : "password"}
               placeholder="......."
               className={`w-full border rounded-lg px-3 py-2 pr-10 bg-surface placeholder:text-text-muted placeholder:text-3xl  ${
@@ -280,8 +239,13 @@ setErrors({});
           {errors.confirmPassword && (
             <p className="text-red-500 text-xs">{errors.confirmPassword}</p>
           )}
+          {errors.form && (
+  <p className="text-red-500 text-xs mb-2">
+    {errors.form}
+  </p>
+)}
         </div>
-        <Button type="submit" className=" rounded-lg w-full bg-primary text-surface">Reset Password</Button>
+        <Button type="submit" disabled={isSubmitting} className=" rounded-lg w-full bg-primary text-surface">Reset Password</Button>
         </form>
     </div>)}
     </div>

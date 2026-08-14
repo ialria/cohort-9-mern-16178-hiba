@@ -3,28 +3,6 @@ const { Resend } = require("resend");
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-// async function sendTestEmail() {
-//   try {
-//     const { data, error } = await resend.emails.send({
-//       from: "onboarding@resend.dev",
-//       to: "hibasaud18@gmail.com",
-//       subject: "Leaflet Test Email",
-//       html: `
-//         <h2>Hello from Leaflet 🌿</h2>
-//         <p>Your email service is working!</p>
-//       `,
-//     });
-
-//     if (error) {
-//       console.log("Email error:", error);
-//       return;
-//     }
-
-//     console.log("Email sent successfully:", data);
-//   } catch (error) {
-//     console.log("Something went wrong:", error);
-//   }
-// }
 
 async function sendPasswordResetEmail(toEmail, resetLink) {
   try {

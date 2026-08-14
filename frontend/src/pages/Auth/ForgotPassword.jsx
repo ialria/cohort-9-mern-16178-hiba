@@ -6,20 +6,28 @@ import { Link } from "react-router-dom";
 function ForgotPassword() {
   const [email, setEmail] = useState("");
   const [emailSent, setEmailSent] = useState(false);
-const [resending, setResending] = useState(false);
-const [resendCooldown, setResendCooldown] = useState(0);
+  const [resending, setResending] = useState(false);
+  const [resendCooldown, setResendCooldown] = useState(0);
   const [errors, setErrors] = useState({});
+  
+const cooldownActive = resendCooldown > 0;
+
 useEffect(() => {
-  if (resendCooldown <= 0) {
+  if (!cooldownActive) {
     return;
   }
+ const timer = setInterval(() => {
+    setResendCooldown((prev) => {
+      if (prev <= 1) {
+        clearInterval(timer);
+        return 0;
+      }
 
-  const timer = setInterval(() => {
-    setResendCooldown((prev) => prev - 1);
+      return prev - 1;
+    });
   }, 1000);
-
   return () => clearInterval(timer);
-}, [resendCooldown]);
+}, [cooldownActive]);
 
   function validateForm() {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -33,7 +41,23 @@ useEffect(() => {
 
     return newErrors;
   }
+  async function sendResetEmail() {
+    const response = await fetch(
+      "http://localhost:5000/api/auth/forgot-password",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email,
+        }),
+      },
+    );
 
+    const data = await response.json();
+    return { response, data };
+  }
   async function handleSubmit(e) {
     e.preventDefault();
     const foundErrors = validateForm();
@@ -44,20 +68,8 @@ useEffect(() => {
     }
     setErrors({});
     try {
-      const response = await fetch(
-        "http://localhost:5000/api/auth/forgot-password",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            email,
-          }),
-        },
-      );
+      const { response, data } = await sendResetEmail();
 
-      const data = await response.json();
       if (!response.ok) {
         setErrors({
           email: data.message || "Something went wrong.",
@@ -78,46 +90,34 @@ useEffect(() => {
   }
 
   async function handleResend() {
-  if (resendCooldown > 0 || resending) {
-    return;
-  }
-
-  setResending(true);
-  setErrors({});
-
-  try {
-    const response = await fetch(
-      "http://localhost:5000/api/auth/forgot-password",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email,
-        }),
-      },
-    );
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      setErrors({
-        email: data.message || "Something went wrong.",
-      });
+    if (resendCooldown > 0 || resending) {
       return;
     }
-    setResendCooldown(60);
-  } catch (error) {
-    console.error("Resend email error:", error);
 
-    setErrors({
-      email: "Something went wrong. Please try again.",
-    });
-  } finally {
-    setResending(false);
+    setResending(true);
+    setErrors({});
+
+    try {
+      const { response, data } = await sendResetEmail();
+
+      if (!response.ok) {
+        setErrors({
+          email: data.message || "Something went wrong.",
+        });
+        return;
+      }
+      setResendCooldown(60);
+    } catch (error) {
+      console.error("Resend email error:", error);
+
+      setErrors({
+        email: "Something went wrong. Please try again.",
+      });
+    } finally {
+      setResending(false);
+    }
   }
-}
+
   return (
     <main className="bg-background py-6 px-5 md:px-10 min-h-screen">
       <div className="flex items-center gap-2">
@@ -127,142 +127,126 @@ useEffect(() => {
         <span className="text-muted font-medium ">leaflet</span>
       </div>
       <section className="border flex flex-col items-center justify-center border-text-muted/30 bg-surface rounded-xl py-10 px-5 md:px-8 my-4">
-        
         {emailSent ? (
           <div className="flex flex-col items-center text-center">
+            <div className="w-28 h-28 rounded-full bg-primary-light flex items-center justify-center">
+              <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center">
+                <Check size={38} strokeWidth={2} className="text-surface" />
+              </div>
+            </div>
 
-  
-      <div className="w-28 h-28 rounded-full bg-primary-light flex items-center justify-center">
-        <div className="w-16 h-16 rounded-full bg-primary flex items-center justify-center">
-          <Check
-            size={38}
-            strokeWidth={2}
-            className="text-surface"
-          />
-        </div>
-      </div>
+            <header className="flex flex-col items-center text-center py-6 gap-3 max-w-md">
+              <h2 className="text-2xl font-semibold text-text">
+                Check your email
+              </h2>
 
-  
-      <header className="flex flex-col items-center text-center py-6 gap-3 max-w-md">
-        <h2 className="text-2xl font-semibold text-text">
-          Check your email
-        </h2>
+              <p className="text-sm text-text-muted leading-6">
+                If an account exists with this email, we've sent you a password
+                reset link.
+              </p>
 
-        <p className="text-sm text-text-muted leading-6">
-          If an account exists with this email, we've sent you a
-          password reset link.
-        </p>
+              <p className="text-sm font-medium text-text break-all">{email}</p>
+            </header>
+            <div className="bg-primary-light/50 rounded-lg px-4 py-3 w-full max-w-md">
+              <p className="text-xs text-text-muted">
+                The reset link will expire in 15 minutes.
+              </p>
+            </div>
+            <div className="mt-6 text-center">
+              <p className="text-sm text-text-muted">
+                Didn't receive the email?
+              </p>
 
-        <p className="text-sm font-medium text-text break-all">
-          {email}
-        </p>
-      </header>
-      <div className="bg-primary-light/50 rounded-lg px-4 py-3 w-full max-w-md">
-        <p className="text-xs text-text-muted">
-          The reset link will expire in 15 minutes.
-        </p>
-      </div>
-      <div className="mt-6 text-center">
-        <p className="text-sm text-text-muted">
-          Didn't receive the email?
-        </p>
+              <button
+                type="button"
+                onClick={handleResend}
+                disabled={resendCooldown > 0 || resending}
+                className={`mt-1 text-sm font-medium ${
+                  resendCooldown > 0 || resending
+                    ? "text-text-muted cursor-not-allowed"
+                    : "text-notes hover:underline cursor-pointer"
+                }`}
+              >
+                {resendCooldown > 0
+                  ? `Resend email in ${resendCooldown}s`
+                  : resending
+                    ? "Sending..."
+                    : "Resend email"}
+              </button>
+            </div>
 
-        <button
-          type="button"
-          onClick={handleResend}
-            disabled={resendCooldown > 0 || resending}
-          className={`mt-1 text-sm font-medium ${
-    resendCooldown > 0 || resending
-      ? "text-text-muted cursor-not-allowed"
-      : "text-notes hover:underline cursor-pointer"
-  }`}
-        >
-        {resendCooldown > 0
-    ? `Resend email in ${resendCooldown}s`
-    : resending
-      ? "Sending..."
-      : "Resend email"}
-        </button>
-      </div>
-
-      <div className="mt-6">
-        <Link
-          to="/login"
-          className="text-notes text-sm hover:underline"
-        >
-          ← Back to Login
-        </Link>
-      </div>
-
-    </div>
-
-  
-        ): (
-           <div className="flex flex-col items-center text-center">          <div className="rounded-full w-28 h-28 flex items-center justify-center bg-primary-light relative">
-          <Mail size={64} strokeWidth={0.75} className="text-notes/50 " />
-          <div className="absolute bottom-2 right-3 bg-primary p-2 rounded-full">
-            <Lock size={14} strokeWidth={1.5} className="text-surface" />
+            <div className="mt-6">
+              <Link to="/login" className="text-notes text-sm hover:underline">
+                ← Back to Login
+              </Link>
+            </div>
           </div>
-        </div>
-        <header className="flex flex-col justify-center items-center text-center py-6 gap-4 w-70">
-          <h2 className="text-2xl font-semibold">Forgot Password?</h2>
-          <p className="text-sm text-text-muted">
-            No worries! Enter your email address and we'll send you a reset
-            link.
-          </p>
-        </header>
-       
-        <form onSubmit={handleSubmit} className="w-full md:w-150 md:px-10">
-          <div className="mb-6 text-start">
-            <label htmlFor="email" className="text-text text-xs">
-              Email
-            </label>
-            <input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => {
-                setEmail(e.target.value);
-                if (errors.email) {
-                  setErrors((prev) => ({
-                    ...prev,
-                    email: "",
-                  }));
-                }
-              }}
-              placeholder="you@example.com"
-              className={`w-full border rounded-lg px-3 py-2 bg-surface placeholder:text-text-muted  ${
-                errors.email ? "border-delete-muted" : "border-text-muted/30"
-              }`}
-            />
-            {errors.email && (
-              <p className="text-error text-xs">{errors.email}</p>
-            )}
+        ) : (
+          <div className="flex flex-col items-center text-center">
+            {" "}
+            <div className="rounded-full w-28 h-28 flex items-center justify-center bg-primary-light relative">
+              <Mail size={64} strokeWidth={0.75} className="text-notes/50 " />
+              <div className="absolute bottom-2 right-3 bg-primary p-2 rounded-full">
+                <Lock size={14} strokeWidth={1.5} className="text-surface" />
+              </div>
+            </div>
+            <header className="flex flex-col justify-center items-center text-center py-6 gap-4 w-70">
+              <h2 className="text-2xl font-semibold">Forgot Password?</h2>
+              <p className="text-sm text-text-muted">
+                No worries! Enter your email address and we'll send you a reset
+                link.
+              </p>
+            </header>
+            <form onSubmit={handleSubmit} className="w-full md:w-150 md:px-10">
+              <div className="mb-6 text-start">
+                <label htmlFor="email" className="text-text text-xs">
+                  Email
+                </label>
+                <input
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    if (errors.email) {
+                      setErrors((prev) => ({
+                        ...prev,
+                        email: "",
+                      }));
+                    }
+                  }}
+                  placeholder="you@example.com"
+                  className={`w-full border rounded-lg px-3 py-2 bg-surface placeholder:text-text-muted  ${
+                    errors.email
+                      ? "border-delete-muted"
+                      : "border-text-muted/30"
+                  }`}
+                />
+                {errors.email && (
+                  <p className="text-error text-xs">{errors.email}</p>
+                )}
+              </div>
+              <Button
+                type="submit"
+                className=" rounded-lg w-full bg-primary text-surface"
+              >
+                Send Reset Link
+              </Button>
+            </form>
+            <div className="mt-2">
+              {" "}
+              <p className="text-text-muted text-sm text-center">
+                Remember your password?{" "}
+                <Link
+                  to="/login"
+                  className=" text-notes text-sm cursor-pointer hover:underline"
+                >
+                  Back to Login
+                </Link>
+              </p>
+            </div>
           </div>
-          <Button
-            type="submit"
-            className=" rounded-lg w-full bg-primary text-surface"
-          >
-            Send Reset Link
-          </Button>
-        </form>
-
-        <div className="mt-2">
-          {" "}
-          <p className="text-text-muted text-sm text-center">
-            Remember your password?{" "}
-            <Link
-              to="/login"
-              className=" text-notes text-sm cursor-pointer hover:underline"
-            >
-              Back to Login
-            </Link>
-          </p>
-        </div>
-        </div>
-
-        )
-      }
+        )}
       </section>
     </main>
   );

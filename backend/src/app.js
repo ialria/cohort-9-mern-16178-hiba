@@ -1,14 +1,16 @@
 const express = require("express");
 const cors=require("cors");
+const cookieParser = require("cookie-parser");
 const testRoutes = require("./routes/testRoutes");
 const authRoutes = require("./routes/authRoute");
 const app = express();
-
+app.use(cookieParser());
 app.use(express.json());
 
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: process.env.FRONTEND_URL,
+    credentials:true,
   })
 );
 app.get("/", (req, res) => {

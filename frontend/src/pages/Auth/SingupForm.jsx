@@ -1,46 +1,22 @@
-import { useEffect, useState } from "react";
+import { useState ,useEffect, useRef} from "react";
 import { Eye, EyeOff } from "../../icons/icons.jsx";
 import { Link, useNavigate } from "react-router-dom";
-import { ZxcvbnFactory } from "@zxcvbn-ts/core";
-import * as zxcvbnCommonPackage from "@zxcvbn-ts/language-common";
-import * as zxcvbnEnPackage from "@zxcvbn-ts/language-en";
 import confetti from "canvas-confetti";
-
-function Toast({ message }) {
-  return (
-    <div className="fixed top-5 right-5 z-50 bg-surface border border-primary-light rounded-xl px-5 py-3 shadow-lg flex items-center gap-3">
-      <div className="w-6 h-6 rounded-full bg-primary flex items-center justify-center shrink-0">
-        <span className="text-surface text-sm font-bold">✓</span>
-      </div>
-
-      <p className="text-text text-sm">{message}</p>
-    </div>
-  );
-}
-const zxcvbn = new ZxcvbnFactory({
-  translations: zxcvbnEnPackage.translations,
-  graphs: zxcvbnCommonPackage.adjacencyGraphs,
-  dictionary: {
-    ...zxcvbnCommonPackage.dictionary,
-    ...zxcvbnEnPackage.dictionary,
-  },
-});
+import Toast from "../../components/Toast.jsx";
+import zxcvbn from "../../utils/passwordStrength.js";
+import PasswordStrength from "../../components/PasswordStrength.jsx";
 
 function SignupForm() {
-  // useEffect(() => {
-  //   confetti({
-  //     particleCount: 35,
-  //     spread: 45,
-  //     startVelocity: 18,
-  //     gravity: 1.2,
-  //     ticks: 70,
-  //     origin: {
-  //       x: 0.88,
-  //       y: 0.12,
-  //     },
-  //     scalar: 0.6,
-  //   });
-  // }, []);
+  const redirectTimer = useRef(null);
+useEffect(() => {
+  return () => {
+    if (redirectTimer.current) {
+      clearTimeout(redirectTimer.current);
+    }
+  };
+}, []);
+
+
   const [showToast, setShowToast] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -107,7 +83,6 @@ function SignupForm() {
 
       const data = await response.json();
       if (response.ok) {
-        navigate("/login");
         setShowToast(true);
         confetti({
           particleCount: 35,
@@ -122,9 +97,9 @@ function SignupForm() {
           scalar: 0.6,
         });
 
-        setTimeout(() => {
-          navigate("/login");
-        }, 1500);
+      redirectTimer.current = setTimeout(() => {
+  navigate("/login");
+}, 1500);
       }
       if (!response.ok) {
         setErrors({
@@ -132,9 +107,10 @@ function SignupForm() {
         });
         return;
       }
-      console.log(data);
     } catch (error) {
-      console.log(error);
+     setErrors({
+    form: "Something went wrong. Please try again.",
+  });
     }
   }
 
@@ -243,48 +219,8 @@ function SignupForm() {
               {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}{" "}
             </button>
           </div>
-          {password && passwordStrength && (
-            <div className="mt-2 flex items-center justify-between">
-              <div className="flex gap-1.5">
-                {[0, 1, 2, 3, 4, 5, 6, 7].map((index) => {
-                  const filledCircles = Math.min(
-                    Math.ceil((passwordStrength.score + 1) * 1.6),
-                    8,
-                  );
-                  return (
-                    <span
-                      key={index}
-                      className={`h-2 w-2 rounded-full border ${
-                        index < filledCircles
-                          ? passwordStrength.score <= 1
-                            ? "bg-red-500 border-red-500"
-                            : passwordStrength.score === 2
-                              ? "bg-yellow-500 border-yellow-500"
-                              : "bg-green-500 border-green-500"
-                          : "bg-transparent border-text-muted/30"
-                      }`}
-                    />
-                  );
-                })}
-              </div>
-
-              <span
-                className={`text-xs font-medium ${
-                  passwordStrength.score <= 1
-                    ? "text-red-500"
-                    : passwordStrength.score === 2
-                      ? "text-yellow-500"
-                      : "text-green-500"
-                }`}
-              >
-                {passwordStrength.score === 0 && "Very weak"}
-                {passwordStrength.score === 1 && "Weak"}
-                {passwordStrength.score === 2 && "Fair"}
-                {passwordStrength.score === 3 && "Strong"}
-                {passwordStrength.score === 4 && "Very strong"}
-              </span>
-            </div>
-          )}
+         
+          <PasswordStrength passwordStrength={passwordStrength} />
           {errors.password && (
             <p className="text-red-500 text-xs">{errors.password}</p>
           )}
@@ -372,6 +308,11 @@ function SignupForm() {
     {errors.terms}
   </p>
 )} */}
+{errors.form && (
+  <p className="text-red-500 text-xs mb-2">
+    {errors.form}
+  </p>
+)}
 
         <button
           type="submit"
