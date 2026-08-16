@@ -71,4 +71,3 @@ async function sendPasswordResetEmail(toEmail, resetLink) {
 module.exports = {
   sendPasswordResetEmail,
 };
-// sendTestEmail();
