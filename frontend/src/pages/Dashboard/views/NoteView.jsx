@@ -109,20 +109,7 @@ const handleContentChange = (value) => {
     </div>
 
 </section>
-    {/* category chips */}
       </section>
-
-  {/* <section className="border-t px-8 md:px-12 border-text/20 sticky py-2 flex gap-2">
-    <h2 className="text-text-muted hidden md:block font-semibold my-1">Category</h2>
-
-    <Button className="bg-surface border border-text/20 hover:bg-primary transition-all duration-200 hover:text-surface text-text text-xs">Ideas</Button>
-    <Button className="bg-surface border border-text/20 hover:bg-primary transition-all duration-200 hover:text-surface text-text text-xs">Work</Button>
-    <Button className="bg-surface border border-text/20 hover:bg-primary transition-all duration-200 hover:text-surface text-text text-xs">Personal</Button>
-
-  </section> */}
-
-
-    
     </main>
   );
 }

@@ -14,24 +14,16 @@ function LogoutModal() {
 
   async function handleLogout() {
     try{
-const response=await apiFetch("/api/auth/logout",{
+await apiFetch("/api/auth/logout",{
   method: "POST",
 });
-if(!response.ok){
-  throw new Error("Logout Failed!"
-
-  );
-}
-closeLogoutModal();
-navigate("/login")
     }catch(error){
 
  console.error("Logout error:", error);
+    }finally{
+    closeLogoutModal();
+  navigate("/login");
     }
-    // finally{
-    //      closeLogoutModal();
-    // navigate("/login"); 
-    // }
 
   }
 

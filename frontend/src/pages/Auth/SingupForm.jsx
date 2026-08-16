@@ -6,7 +6,6 @@ import Toast from "../../components/Toast.jsx";
 import zxcvbn from "../../utils/passwordStrength.js";
 import PasswordStrength from "../../components/PasswordStrength.jsx";
 import { apiFetch } from "../../config/api.js";
-
 function SignupForm() {
   const redirectTimer = useRef(null);
 

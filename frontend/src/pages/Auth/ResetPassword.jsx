@@ -47,34 +47,40 @@ function ResetPassword() {
       return;
     }
     if (!token) {
-      setErrors({
-        form: "Invalid or missing reset link.",
-      });
-      return;
-    }
+    setErrors({
+      form: "Invalid or missing reset link.",
+    });
+    return;
+  }
 
-    setErrors({});
-    setIsSubmitting(true);
-    try {
-      const response = await apiFetch("/api/auth/reset-password", {
+setErrors({});
+setIsSubmitting(true);
+  try {
+    const response = await apiFetch(
+      "/api/auth/reset-password",
+      {
         method: "POST",
         body: JSON.stringify({
           token,
           password,
         }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        setErrors({
-          form: data.message || "Unable to reset password.",
-        });
-        return;
       }
+    );
 
-      setResetSuccessful(true);
-    } catch (error) {
+    const data = await response.json();
+
+    if (!response.ok) {
+      setErrors({
+        form: data.message || "Invalid or missing reset link.",
+      });
+      return;
+    }
+    setResetSuccessful(true);
+
+    setErrors({});
+    setIsSubmitting(true);
+
+  } catch (error) {
       console.error("Reset password error:", error);
 
       setErrors({
