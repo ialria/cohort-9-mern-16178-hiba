@@ -1,10 +1,8 @@
 const prisma = require("../config/prisma");
-// const { PrismaClient } = require("@prisma/client");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const logger=require("../utilities/logger");
 const crypto = require("crypto");
-
-// const prisma = new PrismaClient();
 
 const { sendPasswordResetEmail } = require("../services/emailService");
 
@@ -57,8 +55,16 @@ const signup = async (req, res) => {
       },
     });
   } catch (error) {
-    // console.log(error);
-    res.status(500).json({
+    logger.error(
+    {
+      error: {
+        name: error.name,
+        message: error.message,
+      },
+    },
+    "Signup failed"
+  );
+  return  res.status(500).json({
       message: "Something went wrong",
     });
   }
@@ -109,15 +115,27 @@ const login = async (req, res) => {
       },
     });
   } catch (error) {
-    // console.error(error);
-    res.status(500).json({
+    logger.error(
+    {
+      error: {
+        name: error.name,
+        message: error.message,
+      },
+    },
+    "Login failed"
+  );
+   return res.status(500).json({
       message: "Something went wrong",
     });
   }
 };
 
-const logout=async (req, res)=>{
-     res.clearCookie("token");
+const logout= (req, res)=>{
+   res.clearCookie("token", {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production",
+  sameSite: "lax",
+});
   return res.status(200).json({
     message: "Logout successful",
   });
@@ -158,7 +176,15 @@ const resetLink =  `${process.env.FRONTEND_URL}/reset-password?token=${resetToke
       message: "If an account exists with this email, a reset link has been sent.",
     });
 }catch (error){
-    console.log(error)
+     logger.error(
+    {
+      error: {
+        name: error.name,
+        message: error.message,
+      },
+    },
+    "Forgot password failed"
+  );
     return res.status(500).json({
         message:"Something went wrong"
     });
@@ -234,6 +260,15 @@ if(!token || !password){
       message: "Password reset successfully",
     });
     }catch (error){
+    logger.error(
+    {
+      error: {
+        name: error.name,
+        message: error.message,
+      },
+    },
+    "Password reset failed"
+  );
  return res.status(500).json({
       message: "Something went wrong",
     });

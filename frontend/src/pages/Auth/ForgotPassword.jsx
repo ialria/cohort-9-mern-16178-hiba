@@ -3,31 +3,33 @@ import { Mail, Lock, Check } from "../../icons/icons.jsx";
 import { useState, useEffect } from "react";
 import Button from "../../components/Button.jsx";
 import { Link } from "react-router-dom";
+import { apiFetch } from "../../config/api.js";
 function ForgotPassword() {
   const [email, setEmail] = useState("");
   const [emailSent, setEmailSent] = useState(false);
   const [resending, setResending] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [resendCooldown, setResendCooldown] = useState(0);
   const [errors, setErrors] = useState({});
-  
-const cooldownActive = resendCooldown > 0;
 
-useEffect(() => {
-  if (!cooldownActive) {
-    return;
-  }
- const timer = setInterval(() => {
-    setResendCooldown((prev) => {
-      if (prev <= 1) {
-        clearInterval(timer);
-        return 0;
-      }
+  const cooldownActive = resendCooldown > 0;
 
-      return prev - 1;
-    });
-  }, 1000);
-  return () => clearInterval(timer);
-}, [cooldownActive]);
+  useEffect(() => {
+    if (!cooldownActive) {
+      return;
+    }
+    const timer = setInterval(() => {
+      setResendCooldown((prev) => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          return 0;
+        }
+
+        return prev - 1;
+      });
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [cooldownActive]);
 
   function validateForm() {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -42,13 +44,10 @@ useEffect(() => {
     return newErrors;
   }
   async function sendResetEmail() {
-    const response = await fetch(
-       `${import.meta.env.VITE_API_URL}/api/auth/forgot-password`,
+    const response = await apiFetch(
+      "/api/auth/forgot-password",
       {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
         body: JSON.stringify({
           email,
         }),
@@ -67,6 +66,8 @@ useEffect(() => {
       return;
     }
     setErrors({});
+    setIsSubmitting(true);
+
     try {
       const { response, data } = await sendResetEmail();
 
@@ -86,6 +87,8 @@ useEffect(() => {
       setErrors({
         email: "Something went wrong. Please try again.",
       });
+    } finally {
+      setIsSubmitting(false);
     }
   }
 
@@ -173,6 +176,9 @@ useEffect(() => {
                     ? "Sending..."
                     : "Resend email"}
               </button>
+              {errors.email && (
+                <p className="text-error text-xs mt-2">{errors.email}</p>
+              )}
             </div>
 
             <div className="mt-6">
@@ -228,9 +234,10 @@ useEffect(() => {
               </div>
               <Button
                 type="submit"
+                disabled={isSubmitting}
                 className=" rounded-lg w-full bg-primary text-surface"
               >
-                Send Reset Link
+                {isSubmitting ? "Sending..." : "Send Reset Link"}
               </Button>
             </form>
             <div className="mt-2">

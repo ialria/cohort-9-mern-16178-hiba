@@ -5,7 +5,7 @@ import confetti from "canvas-confetti";
 import Toast from "../../components/Toast.jsx";
 import zxcvbn from "../../utils/passwordStrength.js";
 import PasswordStrength from "../../components/PasswordStrength.jsx";
-
+import { apiFetch } from "../../config/api.js";
 function SignupForm() {
   const redirectTimer = useRef(null);
 useEffect(() => {
@@ -69,11 +69,8 @@ useEffect(() => {
     }
     setErrors({});
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/signup`, {
+      const response = await apiFetch("/api/auth/signup", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
         body: JSON.stringify({
           username,
           email,

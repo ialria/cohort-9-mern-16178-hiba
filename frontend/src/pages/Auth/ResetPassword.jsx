@@ -5,7 +5,7 @@ import Button from "../../components/Button.jsx";
 import zxcvbn from "../../utils/passwordStrength.js";
 import PasswordStrength from "../../components/PasswordStrength.jsx";
 import { useSearchParams,useNavigate } from "react-router-dom";
-
+import { apiFetch } from "../../config/api.js";
 
 function ResetPassword(){
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -56,13 +56,10 @@ const navigate=useNavigate();
 setErrors({});
 setIsSubmitting(true);
   try {
-    const response = await fetch(
-       `${import.meta.env.VITE_API_URL}/api/auth/reset-password`,
+    const response = await apiFetch(
+      "/api/auth/reset-password",
       {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
         body: JSON.stringify({
           token,
           password,

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {Eye, EyeOff} from "../../icons/icons.jsx";
-
+import {apiFetch} from "../../config/api.js";
 function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
@@ -39,12 +39,8 @@ const [isSubmitting, setIsSubmitting] = useState(false);
     setErrors({});
       setIsSubmitting(true);
   try{
-const response= await fetch(`${import.meta.env.VITE_API_URL}/api/auth/login`,{
+const response= await apiFetch("/api/auth/login",{
   method:"POST",
-  headers:{
-    "Content-type":"application/json"
-  },
-  credentials:"include",
   body:JSON.stringify({
     email, password
   })
