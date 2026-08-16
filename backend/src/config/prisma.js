@@ -6,6 +6,9 @@ if (!process.env.DATABASE_URL) {
 const { PrismaClient } = require("@prisma/client");
 const { PrismaMariaDb } = require("@prisma/adapter-mariadb");
 const databaseUrl = new URL(process.env.DATABASE_URL);
+if (!process.env.DATABASE_URL) {
+  throw new Error("DATABASE_URL is not set");
+}
 
 const adapter = new PrismaMariaDb({
   host: databaseUrl.hostname,
