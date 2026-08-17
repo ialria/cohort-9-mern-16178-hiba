@@ -96,7 +96,6 @@ const login = async (req, res) => {
       });
     }
 
-    // creating token when credentials of user are correct
     const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, {
       expiresIn: "1d",
     });
@@ -171,7 +170,7 @@ try{
         }
     });
 const resetLink =  `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}`;
- await sendPasswordResetEmail(user.email, resetLink);//send email to the email provided
+ await sendPasswordResetEmail(user.email, resetLink);
  return res.status(200).json({
       message: "If an account exists with this email, a reset link has been sent.",
     });

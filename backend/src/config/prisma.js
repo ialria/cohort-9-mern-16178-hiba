@@ -1,4 +1,8 @@
 require("dotenv").config();
+
+if (!process.env.DATABASE_URL) {
+  throw new Error("DATABASE URL is not set");
+}
 const { PrismaClient } = require("@prisma/client");
 const { PrismaMariaDb } = require("@prisma/adapter-mariadb");
 if (!process.env.DATABASE_URL) {
