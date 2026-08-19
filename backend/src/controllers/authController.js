@@ -40,11 +40,8 @@ if (!emailRegex.test(email.trim())) {
     message: "Please enter a valid email",
   });
 }
-<<<<<<< HEAD
 
 //different casing or spaces donot create new/duplicated accounts
-=======
->>>>>>> 3888dbb (Resolved PR review comments)
 const normalizedEmail = email.trim().toLowerCase(); 
     const existingUser = await prisma.user.findUnique({
       where: {
@@ -199,20 +196,14 @@ try{
     // valid for 15 minutes
     const tokenExpiresAt=new Date(Date.now()+ 15 * 60 * 1000);
     await prisma.$transaction([
-<<<<<<< HEAD
+
   prisma.passwordresettoken.deleteMany({
-=======
-  prisma.passwordResetToken.deleteMany({
->>>>>>> 3888dbb (Resolved PR review comments)
         where:{
             userId:user.id
         }
     }),
-<<<<<<< HEAD
+
          prisma.passwordresettoken.create({
-=======
-         prisma.passwordResetToken.create({
->>>>>>> 3888dbb (Resolved PR review comments)
         data:{
             hashedToken,
             tokenExpiresAt,
@@ -222,10 +213,7 @@ try{
     ]);
 
    
-<<<<<<< HEAD
     // placing unhashed token in link
-=======
->>>>>>> 3888dbb (Resolved PR review comments)
 const resetLink =  `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}`;
 
 try {

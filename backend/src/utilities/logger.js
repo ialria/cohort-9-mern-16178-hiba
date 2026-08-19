@@ -5,8 +5,4 @@ const logger=pino({
   redact: ["req.headers.cookie", "req.headers.authorization"],
 //   have to protect jwt because token is stored in cookie
 });
-<<<<<<< HEAD
 module.exports=logger;
-=======
-module.exports=logger;
->>>>>>> 3888dbb (Resolved PR review comments)

@@ -175,14 +175,9 @@ if (!note && !isNewNote) {
  <section className="px-10 md:px-22 mb-4">
   <div ref={editorRef}>           <ReactQuill  theme="snow" value={content} modules={modules} onChange={handleContentChange} placeholder="Start typing ..." className="mt-6 text-base
     text-text
-<<<<<<< HEAD
     placeholder:text-text-muted" /> 
     </div>
 
-=======
-    placeholder:text-text-muted" >
-       <div aria-label="Note content" /></ReactQuill> 
->>>>>>> 3888dbb (Resolved PR review comments)
 </section>
       </section>
     </main>

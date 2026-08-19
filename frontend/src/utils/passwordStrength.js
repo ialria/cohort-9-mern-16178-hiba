@@ -19,14 +19,11 @@ async function loadChecker() {
         },
       });
       return checker;
-<<<<<<< HEAD
+
     }) .catch((error) => {
         checkerPromise = null;
         throw error;
       });
-=======
-    });
->>>>>>> 3888dbb (Resolved PR review comments)
   }
   return checkerPromise;
 }

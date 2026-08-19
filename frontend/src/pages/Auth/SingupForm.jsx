@@ -8,7 +8,7 @@ import PasswordStrength from "../../components/PasswordStrength.jsx";
 import { apiFetch } from "../../config/api.js";
 function SignupForm() {
   const redirectTimer = useRef(null);
-<<<<<<< HEAD
+
 const passwordCheckId = useRef(0);
   useEffect(() => {
     return () => {
@@ -20,17 +20,6 @@ const passwordCheckId = useRef(0);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [registrationComplete, setRegistrationComplete] = useState(false);
-=======
-useEffect(() => {
-  return () => {
-    if (redirectTimer.current) {
-      clearTimeout(redirectTimer.current);
-    }
-  };
-}, []);
-
-const [isSubmitting, setIsSubmitting] = useState(false);
->>>>>>> 3888dbb (Resolved PR review comments)
   const [showToast, setShowToast] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -79,11 +68,9 @@ const [isSubmitting, setIsSubmitting] = useState(false);
 
   async function handleSubmit(e) {
     e.preventDefault();
-<<<<<<< HEAD
+
     if (isSubmitting) {
-=======
-    if(isSubmitting){
->>>>>>> 3888dbb (Resolved PR review comments)
+   
       return;
     }
     const foundErrors = validateForm();
@@ -92,13 +79,10 @@ const [isSubmitting, setIsSubmitting] = useState(false);
       setErrors(foundErrors);
       return;
     }
-<<<<<<< HEAD
+
     setErrors({});
     setIsSubmitting(true);
-=======
-   setErrors({});
-setIsSubmitting(true); 
->>>>>>> 3888dbb (Resolved PR review comments)
+
     try {
       const response = await apiFetch("/api/auth/signup", {
         method: "POST",
@@ -128,11 +112,10 @@ setIsSubmitting(true);
           scalar: 0.6,
         });
 
-<<<<<<< HEAD
+
         redirectTimer.current = setTimeout(() => {
           navigate("/login");
         }, 1500);
-        return;
       }
       if (!response.ok) {
         if (response.status === 409) {
@@ -152,33 +135,9 @@ setIsSubmitting(true);
       });
     } finally {
       setRegistrationComplete(true);
-=======
-    
-      redirectTimer.current = setTimeout(() => {
-  navigate("/login");
-}, 1500);
       }
-     if (!response.ok) {
-  if (response.status === 409) {
-    setErrors({
-      email: data.message,
-    });
-  } else {
-    setErrors({
-      form: data.message || "Something went wrong. Please try again.",
-    });
-  }
-  return;
-}
-    } catch (error) {
-     setErrors({
-    form: "Something went wrong. Please try again.",
-  });
-    }finally{
->>>>>>> 3888dbb (Resolved PR review comments)
-      setIsSubmitting(false);
-    }
-  }
+    } 
+  
 
   return (
     <div className="w-full md:w-1/2 bg-background min-h-screen py-10 px-6 md:px-10 lg:py-24 lg:px-24 xl:px-36">
@@ -211,26 +170,19 @@ setIsSubmitting(true);
             id="username"
             type="text"
             placeholder="Your username"
-<<<<<<< HEAD
+
             aria-invalid={!!errors.username}
             aria-describedby={errors.username ? "username-error" : undefined}
-=======
-             aria-invalid={!!errors.username}
-  aria-describedby={errors.username ? "username-error" : undefined}
->>>>>>> 3888dbb (Resolved PR review comments)
             className={`w-full border rounded-lg px-3 py-2 bg-surface placeholder:text-text-muted ${
               errors.username ? "border-red-400" : "border-border"
             }`}
           />
 
           {errors.username && (
-<<<<<<< HEAD
+
             <p id="username-error" className="text-red-500 text-xs">
               {errors.username}
             </p>
-=======
-            <p id="username-error" className="text-red-500 text-xs">{errors.username}</p>
->>>>>>> 3888dbb (Resolved PR review comments)
           )}
         </div>
 
@@ -255,24 +207,17 @@ setIsSubmitting(true);
             type="email"
             placeholder="you@example.com"
             aria-invalid={!!errors.email}
-<<<<<<< HEAD
+
             aria-describedby={errors.email ? "email-error" : undefined}
-=======
-aria-describedby={errors.email ? "email-error" : undefined}
->>>>>>> 3888dbb (Resolved PR review comments)
             className={`w-full border rounded-lg px-3 py-2 bg-surface placeholder:text-text-muted ${
               errors.email ? "border-red-400" : "border-border"
             }`}
           />
 
           {errors.email && (
-<<<<<<< HEAD
             <p id="email-error" className="text-red-500 text-xs">
               {errors.email}
             </p>
-=======
-            <p id="email-error" className="text-red-500 text-xs">{errors.email}</p>
->>>>>>> 3888dbb (Resolved PR review comments)
           )}
         </div>
 
@@ -298,7 +243,7 @@ aria-describedby={errors.email ? "email-error" : undefined}
                 }
 
                 if (value.length > 0) {
-<<<<<<< HEAD
+
                   try {
                     const checker = await zxcvbn();
                     const result = checker.check(value);
@@ -315,24 +260,15 @@ aria-describedby={errors.email ? "email-error" : undefined}
         setPasswordStrength(null);
       }
                   }
-=======
-                  const checker=await zxcvbn();
-                  const result = checker.check(value);
-                  setPasswordStrength(result);
->>>>>>> 3888dbb (Resolved PR review comments)
-                } else {
-                  setPasswordStrength(null);
-                }
+                
+                } 
               }}
               id="password"
               type={showPassword ? "text" : "password"}
               placeholder="......."
               aria-invalid={!!errors.password}
-<<<<<<< HEAD
               aria-describedby={errors.password ? "password-error" : undefined}
-=======
-aria-describedby={errors.password ? "password-error" : undefined}
->>>>>>> 3888dbb (Resolved PR review comments)
+
               className={`w-full border rounded-lg px-3 py-2 pr-10 bg-surface placeholder:text-text-muted placeholder:text-3xl ${
                 errors.password ? "border-red-400" : "border-border"
               }`}
@@ -353,13 +289,9 @@ aria-describedby={errors.password ? "password-error" : undefined}
           <PasswordStrength passwordStrength={passwordStrength} />
 
           {errors.password && (
-<<<<<<< HEAD
             <p id="password-error" className="text-red-500 text-xs">
               {errors.password}
             </p>
-=======
-            <p id="password-error" className="text-red-500 text-xs">{errors.password}</p>
->>>>>>> 3888dbb (Resolved PR review comments)
           )}
         </div>
 
@@ -385,15 +317,10 @@ aria-describedby={errors.password ? "password-error" : undefined}
               type={showConfirmPassword ? "text" : "password"}
               placeholder="......."
               aria-invalid={!!errors.confirmPassword}
-<<<<<<< HEAD
               aria-describedby={
                 errors.confirmPassword ? "confirm-password-error" : undefined
               }
-=======
-aria-describedby={
-  errors.confirmPassword ? "confirm-password-error" : undefined
-}
->>>>>>> 3888dbb (Resolved PR review comments)
+
               className={`w-full border rounded-lg px-3 py-2 pr-10 bg-surface placeholder:text-text-muted placeholder:text-3xl  ${
                 errors.confirmPassword ? "border-red-400" : "border-border"
               }`}
@@ -416,22 +343,54 @@ aria-describedby={
           </div>
 
           {errors.confirmPassword && (
-<<<<<<< HEAD
             <p id="confirm-password-error" className="text-red-500 text-xs">
               {errors.confirmPassword}
             </p>
-=======
-            <p id="confirm-password-error" className="text-red-500 text-xs">{errors.confirmPassword}</p>
->>>>>>> 3888dbb (Resolved PR review comments)
           )}
         </div>
+        {/* <div className="mb-4 flex items-center">
+          <input
+            type="checkbox"
+            checked={acceptedTerms}
+            onChange={(e)=>setAcceptedTerms(e.target.checked)}
+            id="terms"
+            className="mr-2  accent-[#2B2733] cursor-pointer"
+          />
+          <label htmlFor="terms" className="text-xs text-[#2B2733]">
+            I agree to the{" "}
+            <Link to="/termsOfService"
+           
+              className={`underline hover:no-underline ${
+    errors.terms ? "text-red-500" : "text-[#2B2733]"
+  }`}
+            >
+              {" "}
+              Terms of Service
+            </Link>{" "}
+            and{" "}
+            <Link
+              to="/privacyPolicy"
+              className={`text-[#362B4A] underline hover:no-underline ${
+    errors.terms ? "text-red-500" : "text-[#2B2733]"
+  }`}
+            >
+              Privacy Policy
+            </Link>
+            .
+          </label>
+          
+        </div>
+              {errors.terms && (
+  <p className="text-red-500 text-xs mb-4">
+    {errors.terms}
+  </p>
+)} */}
         {errors.form && (
           <p className="text-red-500 text-xs mb-2">{errors.form}</p>
         )}
 
         <button
           type="submit"
-<<<<<<< HEAD
           disabled={isSubmitting || registrationComplete}
           className="w-full rounded-lg bg-primary py-3 px-3 text-background my-3 cursor-pointer"
         >
@@ -440,12 +399,6 @@ aria-describedby={
             : isSubmitting
               ? "Creating Account..."
               : "Create Account"}
-=======
-          disabled={isSubmitting}
-          className="w-full rounded-lg bg-primary py-3 px-3 text-background my-3 cursor-pointer"
-        >
-          {isSubmitting ? "Creating Account..." : "Create Account"}
->>>>>>> 3888dbb (Resolved PR review comments)
         </button>
       </form>
 

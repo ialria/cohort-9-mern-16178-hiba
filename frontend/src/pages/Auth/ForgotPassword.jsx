@@ -60,12 +60,8 @@ function ForgotPassword() {
         }),
       },
     );
-<<<<<<< HEAD
-  const data = await response.json().catch(()=>({}));
-=======
 
-    const data = await response.json().catch(()=>({}));
->>>>>>> 3888dbb (Resolved PR review comments)
+  const data = await response.json().catch(()=>({}));
     return { response, data };
 
     }catch (error){
