@@ -27,9 +27,6 @@ navigate("/login")
     }catch(error){
 
  console.error("Logout error:", error);
-    }finally{
-    closeLogoutModal();
-  navigate("/login");
     }
   }
 
