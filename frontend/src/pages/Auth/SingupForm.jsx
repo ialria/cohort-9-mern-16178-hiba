@@ -69,11 +69,9 @@ function SignupForm() {
 
   async function handleSubmit(e) {
     e.preventDefault();
-
-    if (isSubmitting) {
+    if(isSubmitting){
       return;
     }
-
     const foundErrors = validateForm();
 
     if (Object.keys(foundErrors).length > 0) {
@@ -112,32 +110,31 @@ function SignupForm() {
           scalar: 0.6,
         });
           setIsSubmitting(false);
-
-        redirectTimer.current = setTimeout(() => {
-          navigate("/login");
-        }, 1500);
-
-        return;
+      redirectTimer.current = setTimeout(() => {
+  navigate("/login");
+}, 1500);
       }
-
-      if (response.status === 409) {
-        setErrors({
-          email: data.message,
-        });
-      } else {
-        setErrors({
-          form: data.message || "Something went wrong. Please try again.",
-        });
-      }
-        
-    } catch (error) {
-      setErrors({
-        form: "Something went wrong. Please try again.",
-      });
-      setIsSubmitting(false);
-    
+     if (!response.ok) {
+  if (response.status === 409) {
+    setErrors({
+      email: data.message,
+    });
+  } else {
+    setErrors({
+      form: data.message || "Something went wrong. Please try again.",
+    });
   }
+  return;
 }
+    } catch (error) {
+     setErrors({
+    form: "Something went wrong. Please try again.",
+  });
+    }finally{
+      setIsSubmitting(false);
+    }
+  }
+
 
   return (
     <div className="w-full md:w-1/2 bg-background min-h-screen py-10 px-6 md:px-10 lg:py-24 lg:px-24 xl:px-36">
@@ -180,9 +177,7 @@ function SignupForm() {
           />
 
           {errors.username && (
-            <p id="username-error" className="text-red-500 text-xs">
-              {errors.username}
-            </p>
+            <p id="username-error" className="text-red-500 text-xs">{errors.username}</p>
           )}
         </div>
 
@@ -349,12 +344,7 @@ function SignupForm() {
           </div>
 
           {errors.confirmPassword && (
-            <p
-              id="confirm-password-error"
-              className="text-red-500 text-xs"
-            >
-              {errors.confirmPassword}
-            </p>
+            <p id="confirm-password-error" className="text-red-500 text-xs">{errors.confirmPassword}</p>
           )}
         </div>
 
