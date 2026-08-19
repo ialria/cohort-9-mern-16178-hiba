@@ -1,12 +1,18 @@
 import LeafletLogo from "../../icons/leaflet_logo.jsx";
 import { Mail, Lock, Check } from "../../icons/icons.jsx";
-import { useState, useEffect } from "react";
+import { useState, useRef,useEffect } from "react";
 import Button from "../../components/Button.jsx";
 import { Link } from "react-router-dom";
 import { apiFetch } from "../../config/api.js";
 function ForgotPassword() {
-  const [email, setEmail] = useState("");
   const [emailSent, setEmailSent] = useState(false);
+  const headingReference=useRef(null);
+  useEffect(() => {
+  if (emailSent) {
+    headingReference.current?.focus();
+  }
+}, [emailSent]);
+  const [email, setEmail] = useState("");
   const [resending, setResending] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [resendCooldown, setResendCooldown] = useState(0);
@@ -54,7 +60,7 @@ function ForgotPassword() {
       },
     );
 
-    const data = await response.json();
+    const data = await response.json().catch(()=>({}));
     return { response, data };
   }
   async function handleSubmit(e) {
@@ -71,11 +77,16 @@ function ForgotPassword() {
     try {
       const { response, data } = await sendResetEmail();
 
-      if (!response.ok) {
-        setErrors({
-          email: data.message || "Something went wrong.",
-        });
-        // console.log(data);
+   if (!response.ok) {
+  if (response.status === 409) {
+    setErrors({
+      email: data.message,
+    });
+  } else {
+    setErrors({
+      form: data.message,
+    });
+  }
         return;
       }
 
@@ -85,7 +96,7 @@ function ForgotPassword() {
       console.error("Forgot password error:", error);
 
       setErrors({
-        email: "Something went wrong. Please try again.",
+    form: "Something went wrong. Please try again.",
       });
     } finally {
       setIsSubmitting(false);
@@ -103,19 +114,19 @@ function ForgotPassword() {
     try {
       const { response, data } = await sendResetEmail();
 
-      if (!response.ok) {
-        setErrors({
-          email: data.message || "Something went wrong.",
-        });
-        return;
-      }
+    if (!response.ok) {
+  setErrors({
+    form: data.message || "Something went wrong.",
+  });
+  return;
+}
       setResendCooldown(60);
     } catch (error) {
       console.error("Resend email error:", error);
 
-      setErrors({
-        email: "Something went wrong. Please try again.",
-      });
+    setErrors({
+  form: "Something went wrong. Please try again.",
+});
     } finally {
       setResending(false);
     }
@@ -139,7 +150,7 @@ function ForgotPassword() {
             </div>
 
             <header className="flex flex-col items-center text-center py-6 gap-3 max-w-md">
-              <h2 className="text-2xl font-semibold text-text">
+              <h2 ref={headingReference} tabIndex={-1} className="text-2xl font-semibold text-text">
                 Check your email
               </h2>
 
@@ -176,8 +187,8 @@ function ForgotPassword() {
                     ? "Sending..."
                     : "Resend email"}
               </button>
-              {errors.email && (
-                <p className="text-error text-xs mt-2">{errors.email}</p>
+              {errors.form && (
+                <p className="text-error text-xs mt-2">{errors.form}</p>
               )}
             </div>
 
@@ -218,6 +229,7 @@ function ForgotPassword() {
                       setErrors((prev) => ({
                         ...prev,
                         email: "",
+                        form:""
                       }));
                     }
                   }}
@@ -228,8 +240,11 @@ function ForgotPassword() {
                       : "border-text-muted/30"
                   }`}
                 />
-                {errors.email && (
-                  <p className="text-error text-xs">{errors.email}</p>
+                {errors.email && ( 
+  <p className="text-error text-xs">{errors.email}</p>
+)}
+                {errors.form && (
+                  <p className="text-error text-xs">{errors.form}</p>
                 )}
               </div>
               <Button

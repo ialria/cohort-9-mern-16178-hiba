@@ -149,7 +149,7 @@ setIsSubmitting(true);
           <div className="relative">
             <input
               value={password}
-              onChange={(e) => {
+              onChange={async (e) => {
                 const value = e.target.value;
                 setPassword(value);
                 if (errors.password) {
@@ -159,7 +159,8 @@ setIsSubmitting(true);
                   }));
                 }
                 if (value.length > 0) {
-                  const result = zxcvbn.check(value);
+                  const checker=await zxcvbn();
+                  const result = checker.check(value);
                   setPasswordStrength(result);
                 } else {
                   setPasswordStrength(null);

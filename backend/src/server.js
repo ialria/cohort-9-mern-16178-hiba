@@ -22,10 +22,15 @@ const gracefulShutdown = async (signal) => {
   console.log(`${signal} received. Shutting down gracefully...`);
 
   server.close(async () => {
-    await prisma.$disconnect();
-    console.log("Prisma disconnected.");
+    try {
+      await prisma.$disconnect();
+      console.log("Prisma disconnected.");
 
-    process.exit(0);
+      process.exit(0);
+    } catch (error) {
+      console.error("Prisma disconnect failed:", error);
+      process.exit(1);
+    }
   });
 };
 

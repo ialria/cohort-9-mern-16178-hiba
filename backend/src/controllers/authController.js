@@ -24,11 +24,18 @@ const signup = async (req, res) => {
     message: "Password must be 64 characters or less",
   });
 }
- 
 
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+if (!emailRegex.test(email.trim())) {
+  return res.status(400).json({
+    message: "Please enter a valid email",
+  });
+}
+const normalizedEmail = email.trim().toLowerCase(); 
     const existingUser = await prisma.user.findUnique({
       where: {
-        email: email,
+        email: normalizedEmail,
       },
     });
     if (existingUser) {
@@ -41,7 +48,7 @@ const signup = async (req, res) => {
     const user = await prisma.user.create({
       data: {
         username: username,
-        email: email,
+        email: normalizedEmail,
         password: hashedPassword,
       },
     });
@@ -55,6 +62,11 @@ const signup = async (req, res) => {
       },
     });
   } catch (error) {
+     if (error.code === "P2002") {
+    return res.status(409).json({
+      message: "Email is already registered",
+    });
+  }
     logger.error(
     {
       error: {
@@ -78,9 +90,10 @@ const login = async (req, res) => {
         message: "Email and password are required",
       });
     }
+    const normalizedEmail = email.trim().toLowerCase();
     const user = await prisma.user.findUnique({
       where: {
-        email: email,
+        email: normalizedEmail,
       },
     });
     if (!user) {
@@ -148,8 +161,10 @@ try{
             message: "Email is required"
         });
     }
+    const normalizedEmail = email.trim().toLowerCase();
+
     const user=await prisma.user.findUnique({
-        where:{email}
+        where:{email:normalizedEmail}
     });
     if(!user){
         return res.status(200).json({message:"If an account exists with this email, a reset link has been sent."});
@@ -157,18 +172,22 @@ try{
     const resetToken=crypto.randomBytes(32).toString("hex");
     const hashedToken=crypto.createHash("sha256").update(resetToken).digest("hex");
     const tokenExpiresAt=new Date(Date.now()+ 15 * 60 * 1000);
-    await prisma.passwordresettoken.deleteMany({
+    await prisma.$transaction([
+  prisma.passwordResetToken.deleteMany({
         where:{
             userId:user.id
         }
-    });
-        await prisma.passwordresettoken.create({
+    }),
+         prisma.passwordResetToken.create({
         data:{
             hashedToken,
             tokenExpiresAt,
             userId:user.id
         }
-    });
+    })
+    ]);
+
+   
 const resetLink =  `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}`;
  await sendPasswordResetEmail(user.email, resetLink);
  return res.status(200).json({
