@@ -72,10 +72,8 @@ function SignupForm() {
       setErrors(foundErrors);
       return;
     }
-
     setErrors({});
     setIsSubmitting(true);
-
     try {
       const response = await apiFetch("/api/auth/signup", {
         method: "POST",
@@ -235,11 +233,9 @@ function SignupForm() {
                   try {
                     const checker = await zxcvbn();
                     const result = checker.check(value);
-
                     setPasswordStrength(result);
                   } catch (error) {
                     console.error("Password strength checker error:", error);
-
                     setPasswordStrength(null);
                   }
                 } else {
@@ -302,7 +298,7 @@ function SignupForm() {
               aria-describedby={
                 errors.confirmPassword ? "confirm-password-error" : undefined
               }
-              className={`w-full border rounded-lg px-3 py-2 pr-10 bg-surface placeholder:text-text-muted placeholder:text-3xl ${
+              className={`w-full border rounded-lg px-3 py-2 pr-10 bg-surface placeholder:text-text-muted placeholder:text-3xl  ${
                 errors.confirmPassword ? "border-red-400" : "border-border"
               }`}
             />
@@ -329,7 +325,6 @@ function SignupForm() {
             </p>
           )}
         </div>
-
         {errors.form && (
           <p className="text-red-500 text-xs mb-2">{errors.form}</p>
         )}
