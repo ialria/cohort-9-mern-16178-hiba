@@ -8,6 +8,7 @@ import PasswordStrength from "../../components/PasswordStrength.jsx";
 import { apiFetch } from "../../config/api.js";
 function SignupForm() {
   const redirectTimer = useRef(null);
+<<<<<<< HEAD
   useEffect(() => {
     return () => {
       if (redirectTimer.current) {
@@ -17,6 +18,17 @@ function SignupForm() {
   }, []);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+=======
+useEffect(() => {
+  return () => {
+    if (redirectTimer.current) {
+      clearTimeout(redirectTimer.current);
+    }
+  };
+}, []);
+
+const [isSubmitting, setIsSubmitting] = useState(false);
+>>>>>>> 3888dbb (Resolved PR review comments)
   const [showToast, setShowToast] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -62,7 +74,11 @@ function SignupForm() {
 
   async function handleSubmit(e) {
     e.preventDefault();
+<<<<<<< HEAD
     if (isSubmitting) {
+=======
+    if(isSubmitting){
+>>>>>>> 3888dbb (Resolved PR review comments)
       return;
     }
     const foundErrors = validateForm();
@@ -70,8 +86,13 @@ function SignupForm() {
       setErrors(foundErrors);
       return;
     }
+<<<<<<< HEAD
     setErrors({});
     setIsSubmitting(true);
+=======
+   setErrors({});
+setIsSubmitting(true); 
+>>>>>>> 3888dbb (Resolved PR review comments)
     try {
       const response = await apiFetch("/api/auth/signup", {
         method: "POST",
@@ -98,6 +119,7 @@ function SignupForm() {
           scalar: 0.6,
         });
 
+<<<<<<< HEAD
         redirectTimer.current = setTimeout(() => {
           navigate("/login");
         }, 1500);
@@ -119,6 +141,30 @@ function SignupForm() {
         form: "Something went wrong. Please try again.",
       });
     } finally {
+=======
+    
+      redirectTimer.current = setTimeout(() => {
+  navigate("/login");
+}, 1500);
+      }
+     if (!response.ok) {
+  if (response.status === 409) {
+    setErrors({
+      email: data.message,
+    });
+  } else {
+    setErrors({
+      form: data.message || "Something went wrong. Please try again.",
+    });
+  }
+  return;
+}
+    } catch (error) {
+     setErrors({
+    form: "Something went wrong. Please try again.",
+  });
+    }finally{
+>>>>>>> 3888dbb (Resolved PR review comments)
       setIsSubmitting(false);
     }
   }
@@ -152,17 +198,26 @@ function SignupForm() {
             id="username"
             type="text"
             placeholder="Your username"
+<<<<<<< HEAD
             aria-invalid={!!errors.username}
             aria-describedby={errors.username ? "username-error" : undefined}
+=======
+             aria-invalid={!!errors.username}
+  aria-describedby={errors.username ? "username-error" : undefined}
+>>>>>>> 3888dbb (Resolved PR review comments)
             className={`w-full border rounded-lg px-3 py-2 bg-surface placeholder:text-text-muted ${
               errors.username ? "border-red-400" : "border-border"
             }`}
           />
 
           {errors.username && (
+<<<<<<< HEAD
             <p id="username-error" className="text-red-500 text-xs">
               {errors.username}
             </p>
+=======
+            <p id="username-error" className="text-red-500 text-xs">{errors.username}</p>
+>>>>>>> 3888dbb (Resolved PR review comments)
           )}
         </div>
         <div className="mb-4">
@@ -184,15 +239,23 @@ function SignupForm() {
             type="email"
             placeholder="you@example.com"
             aria-invalid={!!errors.email}
+<<<<<<< HEAD
             aria-describedby={errors.email ? "email-error" : undefined}
+=======
+aria-describedby={errors.email ? "email-error" : undefined}
+>>>>>>> 3888dbb (Resolved PR review comments)
             className={`w-full border rounded-lg px-3 py-2 bg-surface placeholder:text-text-muted ${
               errors.email ? "border-red-400" : "border-border"
             }`}
           />
           {errors.email && (
+<<<<<<< HEAD
             <p id="email-error" className="text-red-500 text-xs">
               {errors.email}
             </p>
+=======
+            <p id="email-error" className="text-red-500 text-xs">{errors.email}</p>
+>>>>>>> 3888dbb (Resolved PR review comments)
           )}
         </div>
         <div className="mb-4 ">
@@ -212,6 +275,7 @@ function SignupForm() {
                   }));
                 }
                 if (value.length > 0) {
+<<<<<<< HEAD
                   try {
                     const checker = await zxcvbn();
                     const result = checker.check(value);
@@ -220,6 +284,11 @@ function SignupForm() {
                     console.error("Password strength checker error:", error);
                     setPasswordStrength(null);
                   }
+=======
+                  const checker=await zxcvbn();
+                  const result = checker.check(value);
+                  setPasswordStrength(result);
+>>>>>>> 3888dbb (Resolved PR review comments)
                 } else {
                   setPasswordStrength(null);
                 }
@@ -228,7 +297,11 @@ function SignupForm() {
               type={showPassword ? "text" : "password"}
               placeholder="......."
               aria-invalid={!!errors.password}
+<<<<<<< HEAD
               aria-describedby={errors.password ? "password-error" : undefined}
+=======
+aria-describedby={errors.password ? "password-error" : undefined}
+>>>>>>> 3888dbb (Resolved PR review comments)
               className={`w-full border rounded-lg px-3 py-2 pr-10 bg-surface placeholder:text-text-muted placeholder:text-3xl ${
                 errors.password ? "border-red-400" : "border-border"
               }`}
@@ -247,9 +320,13 @@ function SignupForm() {
 
           <PasswordStrength passwordStrength={passwordStrength} />
           {errors.password && (
+<<<<<<< HEAD
             <p id="password-error" className="text-red-500 text-xs">
               {errors.password}
             </p>
+=======
+            <p id="password-error" className="text-red-500 text-xs">{errors.password}</p>
+>>>>>>> 3888dbb (Resolved PR review comments)
           )}
         </div>
         <div className="mb-2">
@@ -272,9 +349,15 @@ function SignupForm() {
               type={showConfirmPassword ? "text" : "password"}
               placeholder="......."
               aria-invalid={!!errors.confirmPassword}
+<<<<<<< HEAD
               aria-describedby={
                 errors.confirmPassword ? "confirm-password-error" : undefined
               }
+=======
+aria-describedby={
+  errors.confirmPassword ? "confirm-password-error" : undefined
+}
+>>>>>>> 3888dbb (Resolved PR review comments)
               className={`w-full border rounded-lg px-3 py-2 pr-10 bg-surface placeholder:text-text-muted placeholder:text-3xl  ${
                 errors.confirmPassword ? "border-red-400" : "border-border"
               }`}
@@ -299,9 +382,13 @@ function SignupForm() {
             </button>
           </div>
           {errors.confirmPassword && (
+<<<<<<< HEAD
             <p id="confirm-password-error" className="text-red-500 text-xs">
               {errors.confirmPassword}
             </p>
+=======
+            <p id="confirm-password-error" className="text-red-500 text-xs">{errors.confirmPassword}</p>
+>>>>>>> 3888dbb (Resolved PR review comments)
           )}
         </div>
         {/* <div className="mb-4 flex items-center">
