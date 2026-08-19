@@ -47,40 +47,36 @@ function ResetPassword() {
       return;
     }
     if (!token) {
-    setErrors({
-      form: "Invalid or missing reset link.",
-    });
-    return;
-  }
+      setErrors({
+        form: "Invalid or missing reset link.",
+      });
+      return;
+    }
 
-setErrors({});
-setIsSubmitting(true);
-  try {
-    const response = await apiFetch(
-      "/api/auth/reset-password",
-      {
+    setErrors({});
+    setIsSubmitting(true);
+    try {
+      const response = await apiFetch("/api/auth/reset-password", {
         method: "POST",
         body: JSON.stringify({
           token,
           password,
         }),
-      }
-    );
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      setErrors({
-        form: data.message || "Invalid or missing reset link.",
       });
-      return;
-    }
-    setResetSuccessful(true);
+      const data = await response.json();
 
-    setErrors({});
-    setIsSubmitting(true);
+      if (!response.ok) {
+        setErrors({
+          form: data.message || "Unable to reset password.",
+        });
+        return;
+      }
 
-  } catch (error) {
+      setResetSuccessful(true);
+
+      setErrors({});
+      setIsSubmitting(true);
+    } catch (error) {
       console.error("Reset password error:", error);
 
       setErrors({
@@ -143,49 +139,57 @@ setIsSubmitting(true);
           </h2>
           <form onSubmit={handleSubmit} className="w-full mt-6">
             <div className="mb-4 ">
-          <label htmlFor="password" className="text-text-muted text-xs">
-            Password
-          </label>
-          <div className="relative">
-            <input
-              value={password}
-              onChange={async (e) => {
-                const value = e.target.value;
-                setPassword(value);
-                if (errors.password) {
-                  setErrors((prev) => ({
-                    ...prev,
-                    password: "",
-                  }));
-                }
-                if (value.length > 0) {
-                  const checker=await zxcvbn();
-                  const result = checker.check(value);
-                  setPasswordStrength(result);
-                } else {
-                  setPasswordStrength(null);
-                }
-              }}
-              id="password"
-              autoComplete="new-password"
-              type={showPassword ? "text" : "password"}
-              placeholder="......."
-              className={`w-full border rounded-lg px-3 py-2 pr-10 bg-surface placeholder:text-text-muted placeholder:text-3xl ${
-                errors.password ? "border-red-400" : "border-border"
-              }`}
-            />
-            <button
-              type="button"
-              onClick={() => {
-                setShowPassword((prev) => !prev);
-              }}
-              aria-label={showPassword ? "Hide password" : "Show password"}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted cursor-pointer"
-            >
-              {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}{" "}
-            </button>
-          </div>
-         <PasswordStrength passwordStrength={passwordStrength} />
+              <label htmlFor="password" className="text-text-muted text-xs">
+                Password
+              </label>
+              <div className="relative">
+                <input
+                  value={password}
+                  onChange={async (e) => {
+                    const value = e.target.value;
+                    setPassword(value);
+                    if (errors.password) {
+                      setErrors((prev) => ({
+                        ...prev,
+                        password: "",
+                      }));
+                    }
+                    if (value.length > 0) {
+                      try {
+                        const checker = await zxcvbn();
+                        const result = checker.check(value);
+                        setPasswordStrength(result);
+                      } catch (error) {
+                        console.error(
+                          "Password strength checker error:",
+                          error,
+                        );
+                        setPasswordStrength(null);
+                      }
+                    } else {
+                      setPasswordStrength(null);
+                    }
+                  }}
+                  id="password"
+                  autoComplete="new-password"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="......."
+                  className={`w-full border rounded-lg px-3 py-2 pr-10 bg-surface placeholder:text-text-muted placeholder:text-3xl ${
+                    errors.password ? "border-red-400" : "border-border"
+                  }`}
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowPassword((prev) => !prev);
+                  }}
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted cursor-pointer"
+                >
+                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}{" "}
+                </button>
+              </div>
+              <PasswordStrength passwordStrength={passwordStrength} />
 
               {errors.password && (
                 <p className="text-red-500 text-xs">{errors.password}</p>
