@@ -1,7 +1,7 @@
 require("dotenv").config();
 const { Resend } = require("resend");
 const logger = require("../utilities/logger");
-if (!process.env.RESEND_API_EMAIL) {
+if (!process.env.RESEND_API_KEY) {
   throw new Error("RESEND API KEY is not set");
 }
 if (!process.env.RESEND_FROM_EMAIL) {

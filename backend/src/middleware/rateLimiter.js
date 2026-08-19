@@ -12,5 +12,5 @@ const authLimiter = (message)=>rateLimit({
   const resetPasswordLimiter=authLimiter("Too many  password reset attempts. Please try again later.")
   const signupLimiter=authLimiter("Too many signup attempts. Please try again later.")
 module.exports = {
-    loginLimiter,forgotPasswordLimiter,resetPasswordLimiter
+    loginLimiter,forgotPasswordLimiter,resetPasswordLimiter,signupLimiter
 };

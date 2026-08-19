@@ -19,7 +19,10 @@ async function loadChecker() {
         },
       });
       return checker;
-    });
+    }) .catch((error) => {
+        checkerPromise = null;
+        throw error;
+      });
   }
   return checkerPromise;
 }

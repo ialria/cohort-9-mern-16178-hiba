@@ -173,12 +173,12 @@ try{
     const hashedToken=crypto.createHash("sha256").update(resetToken).digest("hex");
     const tokenExpiresAt=new Date(Date.now()+ 15 * 60 * 1000);
     await prisma.$transaction([
-  prisma.passwordResetToken.deleteMany({
+  prisma.passwordresettoken.deleteMany({
         where:{
             userId:user.id
         }
     }),
-         prisma.passwordResetToken.create({
+         prisma.passwordresettoken.create({
         data:{
             hashedToken,
             tokenExpiresAt,

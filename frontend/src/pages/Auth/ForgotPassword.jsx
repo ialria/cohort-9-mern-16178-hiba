@@ -50,7 +50,8 @@ function ForgotPassword() {
     return newErrors;
   }
   async function sendResetEmail() {
-    const response = await apiFetch(
+    try{
+  const response = await apiFetch(
       "/api/auth/forgot-password",
       {
         method: "POST",
@@ -59,9 +60,17 @@ function ForgotPassword() {
         }),
       },
     );
-
-    const data = await response.json().catch(()=>({}));
+  const data = await response.json().catch(()=>({}));
     return { response, data };
+
+    }catch (error){
+       throw new Error("Failed to send password reset email.", {
+      cause: error,
+    });
+    }
+  
+
+  
   }
   async function handleSubmit(e) {
     e.preventDefault();
@@ -225,7 +234,7 @@ function ForgotPassword() {
                   value={email}
                   onChange={(e) => {
                     setEmail(e.target.value);
-                    if (errors.email) {
+                    if (errors.email || errors.form) {
                       setErrors((prev) => ({
                         ...prev,
                         email: "",
