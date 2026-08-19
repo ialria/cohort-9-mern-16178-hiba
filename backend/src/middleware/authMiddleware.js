@@ -3,8 +3,12 @@ const jwt=require("jsonwebtoken");
 // global middleware
 const authMiddleware=(req, res, next)=>{
 const token=req.cookies?.token;
+<<<<<<< HEAD
 if(!token){ 
     //not logged in -reject user
+=======
+if(!token){
+>>>>>>> 3888dbb (Resolved PR review comments)
      return res.status(401).json({
         message:"Authentication required"
     });

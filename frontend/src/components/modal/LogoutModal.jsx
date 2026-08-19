@@ -23,13 +23,26 @@ if(!response.ok){
 
   );
 }
+<<<<<<< HEAD
 logout();
 closeLogoutModal();
 navigate("/login",{replace:true});
+=======
+closeLogoutModal();
+navigate("/login")
+>>>>>>> 3888dbb (Resolved PR review comments)
     }catch(error){
 
  console.error("Logout error:", error);
     }
+<<<<<<< HEAD
+=======
+    // finally{
+    //      closeLogoutModal();
+    // navigate("/login"); 
+    // }
+
+>>>>>>> 3888dbb (Resolved PR review comments)
   }
 
 

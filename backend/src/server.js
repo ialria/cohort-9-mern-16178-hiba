@@ -83,6 +83,7 @@ const gracefulShutdown = async (signal) => {
   }, 10000);
 
   server.close(async () => {
+<<<<<<< HEAD
     clearTimeout(shutdownTimeout);
 
     try {
@@ -92,6 +93,15 @@ const gracefulShutdown = async (signal) => {
       process.exit(0);
     } catch (error) {
       logger.error({error}, "Prisma disconnect failed");
+=======
+    try {
+      await prisma.$disconnect();
+      console.log("Prisma disconnected.");
+
+      process.exit(0);
+    } catch (error) {
+      console.error("Prisma disconnect failed:", error);
+>>>>>>> 3888dbb (Resolved PR review comments)
       process.exit(1);
     }
   });
