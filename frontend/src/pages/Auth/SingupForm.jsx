@@ -9,6 +9,9 @@ import { apiFetch } from "../../config/api.js";
 function SignupForm() {
   const redirectTimer = useRef(null);
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> c11d208 (Addressed review feedback)
   useEffect(() => {
     return () => {
       if (redirectTimer.current) {
@@ -16,6 +19,7 @@ function SignupForm() {
       }
     };
   }, []);
+<<<<<<< HEAD
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 =======
@@ -29,6 +33,10 @@ useEffect(() => {
 
 const [isSubmitting, setIsSubmitting] = useState(false);
 >>>>>>> 3888dbb (Resolved PR review comments)
+=======
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
+>>>>>>> c11d208 (Addressed review feedback)
   const [showToast, setShowToast] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -75,10 +83,14 @@ const [isSubmitting, setIsSubmitting] = useState(false);
   async function handleSubmit(e) {
     e.preventDefault();
 <<<<<<< HEAD
+<<<<<<< HEAD
     if (isSubmitting) {
 =======
     if(isSubmitting){
 >>>>>>> 3888dbb (Resolved PR review comments)
+=======
+    if (isSubmitting) {
+>>>>>>> c11d208 (Addressed review feedback)
       return;
     }
     const foundErrors = validateForm();
@@ -87,12 +99,17 @@ const [isSubmitting, setIsSubmitting] = useState(false);
       return;
     }
 <<<<<<< HEAD
+<<<<<<< HEAD
     setErrors({});
     setIsSubmitting(true);
 =======
    setErrors({});
 setIsSubmitting(true); 
 >>>>>>> 3888dbb (Resolved PR review comments)
+=======
+    setErrors({});
+    setIsSubmitting(true);
+>>>>>>> c11d208 (Addressed review feedback)
     try {
       const response = await apiFetch("/api/auth/signup", {
         method: "POST",
@@ -120,6 +137,9 @@ setIsSubmitting(true);
         });
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> c11d208 (Addressed review feedback)
         redirectTimer.current = setTimeout(() => {
           navigate("/login");
         }, 1500);
@@ -135,6 +155,7 @@ setIsSubmitting(true);
           });
         }
         return;
+<<<<<<< HEAD
       }
     } catch (error) {
       setErrors({
@@ -146,25 +167,22 @@ setIsSubmitting(true);
       redirectTimer.current = setTimeout(() => {
   navigate("/login");
 }, 1500);
+=======
+>>>>>>> c11d208 (Addressed review feedback)
       }
-     if (!response.ok) {
-  if (response.status === 409) {
-    setErrors({
-      email: data.message,
-    });
-  } else {
-    setErrors({
-      form: data.message || "Something went wrong. Please try again.",
-    });
-  }
-  return;
-}
     } catch (error) {
+<<<<<<< HEAD
      setErrors({
     form: "Something went wrong. Please try again.",
   });
     }finally{
 >>>>>>> 3888dbb (Resolved PR review comments)
+=======
+      setErrors({
+        form: "Something went wrong. Please try again.",
+      });
+    } finally {
+>>>>>>> c11d208 (Addressed review feedback)
       setIsSubmitting(false);
     }
   }
@@ -199,12 +217,17 @@ setIsSubmitting(true);
             type="text"
             placeholder="Your username"
 <<<<<<< HEAD
+<<<<<<< HEAD
             aria-invalid={!!errors.username}
             aria-describedby={errors.username ? "username-error" : undefined}
 =======
              aria-invalid={!!errors.username}
   aria-describedby={errors.username ? "username-error" : undefined}
 >>>>>>> 3888dbb (Resolved PR review comments)
+=======
+            aria-invalid={!!errors.username}
+            aria-describedby={errors.username ? "username-error" : undefined}
+>>>>>>> c11d208 (Addressed review feedback)
             className={`w-full border rounded-lg px-3 py-2 bg-surface placeholder:text-text-muted ${
               errors.username ? "border-red-400" : "border-border"
             }`}
@@ -212,12 +235,18 @@ setIsSubmitting(true);
 
           {errors.username && (
 <<<<<<< HEAD
+<<<<<<< HEAD
             <p id="username-error" className="text-red-500 text-xs">
               {errors.username}
             </p>
 =======
             <p id="username-error" className="text-red-500 text-xs">{errors.username}</p>
 >>>>>>> 3888dbb (Resolved PR review comments)
+=======
+            <p id="username-error" className="text-red-500 text-xs">
+              {errors.username}
+            </p>
+>>>>>>> c11d208 (Addressed review feedback)
           )}
         </div>
         <div className="mb-4">
@@ -240,15 +269,20 @@ setIsSubmitting(true);
             placeholder="you@example.com"
             aria-invalid={!!errors.email}
 <<<<<<< HEAD
+<<<<<<< HEAD
             aria-describedby={errors.email ? "email-error" : undefined}
 =======
 aria-describedby={errors.email ? "email-error" : undefined}
 >>>>>>> 3888dbb (Resolved PR review comments)
+=======
+            aria-describedby={errors.email ? "email-error" : undefined}
+>>>>>>> c11d208 (Addressed review feedback)
             className={`w-full border rounded-lg px-3 py-2 bg-surface placeholder:text-text-muted ${
               errors.email ? "border-red-400" : "border-border"
             }`}
           />
           {errors.email && (
+<<<<<<< HEAD
 <<<<<<< HEAD
             <p id="email-error" className="text-red-500 text-xs">
               {errors.email}
@@ -256,6 +290,11 @@ aria-describedby={errors.email ? "email-error" : undefined}
 =======
             <p id="email-error" className="text-red-500 text-xs">{errors.email}</p>
 >>>>>>> 3888dbb (Resolved PR review comments)
+=======
+            <p id="email-error" className="text-red-500 text-xs">
+              {errors.email}
+            </p>
+>>>>>>> c11d208 (Addressed review feedback)
           )}
         </div>
         <div className="mb-4 ">
@@ -276,6 +315,9 @@ aria-describedby={errors.email ? "email-error" : undefined}
                 }
                 if (value.length > 0) {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> c11d208 (Addressed review feedback)
                   try {
                     const checker = await zxcvbn();
                     const result = checker.check(value);
@@ -284,11 +326,14 @@ aria-describedby={errors.email ? "email-error" : undefined}
                     console.error("Password strength checker error:", error);
                     setPasswordStrength(null);
                   }
+<<<<<<< HEAD
 =======
                   const checker=await zxcvbn();
                   const result = checker.check(value);
                   setPasswordStrength(result);
 >>>>>>> 3888dbb (Resolved PR review comments)
+=======
+>>>>>>> c11d208 (Addressed review feedback)
                 } else {
                   setPasswordStrength(null);
                 }
@@ -298,10 +343,14 @@ aria-describedby={errors.email ? "email-error" : undefined}
               placeholder="......."
               aria-invalid={!!errors.password}
 <<<<<<< HEAD
+<<<<<<< HEAD
               aria-describedby={errors.password ? "password-error" : undefined}
 =======
 aria-describedby={errors.password ? "password-error" : undefined}
 >>>>>>> 3888dbb (Resolved PR review comments)
+=======
+              aria-describedby={errors.password ? "password-error" : undefined}
+>>>>>>> c11d208 (Addressed review feedback)
               className={`w-full border rounded-lg px-3 py-2 pr-10 bg-surface placeholder:text-text-muted placeholder:text-3xl ${
                 errors.password ? "border-red-400" : "border-border"
               }`}
@@ -321,12 +370,18 @@ aria-describedby={errors.password ? "password-error" : undefined}
           <PasswordStrength passwordStrength={passwordStrength} />
           {errors.password && (
 <<<<<<< HEAD
+<<<<<<< HEAD
             <p id="password-error" className="text-red-500 text-xs">
               {errors.password}
             </p>
 =======
             <p id="password-error" className="text-red-500 text-xs">{errors.password}</p>
 >>>>>>> 3888dbb (Resolved PR review comments)
+=======
+            <p id="password-error" className="text-red-500 text-xs">
+              {errors.password}
+            </p>
+>>>>>>> c11d208 (Addressed review feedback)
           )}
         </div>
         <div className="mb-2">
@@ -350,6 +405,7 @@ aria-describedby={errors.password ? "password-error" : undefined}
               placeholder="......."
               aria-invalid={!!errors.confirmPassword}
 <<<<<<< HEAD
+<<<<<<< HEAD
               aria-describedby={
                 errors.confirmPassword ? "confirm-password-error" : undefined
               }
@@ -358,6 +414,11 @@ aria-describedby={
   errors.confirmPassword ? "confirm-password-error" : undefined
 }
 >>>>>>> 3888dbb (Resolved PR review comments)
+=======
+              aria-describedby={
+                errors.confirmPassword ? "confirm-password-error" : undefined
+              }
+>>>>>>> c11d208 (Addressed review feedback)
               className={`w-full border rounded-lg px-3 py-2 pr-10 bg-surface placeholder:text-text-muted placeholder:text-3xl  ${
                 errors.confirmPassword ? "border-red-400" : "border-border"
               }`}
@@ -383,12 +444,18 @@ aria-describedby={
           </div>
           {errors.confirmPassword && (
 <<<<<<< HEAD
+<<<<<<< HEAD
             <p id="confirm-password-error" className="text-red-500 text-xs">
               {errors.confirmPassword}
             </p>
 =======
             <p id="confirm-password-error" className="text-red-500 text-xs">{errors.confirmPassword}</p>
 >>>>>>> 3888dbb (Resolved PR review comments)
+=======
+            <p id="confirm-password-error" className="text-red-500 text-xs">
+              {errors.confirmPassword}
+            </p>
+>>>>>>> c11d208 (Addressed review feedback)
           )}
         </div>
         {/* <div className="mb-4 flex items-center">
