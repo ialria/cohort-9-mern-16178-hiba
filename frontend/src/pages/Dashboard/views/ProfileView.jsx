@@ -113,8 +113,8 @@ const recentNotes = [...activeNotes]
                     strokeWidth={1.5}
                     className="text-surface"
                   />
-                  <span className=" md:text-md text-surface flex gap-1">Edit <span className="hidden md:block text-surface">Profile</span></span>
-                 
+                  <span className=" md:text-md text-surface">Edit</span>
+                  <span className="hidden md:block text-surface">Profile</span>
                 </Button>
               </Link>
             </div>
