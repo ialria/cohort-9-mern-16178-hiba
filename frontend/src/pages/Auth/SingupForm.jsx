@@ -22,6 +22,7 @@ function SignupForm() {
 <<<<<<< HEAD
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+<<<<<<< HEAD
 =======
 useEffect(() => {
   return () => {
@@ -37,6 +38,9 @@ const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 >>>>>>> c11d208 (Addressed review feedback)
+=======
+  const [registrationComplete, setRegistrationComplete] = useState(false);
+>>>>>>> d950b1b (Implemented note search functionality)
   const [showToast, setShowToast] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -122,6 +126,7 @@ setIsSubmitting(true);
 
       const data = await response.json();
       if (response.ok) {
+        setRegistrationComplete(true);
         setShowToast(true);
         confetti({
           particleCount: 35,
@@ -143,6 +148,7 @@ setIsSubmitting(true);
         redirectTimer.current = setTimeout(() => {
           navigate("/login");
         }, 1500);
+        return;
       }
       if (!response.ok) {
         if (response.status === 409) {
@@ -162,6 +168,7 @@ setIsSubmitting(true);
         form: "Something went wrong. Please try again.",
       });
     } finally {
+<<<<<<< HEAD
 =======
     
       redirectTimer.current = setTimeout(() => {
@@ -183,7 +190,11 @@ setIsSubmitting(true);
       });
     } finally {
 >>>>>>> c11d208 (Addressed review feedback)
+=======
+      setRegistrationComplete(true);
+>>>>>>> d950b1b (Implemented note search functionality)
       setIsSubmitting(false);
+      return;
     }
   }
 
@@ -501,10 +512,14 @@ aria-describedby={
 
         <button
           type="submit"
-          disabled={isSubmitting}
+          disabled={isSubmitting || registrationComplete}
           className="w-full rounded-lg bg-primary py-3 px-3 text-background my-3 cursor-pointer"
         >
-          {isSubmitting ? "Creating Account..." : "Create Account"}
+          {registrationComplete
+            ? "Account created"
+            : isSubmitting
+              ? "Creating Account..."
+              : "Create Account"}
         </button>
       </form>
 

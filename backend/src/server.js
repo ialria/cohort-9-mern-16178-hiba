@@ -1,4 +1,6 @@
 require("dotenv").config();
+const logger = require("./utilities/logger");
+const requiredEnv = ["JWT_SECRET", "FRONTEND_URL", "DATABASE_URL"];
 
 const requiredVariables = ["JWT_SECRET", "FRONTEND_URL", "DATABASE_URL"];
 
@@ -13,20 +15,36 @@ const prisma = require("./config/prisma.js");
 const PORT = process.env.PORT || 5000;
 
 const server = app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
+   logger.info(`Server running on port ${PORT}`);
+});
+server.on("error", (error) => {
+  if (error.code === "EADDRINUSE") {
+    logger.error(`Port ${PORT} is already in use`);
+  } else {
+    logger.error(
+      {
+        error: {
+          name: error.name,
+          message: error.message,
+          code: error.code,
+        },
+      },
+      "Server failed to start",
+    );
+  }
 });
 
 const gracefulShutdown = async (signal) => {
-  console.log(`${signal} received. Shutting down gracefully...`);
+  logger.info(`${signal} received. Shutting down gracefully...`);
 
   server.close(async () => {
     try {
       await prisma.$disconnect();
-      console.log("Prisma disconnected.");
+    logger.info("Prisma disconnected.");
 
       process.exit(0);
     } catch (error) {
-      console.error("Prisma disconnect failed:", error);
+      logger.error({error}, "Prisma disconnect failed");
       process.exit(1);
     }
   });

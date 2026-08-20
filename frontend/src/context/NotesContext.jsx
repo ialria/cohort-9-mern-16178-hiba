@@ -1,122 +1,144 @@
-import {createContext, useContext, useState, useEffect} from "react";
+import { createContext, useContext, useState, useEffect } from "react";
 import { apiFetch } from "../config/api";
 
-const NotesContext=createContext();
+const NotesContext = createContext();
 
-export function NotesProvider({children}){
+export function NotesProvider({ children }) {
 useEffect(() => {
-  getAllNotes();
+  getAllNotes().catch((error) => {
+    console.error("Failed to fetch notes:", error);
+  });
 }, []);
+  async function createNote(title, noteContent) {
+    const response = await apiFetch("/api/notes", {
+      method: "POST",
+      body: JSON.stringify({
+        title,
+        noteContent,
+      }),
+    });
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.message || "Failed to create note");
+    }
+    setNotes((prev) => [...prev, data.note]);
 
-async function createNote(title, noteContent) {
-  const response = await apiFetch("/api/notes", {
-    method: "POST",
-    body: JSON.stringify({
-      title,
-      noteContent,
-    }),
-  });
-  const data = await response.json();
-  if (!response.ok) {
-    throw new Error(data.message || "Failed to create note");
+    return data.note;
   }
-    setNotes(prev => [...prev, data.note]);
 
-  return data.note;
-}
-
-async function updateNote(id, title, noteContent) {
-  const response=await apiFetch(`/api/notes/${id}`,{
-    method:"PATCH",
-    body:JSON.stringify({title, noteContent})
-  });
-  const data=await response.json();
+  async function updateNote(id, title, noteContent) {
+    const response = await apiFetch(`/api/notes/${id}`, {
+      method: "PATCH",
+      body: JSON.stringify({ title, noteContent }),
+    });
+    const data = await response.json();
 
     if (!response.ok) {
-    throw new Error(data.message || "Error! Failed to update note");
-  }
-setNotes(prev =>
-    prev.map(note =>
-      note.id === id ? data.note : note
-    )
-  );
-return data.note;
-}
-
-async function getAllNotes() {
-  const response = await apiFetch("/api/notes");
-
-  const data = await response.json();
- console.log("GET NOTES RESPONSE:", data);
-  if (!response.ok) {
-    throw new Error(data.message || "Failed to fetch notes");
+      throw new Error(data.message || "Error! Failed to update note");
+    }
+    setNotes((prev) => prev.map((note) => (note.id === id ? data.note : note)));
+    return data.note;
   }
 
-  setNotes(data.allNotes);
-}
+  async function getAllNotes() {
+    const response = await apiFetch("/api/notes");
 
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.message || "Failed to fetch notes");
+    }
 
-
-    function restoreNote(id) {
-  setNotes(prev =>
-    prev.map(note =>
-      note.id === id
-        ? { ...note, deleted: false }
-        : note
-    )
-  );
-}
-function deleteForever(id) {
-  setNotes(prev =>
-    prev.filter(note => note.id !== id)
-  );
-}
-   async function moveToTrash(id) {
-try{
-  const response=await apiFetch(`/api/notes/${id}/trash`,{
-    method:"PATCH"
-  });
-  const data=await response.json();
-  if(!response.ok){
-     throw new Error(data.message || "Error! Failed to move Note to trash");
+    setNotes(data.allNotes);
   }
-    console.log("MOVE TO TRASH RESPONSE:", data);
-  setNotes(prev =>
-      prev.map(note =>
-        note.id === id ? {...note, isDeleted:true} : note
-      )
+
+ async function restoreNote(id) {
+   try {
+    const response = await apiFetch(`/api/notes/${id}/restore`, {
+      method: "PATCH",
+    });
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.message || "Failed to restore note");
+    }
+    setNotes((prev) =>
+      prev.map((note) => (note.id === id ? data.note : note)),
     );
-}
-catch (error){
- console.error("Failed to move note to trash:", error);
-}
-}
-async function handleFavourite(id) {
-
-  try{
-const response=await apiFetch(`/api/notes/${id}/favourite`,{
-  method:"PATCH"
-});
-const data=await response.json();
-if(!response.ok){
-  throw new Error(data.message || "Error! Failed to update note to favourite");
-}
-
-setNotes(
-  prev=>prev.map(note=>note.id===id ? data.note : note)
-);
-  }catch (error){
-console.error("Failed to update favourite:", error);
+  } catch (error) {
+    console.error("Failed to restore note:", error);
   }
-}
-    const [notes, setNotes] = useState([]);
-    return (
-   <NotesContext.Provider value={{ notes, setNotes, moveToTrash, handleFavourite ,deleteForever,restoreNote, createNote, getAllNotes, updateNote}}>
+  }
+
+ async function deleteForever(id) {
+   try {
+    const response = await apiFetch(`/api/notes/${id}`, {
+      method: "DELETE",
+    });
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.message || "Failed to permanently delete note");
+    }
+    setNotes((prev) => prev.filter((note) => note.id !== id));
+  } catch (error) {
+    console.error("Failed to permanently delete note:", error);
+  }}
+  async function moveToTrash(id) {
+    try {
+      const response = await apiFetch(`/api/notes/${id}/trash`, {
+        method: "PATCH",
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.message || "Error! Failed to move Note to trash");
+      }
+      setNotes((prev) =>
+        prev.map((note) => (note.id === id ? data.note : note)),
+      );
+    } catch (error) {
+      console.error("Failed to move note to trash:", error);
+    }
+  }
+  async function handleFavourite(id) {
+    try {
+      const response = await apiFetch(`/api/notes/${id}/favourite`, {
+        method: "PATCH",
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(
+          data.message || "Error! Failed to update note to favourite",
+        );
+      }
+
+      setNotes((prev) =>
+        prev.map((note) => (note.id === id ? data.note : note)),
+      );
+    } catch (error) {
+      console.error("Failed to update favourite:", error);
+    }
+  }
+  const [notes, setNotes] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  return (
+    <NotesContext.Provider
+      value={{
+        notes,
+        setNotes,
+        searchTerm,
+        setSearchTerm,
+        moveToTrash,
+        handleFavourite,
+        deleteForever,
+        restoreNote,
+        createNote,
+        getAllNotes,
+        updateNote,
+      }}
+    >
       {children}
     </NotesContext.Provider>
-    );
+  );
 }
 
-export function useNotes(){
-    return useContext(NotesContext);
+export function useNotes() {
+  return useContext(NotesContext);
 }

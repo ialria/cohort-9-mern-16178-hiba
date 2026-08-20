@@ -152,7 +152,7 @@ if (!response.ok) {
 
 <div className="relative">
   {loginError && (
-    <p className="absolute bottom-full left-0 mb-1 text-red-500 text-xs">
+    <p role="alert" className="absolute bottom-full left-0 mb-1 text-red-500 text-xs">
       {loginError}
     </p>
   )}
