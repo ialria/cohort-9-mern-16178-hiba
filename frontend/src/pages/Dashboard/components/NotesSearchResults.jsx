@@ -51,7 +51,6 @@ function createPreview(title, content, searchText) {
   }
   return preview;
 }
-
 function highlightSearchText(text, searchText) {
   if (!searchText.trim()) {
     return text;

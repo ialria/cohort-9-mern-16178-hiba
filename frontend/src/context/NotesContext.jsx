@@ -17,6 +17,7 @@ useEffect(() => {
   });
 }, []);
 
+
 useEffect(() => {
 //prevents after cleanup then
   return () => {
@@ -25,20 +26,6 @@ useEffect(() => {
     }
   };
 }, []);
-
-  async function createNote(title, noteContent) {
-    const response = await apiFetch("/api/notes", {
-      method: "POST",
-      body: JSON.stringify({
-        title,
-        noteContent,
-      }),
-    });
-    const data = await response.json();
-    if (!response.ok) {
-      throw new Error(data.message || "Failed to create note");
-    }
-    setNotes((prev) => [...prev, data.note]);
 
   async function createNote(title, noteContent) {
     try{
@@ -376,7 +363,7 @@ exportStatusTimer.current = setTimeout(() => {
     </NotesContext.Provider>
   );
 }
-}
+  
 export function useNotes() {
   return useContext(NotesContext);
 }

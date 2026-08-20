@@ -116,6 +116,7 @@ const passwordCheckId = useRef(0);
         redirectTimer.current = setTimeout(() => {
           navigate("/login");
         }, 1500);
+        return;
       }
       if (!response.ok) {
         if (response.status === 409) {
