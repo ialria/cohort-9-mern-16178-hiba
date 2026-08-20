@@ -4,8 +4,13 @@ import NoteMenu from "../../components/note_components/NoteMenu.jsx";
 import {useSidebar} from "../../../../context/SidebarContext.jsx";
 function PinnedView(){
     const {collapsed}=useSidebar();
+<<<<<<< HEAD:frontend/src/pages/Dashboard/views/main_content/PinnedView.jsx
     const {notes, handlePin, moveToTrash, exportNote} = useNotes();
 const pinnedNotes=notes.filter(note=>note.isPinned && !note.isDeleted);
+=======
+    const {notes, handleFavourite, moveToTrash} = useNotes();
+const favouriteNotes=notes.filter(note=>note.isFavorite && !note.isDeleted);
+>>>>>>> e5e06b1 (Implement note management):frontend/src/pages/Dashboard/views/main_content/FavouriteView.jsx
     return (
      <section className={`grid grid-cols-1 gap-4 md:grid-cols-2  ${collapsed ? "md:gap-4" : "md:gap-6"} px-5 md:px-8`}>
             {pinnedNotes.length === 0 ? (
