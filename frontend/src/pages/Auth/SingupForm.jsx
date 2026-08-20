@@ -127,6 +127,7 @@ function SignupForm() {
     } finally {
       setRegistrationComplete(true);
       setIsSubmitting(false);
+      return;
     }
   }
 
