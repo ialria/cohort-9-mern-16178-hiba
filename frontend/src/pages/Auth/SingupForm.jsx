@@ -131,6 +131,7 @@ const passwordCheckId = useRef(0);
     } finally {
       setRegistrationComplete(true);
       setIsSubmitting(false);
+      return;
     }
   }
 
