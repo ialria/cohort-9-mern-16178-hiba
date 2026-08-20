@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import {Star,Ellipsis, FileText} from "../../../icons/icons.jsx"
 import NoteView from "../views/NoteView.jsx";
 import {useState} from "react";
-
+import formatDate from "../../../utils/formateDate.js";
 
 
 function NoteCard({ note, previewLines = 3,
@@ -13,6 +13,14 @@ function NoteCard({ note, previewLines = 3,
   compact=false,
   onDelete}) {
   const [showMenu, setShowMenu]=useState(false);
+function getPreview(content) {
+  return content
+    ?.replace(/<[^>]*>/g, "")
+    .replace(/&nbsp;/g, " ")
+    .trim();
+}
+
+
 //   const [isFavourite,setIsFavourite]=useState(false);
 //   const[isDelete,setIsDelete]=useState(false);
 // function handleFavourite(){
@@ -40,21 +48,23 @@ function NoteCard({ note, previewLines = 3,
   e.preventDefault();
   e.stopPropagation();
   setShowMenu((prev)=>!prev)}} className="p-1 hidden group-hover:block transition-opacity duration-150 bg-primary-lighter rounded-lg hover:bg-text-muted/14"><Ellipsis className="text-text-muted " size={18} strokeWidth={2}/></button>
- {showMenu && <MenuComponent onFavourite={onFavourite} onDelete={onDelete} isFavourite={note.favorite}/>}
+ {showMenu && <MenuComponent onFavourite={onFavourite} onDelete={onDelete} isFavourite={note.isFavorite}/>}
       </div>
    
    <div className="mt-1 md:mt-4 flex justify-between items-center  gap-3 md:gap-8">
-     <p className={` text-text-muted text-sm ${previewLines===1? "line-clamp-1": "line-clamp-3"}`}>{note.preview}</p>
-{showFavorite && note.favorite && ( <Star size={18} strokeWidth={2} className="shrink-0 text-yellow-400 fill-yellow-400 cursor-pointer"/>)}
+     <p className={` text-text-muted text-sm ${previewLines===1? "line-clamp-1": "line-clamp-3"}`}>{getPreview(note.content)}</p>
+{showFavorite && note.isFavorite && ( <Star size={18} strokeWidth={2} className="shrink-0 text-yellow-400 fill-yellow-400 cursor-pointer"/>)}
    </div>
   {!showFavorite && 
     <div className="mt-auto flex justify-between text-text-disabled">
       {showDate && (
-  <p className="text-xs ">{note.updatedAt}</p>
+  <p className="text-xs "> {note.editedAt
+    ? `Edited ${formatDate(note.editedAt)}`
+    : `Created ${formatDate(note.createdAt)}`}</p>
 
       )}
    
-   {note.favorite && (<button type="button"> <Star size={18} strokeWidth={1.5} className=" text-yellow-400 fill-yellow-400 cursor-pointer"/></button>)}
+   {note.isFavorite && (<button type="button"> <Star size={18} strokeWidth={1.5} className=" text-yellow-400 fill-yellow-400 cursor-pointer"/></button>)}
     </div>
     }
     </article> 

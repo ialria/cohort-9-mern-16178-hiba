@@ -3,6 +3,7 @@ const cors=require("cors");
 const cookieParser = require("cookie-parser");
 const helmet = require("helmet");
 const authRoutes = require("./routes/authRoute");
+const noteRoutes=require("./routes/noteRoute");
 const app = express();
 app.use(helmet());
 app.use(cookieParser());
@@ -20,5 +21,6 @@ app.get("/", (req, res) => {
   });
 });
 app.use("/api/auth", authRoutes);
+app.use("/api/notes", noteRoutes);
 
 module.exports = app;
