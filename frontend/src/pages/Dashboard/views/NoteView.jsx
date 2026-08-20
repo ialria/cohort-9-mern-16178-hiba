@@ -4,11 +4,20 @@ import EditorToolButton from "../../Dashboard/components/note_components/EditorT
 import TextArea from "../../../components/TextArea.jsx";
 import ReactQuill from "react-quill-new";
 import "quill/dist/quill.snow.css";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import Button from "../../../components/Button";
 function NoteView() {
   const { noteId } = useParams();
   const [content, setContent]=useState("");
+  const editorRef = useRef(null);
+
+useEffect(() => {
+  const editor = editorRef.current?.querySelector(".ql-editor");
+
+  if (editor) {
+    editor.setAttribute("aria-label", "Note content editor");
+  }
+}, []);
   const modules = {
     toolbar: [
         ["bold", "italic", "underline", "strike"],
@@ -36,9 +45,11 @@ function NoteView() {
       </article>
 {/* <EditorToolButton /> */}
  <section className="px-10 md:px-22">
-           <ReactQuill  theme="snow" value={content} modules={modules} onChange={setContent} placeholder="Start typing ..." className="mt-6 text-base
+  <div ref={editorRef}>           <ReactQuill  theme="snow" value={content} modules={modules} onChange={setContent} placeholder="Start typing ..." className="mt-6 text-base
     text-text
     placeholder:text-text-muted" /> 
+    </div>
+
 </section>
     {/* category chips */}
       </section>

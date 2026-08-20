@@ -140,12 +140,12 @@ try{
     const resetToken=crypto.randomBytes(32).toString("hex");
     const hashedToken=crypto.createHash("sha256").update(resetToken).digest("hex");
     const tokenExpiresAt=new Date(Date.now()+ 15 * 60 * 1000);
-    await prisma.passwordResetToken.deleteMany({
+    await prisma.passwordresettoken.deleteMany({
         where:{
             userId:user.id
         }
     });
-        await prisma.passwordResetToken.create({
+        await prisma.passwordresettoken.create({
         data:{
             hashedToken,
             tokenExpiresAt,
@@ -191,7 +191,7 @@ if(!token || !password){
       .createHash("sha256")
       .update(token)
       .digest("hex");
-       const resetToken = await prisma.passwordResetToken.findUnique({
+       const resetToken = await prisma.passwordresettoken.findUnique({
       where: {
         hashedToken,
       },
@@ -202,7 +202,7 @@ if(!token || !password){
       });
     }
   if (resetToken.tokenExpiresAt < new Date()) {
-      await prisma.passwordResetToken.delete({
+      await prisma.passwordresettoken.delete({
         where: {
           id: resetToken.id,
         },
@@ -223,7 +223,7 @@ if(!token || !password){
         },
       }),
 
-      prisma.passwordResetToken.delete({
+      prisma.passwordresettoken.delete({
         where: {
           id: resetToken.id,
         },

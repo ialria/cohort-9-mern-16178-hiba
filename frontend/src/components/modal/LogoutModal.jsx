@@ -12,12 +12,18 @@ function LogoutModal() {
     closeLogoutModal,
   } = useModal();
 
-  function handleLogout() {
- localStorage.removeItem("token");
-    closeLogoutModal();
+ const handleLogout = async () => {
+  try {
+    await fetch("http://localhost:5000/api/auth/logout", {
+      method: "POST",
+      credentials: "include",
+    });
+
     navigate("/login");
+  } catch (error) {
+    console.error("Logout failed:", error);
   }
-// yes -working
+};
 
   return (
     <Modal
