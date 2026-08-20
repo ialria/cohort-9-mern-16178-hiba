@@ -18,6 +18,7 @@ function SignupForm() {
   }, []);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [registrationComplete, setRegistrationComplete] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -95,6 +96,7 @@ function SignupForm() {
       const data = await response.json();
 
       if (response.ok) {
+        setRegistrationComplete(true);
         setShowToast(true);
 
         confetti({
@@ -113,6 +115,7 @@ function SignupForm() {
         redirectTimer.current = setTimeout(() => {
           navigate("/login");
         }, 1500);
+        return;
       }
       if (!response.ok) {
         if (response.status === 409) {
@@ -131,7 +134,9 @@ function SignupForm() {
         form: "Something went wrong. Please try again.",
       });
     } finally {
+      setRegistrationComplete(true);
       setIsSubmitting(false);
+      return;
     }
   }
 
@@ -339,10 +344,14 @@ function SignupForm() {
 
         <button
           type="submit"
-          disabled={isSubmitting}
+          disabled={isSubmitting || registrationComplete}
           className="w-full rounded-lg bg-primary py-3 px-3 text-background my-3 cursor-pointer"
         >
-          {isSubmitting ? "Creating Account..." : "Create Account"}
+          {registrationComplete
+            ? "Account created"
+            : isSubmitting
+              ? "Creating Account..."
+              : "Create Account"}
         </button>
       </form>
 

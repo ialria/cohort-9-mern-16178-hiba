@@ -237,7 +237,7 @@ if (!Number.isInteger(parsedNoteId) || parsedNoteId <= 0) {
       note: updatedNote,
     });
   } catch (error) {
-    console.error("MOVE TO TRASH ERROR:", error);
+    logger.error({error},"MOVE TO TRASH ERROR");
     logger.error(
       {
         error: {

@@ -56,13 +56,11 @@ const gracefulShutdown = async (signal) => {
 
     try {
       await prisma.$disconnect();
-      console.log("Prisma disconnected.");
-      logger.info("Prisma disconnected.");
+    logger.info("Prisma disconnected.");
 
       process.exit(0);
     } catch (error) {
-      console.error("Prisma disconnect failed:", error);
-      logger.error({ error }, "Prisma disconnect failed");
+      logger.error({error}, "Prisma disconnect failed");
       process.exit(1);
     }
   });
