@@ -9,8 +9,6 @@ for (const variable of requiredVariables) {
 }
 
 const app = require("./app");
-
-const app = require("./app");
 const prisma = require("./config/prisma.js");
 const PORT = process.env.PORT || 5000;
 

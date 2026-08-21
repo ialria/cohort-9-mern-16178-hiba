@@ -34,7 +34,7 @@ navigate("/login")
     // }
 
   }
-};
+
 
   return (
     <Modal
@@ -87,6 +87,6 @@ navigate("/login")
       </div>
     </Modal>
   );
-
+}
 
 export default LogoutModal;
