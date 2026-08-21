@@ -6,12 +6,10 @@ import Toast from "../../components/Toast.jsx";
 import zxcvbn from "../../utils/passwordStrength.js";
 import PasswordStrength from "../../components/PasswordStrength.jsx";
 import { apiFetch } from "../../config/api.js";
+
 function SignupForm() {
   const redirectTimer = useRef(null);
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> c11d208 (Addressed review feedback)
+
   useEffect(() => {
     return () => {
       if (redirectTimer.current) {
@@ -19,28 +17,8 @@ function SignupForm() {
       }
     };
   }, []);
-<<<<<<< HEAD
 
   const [isSubmitting, setIsSubmitting] = useState(false);
-<<<<<<< HEAD
-=======
-useEffect(() => {
-  return () => {
-    if (redirectTimer.current) {
-      clearTimeout(redirectTimer.current);
-    }
-  };
-}, []);
-
-const [isSubmitting, setIsSubmitting] = useState(false);
->>>>>>> 3888dbb (Resolved PR review comments)
-=======
-
-  const [isSubmitting, setIsSubmitting] = useState(false);
->>>>>>> c11d208 (Addressed review feedback)
-=======
-  const [registrationComplete, setRegistrationComplete] = useState(false);
->>>>>>> d950b1b (Implemented note search functionality)
   const [showToast, setShowToast] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -50,8 +28,10 @@ const [isSubmitting, setIsSubmitting] = useState(false);
   const [password, setPassword] = useState("");
   const [passwordStrength, setPasswordStrength] = useState(null);
   const [confirmPassword, setConfirmPassword] = useState("");
+
   const navigate = useNavigate();
-  // const [acceptedTerms,setAcceptedTerms]=useState(false); done maybe after backend
+
+  // const [acceptedTerms, setAcceptedTerms] = useState(false);
 
   function validateForm() {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -62,6 +42,7 @@ const [isSubmitting, setIsSubmitting] = useState(false);
     } else if (!emailRegex.test(email)) {
       newErrors.email = "Please enter a valid email";
     }
+
     if (password.trim() === "") {
       newErrors.password = "Please enter your password.";
     } else if (password.length < 8) {
@@ -69,51 +50,41 @@ const [isSubmitting, setIsSubmitting] = useState(false);
     } else if (password.length > 64) {
       newErrors.password = "Password must be 64 characters or less.";
     }
+
     if (confirmPassword.trim() === "") {
       newErrors.confirmPassword = "Please confirm your password";
     } else if (password !== confirmPassword) {
       newErrors.confirmPassword = "Passwords do not match.";
     }
+
     if (username.trim() === "") {
       newErrors.username = "Please enter your username.";
     }
-    // if(!acceptedTerms)
-    // {
-    //     newErrors.terms="Please accept the Terms of Service.";
+
+    // if (!acceptedTerms) {
+    //   newErrors.terms = "Please accept the Terms of Service.";
     // }
+
     return newErrors;
   }
 
   async function handleSubmit(e) {
     e.preventDefault();
-<<<<<<< HEAD
-<<<<<<< HEAD
+
     if (isSubmitting) {
-=======
-    if(isSubmitting){
->>>>>>> 3888dbb (Resolved PR review comments)
-=======
-    if (isSubmitting) {
->>>>>>> c11d208 (Addressed review feedback)
       return;
     }
+
     const foundErrors = validateForm();
+
     if (Object.keys(foundErrors).length > 0) {
       setErrors(foundErrors);
       return;
     }
-<<<<<<< HEAD
-<<<<<<< HEAD
+
     setErrors({});
     setIsSubmitting(true);
-=======
-   setErrors({});
-setIsSubmitting(true); 
->>>>>>> 3888dbb (Resolved PR review comments)
-=======
-    setErrors({});
-    setIsSubmitting(true);
->>>>>>> c11d208 (Addressed review feedback)
+
     try {
       const response = await apiFetch("/api/auth/signup", {
         method: "POST",
@@ -125,9 +96,10 @@ setIsSubmitting(true);
       });
 
       const data = await response.json();
+
       if (response.ok) {
-        setRegistrationComplete(true);
         setShowToast(true);
+
         confetti({
           particleCount: 35,
           spread: 45,
@@ -141,71 +113,41 @@ setIsSubmitting(true);
           scalar: 0.6,
         });
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> c11d208 (Addressed review feedback)
         redirectTimer.current = setTimeout(() => {
           navigate("/login");
         }, 1500);
+
         return;
       }
-      if (!response.ok) {
-        if (response.status === 409) {
-          setErrors({
-            email: data.message,
-          });
-        } else {
-          setErrors({
-            form: data.message || "Something went wrong. Please try again.",
-          });
-        }
-        return;
-<<<<<<< HEAD
+
+      if (response.status === 409) {
+        setErrors({
+          email: data.message,
+        });
+      } else {
+        setErrors({
+          form: data.message || "Something went wrong. Please try again.",
+        });
       }
     } catch (error) {
       setErrors({
         form: "Something went wrong. Please try again.",
       });
     } finally {
-<<<<<<< HEAD
-=======
-    
-      redirectTimer.current = setTimeout(() => {
-  navigate("/login");
-}, 1500);
-=======
->>>>>>> c11d208 (Addressed review feedback)
-      }
-    } catch (error) {
-<<<<<<< HEAD
-     setErrors({
-    form: "Something went wrong. Please try again.",
-  });
-    }finally{
->>>>>>> 3888dbb (Resolved PR review comments)
-=======
-      setErrors({
-        form: "Something went wrong. Please try again.",
-      });
-    } finally {
->>>>>>> c11d208 (Addressed review feedback)
-=======
-      setRegistrationComplete(true);
->>>>>>> d950b1b (Implemented note search functionality)
       setIsSubmitting(false);
-      return;
     }
   }
 
   return (
-    <div className=" w-full md:w-1/2 bg-background min-h-screen py-10 px-6 md:px-10 lg:py-24 lg:px-24 xl:px-36">
+    <div className="w-full md:w-1/2 bg-background min-h-screen py-10 px-6 md:px-10 lg:py-24 lg:px-24 xl:px-36">
       <div className="mb-4">
         <p className="text-2xl font-bold text-text">Create your account</p>
+
         <p className="text-text-muted text-sm">
           Start organizing your thoughts today.
         </p>
       </div>
+
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
           <label htmlFor="username" className="text-text-muted text-xs">
@@ -227,47 +169,32 @@ setIsSubmitting(true);
             id="username"
             type="text"
             placeholder="Your username"
-<<<<<<< HEAD
-<<<<<<< HEAD
             aria-invalid={!!errors.username}
-            aria-describedby={errors.username ? "username-error" : undefined}
-=======
-             aria-invalid={!!errors.username}
-  aria-describedby={errors.username ? "username-error" : undefined}
->>>>>>> 3888dbb (Resolved PR review comments)
-=======
-            aria-invalid={!!errors.username}
-            aria-describedby={errors.username ? "username-error" : undefined}
->>>>>>> c11d208 (Addressed review feedback)
+            aria-describedby={
+              errors.username ? "username-error" : undefined
+            }
             className={`w-full border rounded-lg px-3 py-2 bg-surface placeholder:text-text-muted ${
               errors.username ? "border-red-400" : "border-border"
             }`}
           />
 
           {errors.username && (
-<<<<<<< HEAD
-<<<<<<< HEAD
             <p id="username-error" className="text-red-500 text-xs">
               {errors.username}
             </p>
-=======
-            <p id="username-error" className="text-red-500 text-xs">{errors.username}</p>
->>>>>>> 3888dbb (Resolved PR review comments)
-=======
-            <p id="username-error" className="text-red-500 text-xs">
-              {errors.username}
-            </p>
->>>>>>> c11d208 (Addressed review feedback)
           )}
         </div>
+
         <div className="mb-4">
           <label htmlFor="email" className="text-text-muted text-xs">
             Email
           </label>
+
           <input
             value={email}
             onChange={(e) => {
               setEmail(e.target.value);
+
               if (errors.email) {
                 setErrors((prev) => ({
                   ...prev,
@@ -279,72 +206,53 @@ setIsSubmitting(true);
             type="email"
             placeholder="you@example.com"
             aria-invalid={!!errors.email}
-<<<<<<< HEAD
-<<<<<<< HEAD
             aria-describedby={errors.email ? "email-error" : undefined}
-=======
-aria-describedby={errors.email ? "email-error" : undefined}
->>>>>>> 3888dbb (Resolved PR review comments)
-=======
-            aria-describedby={errors.email ? "email-error" : undefined}
->>>>>>> c11d208 (Addressed review feedback)
             className={`w-full border rounded-lg px-3 py-2 bg-surface placeholder:text-text-muted ${
               errors.email ? "border-red-400" : "border-border"
             }`}
           />
+
           {errors.email && (
-<<<<<<< HEAD
-<<<<<<< HEAD
             <p id="email-error" className="text-red-500 text-xs">
               {errors.email}
             </p>
-=======
-            <p id="email-error" className="text-red-500 text-xs">{errors.email}</p>
->>>>>>> 3888dbb (Resolved PR review comments)
-=======
-            <p id="email-error" className="text-red-500 text-xs">
-              {errors.email}
-            </p>
->>>>>>> c11d208 (Addressed review feedback)
           )}
         </div>
-        <div className="mb-4 ">
+
+        <div className="mb-4">
           <label htmlFor="password" className="text-text-muted text-xs">
             Password
           </label>
+
           <div className="relative">
             <input
               value={password}
               onChange={async (e) => {
                 const value = e.target.value;
+
                 setPassword(value);
+
                 if (errors.password) {
                   setErrors((prev) => ({
                     ...prev,
                     password: "",
                   }));
                 }
+
                 if (value.length > 0) {
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> c11d208 (Addressed review feedback)
                   try {
                     const checker = await zxcvbn();
                     const result = checker.check(value);
+
                     setPasswordStrength(result);
                   } catch (error) {
-                    console.error("Password strength checker error:", error);
+                    console.error(
+                      "Password strength checker error:",
+                      error
+                    );
+
                     setPasswordStrength(null);
                   }
-<<<<<<< HEAD
-=======
-                  const checker=await zxcvbn();
-                  const result = checker.check(value);
-                  setPasswordStrength(result);
->>>>>>> 3888dbb (Resolved PR review comments)
-=======
->>>>>>> c11d208 (Addressed review feedback)
                 } else {
                   setPasswordStrength(null);
                 }
@@ -353,19 +261,14 @@ aria-describedby={errors.email ? "email-error" : undefined}
               type={showPassword ? "text" : "password"}
               placeholder="......."
               aria-invalid={!!errors.password}
-<<<<<<< HEAD
-<<<<<<< HEAD
-              aria-describedby={errors.password ? "password-error" : undefined}
-=======
-aria-describedby={errors.password ? "password-error" : undefined}
->>>>>>> 3888dbb (Resolved PR review comments)
-=======
-              aria-describedby={errors.password ? "password-error" : undefined}
->>>>>>> c11d208 (Addressed review feedback)
+              aria-describedby={
+                errors.password ? "password-error" : undefined
+              }
               className={`w-full border rounded-lg px-3 py-2 pr-10 bg-surface placeholder:text-text-muted placeholder:text-3xl ${
                 errors.password ? "border-red-400" : "border-border"
               }`}
             />
+
             <button
               type="button"
               onClick={() => {
@@ -374,36 +277,33 @@ aria-describedby={errors.password ? "password-error" : undefined}
               aria-label={showPassword ? "Hide password" : "Show password"}
               className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted cursor-pointer"
             >
-              {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}{" "}
+              {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
             </button>
           </div>
 
           <PasswordStrength passwordStrength={passwordStrength} />
+
           {errors.password && (
-<<<<<<< HEAD
-<<<<<<< HEAD
             <p id="password-error" className="text-red-500 text-xs">
               {errors.password}
             </p>
-=======
-            <p id="password-error" className="text-red-500 text-xs">{errors.password}</p>
->>>>>>> 3888dbb (Resolved PR review comments)
-=======
-            <p id="password-error" className="text-red-500 text-xs">
-              {errors.password}
-            </p>
->>>>>>> c11d208 (Addressed review feedback)
           )}
         </div>
+
         <div className="mb-2">
-          <label htmlFor="confirmPassword" className="text-text-muted text-xs">
+          <label
+            htmlFor="confirmPassword"
+            className="text-text-muted text-xs"
+          >
             Confirm Password
           </label>
+
           <div className="relative">
             <input
               value={confirmPassword}
               onChange={(e) => {
                 setConfirmPassword(e.target.value);
+
                 if (errors.confirmPassword) {
                   setErrors((prev) => ({
                     ...prev,
@@ -415,25 +315,18 @@ aria-describedby={errors.password ? "password-error" : undefined}
               type={showConfirmPassword ? "text" : "password"}
               placeholder="......."
               aria-invalid={!!errors.confirmPassword}
-<<<<<<< HEAD
-<<<<<<< HEAD
               aria-describedby={
-                errors.confirmPassword ? "confirm-password-error" : undefined
+                errors.confirmPassword
+                  ? "confirm-password-error"
+                  : undefined
               }
-=======
-aria-describedby={
-  errors.confirmPassword ? "confirm-password-error" : undefined
-}
->>>>>>> 3888dbb (Resolved PR review comments)
-=======
-              aria-describedby={
-                errors.confirmPassword ? "confirm-password-error" : undefined
-              }
->>>>>>> c11d208 (Addressed review feedback)
-              className={`w-full border rounded-lg px-3 py-2 pr-10 bg-surface placeholder:text-text-muted placeholder:text-3xl  ${
-                errors.confirmPassword ? "border-red-400" : "border-border"
+              className={`w-full border rounded-lg px-3 py-2 pr-10 bg-surface placeholder:text-text-muted placeholder:text-3xl ${
+                errors.confirmPassword
+                  ? "border-red-400"
+                  : "border-border"
               }`}
             />
+
             <button
               type="button"
               onClick={() => {
@@ -450,90 +343,36 @@ aria-describedby={
                 <EyeOff size={20} />
               ) : (
                 <Eye size={20} />
-              )}{" "}
+              )}
             </button>
           </div>
+
           {errors.confirmPassword && (
-<<<<<<< HEAD
-<<<<<<< HEAD
-            <p id="confirm-password-error" className="text-red-500 text-xs">
+            <p
+              id="confirm-password-error"
+              className="text-red-500 text-xs"
+            >
               {errors.confirmPassword}
             </p>
-=======
-            <p id="confirm-password-error" className="text-red-500 text-xs">{errors.confirmPassword}</p>
->>>>>>> 3888dbb (Resolved PR review comments)
-=======
-            <p id="confirm-password-error" className="text-red-500 text-xs">
-              {errors.confirmPassword}
-            </p>
->>>>>>> c11d208 (Addressed review feedback)
           )}
         </div>
-        {/* <div className="mb-4 flex items-center">
-          <input
-            type="checkbox"
-            checked={acceptedTerms}
-            onChange={(e)=>setAcceptedTerms(e.target.checked)}
-            id="terms"
-            className="mr-2  accent-[#2B2733] cursor-pointer"
-          />
-          <label htmlFor="terms" className="text-xs text-[#2B2733]">
-            I agree to the{" "}
-            <Link to="/termsOfService"
-           
-              className={`underline hover:no-underline ${
-    errors.terms ? "text-red-500" : "text-[#2B2733]"
-  }`}
-            >
-              {" "}
-              Terms of Service
-            </Link>{" "}
-            and{" "}
-            <Link
-              to="/privacyPolicy"
-              className={`text-[#362B4A] underline hover:no-underline ${
-    errors.terms ? "text-red-500" : "text-[#2B2733]"
-  }`}
-            >
-              Privacy Policy
-            </Link>
-            .
-          </label>
-          
-        </div>
-              {errors.terms && (
-  <p className="text-red-500 text-xs mb-4">
-    {errors.terms}
-  </p>
-)} */}
+
+        {/* Terms and Privacy Policy can be enabled later */}
+
         {errors.form && (
-          <p className="text-red-500 text-xs mb-2">{errors.form}</p>
+          <p className="text-red-500 text-xs mb-2">
+            {errors.form}
+          </p>
         )}
 
         <button
           type="submit"
-          disabled={isSubmitting || registrationComplete}
+          disabled={isSubmitting}
           className="w-full rounded-lg bg-primary py-3 px-3 text-background my-3 cursor-pointer"
         >
-          {registrationComplete
-            ? "Account created"
-            : isSubmitting
-              ? "Creating Account..."
-              : "Create Account"}
+          {isSubmitting ? "Creating Account..." : "Create Account"}
         </button>
       </form>
-
-      {/* <div className="flex items-center gap-4 mb-3">
-        <div className="flex-1 h-px bg-gray-300"></div>
-        <span className="text-sm text-gray-500">OR</span>
-        <div className="flex-1 h-px bg-gray-300"></div>
-      </div>
-      <button className="w-full rounded-lg bg-primary-light py-3 px-3 text-[#7b7389] mb-2 text-sm cursor-pointer">
-        Continue with Google
-      </button>
-      <button className="w-full rounded-lg bg-primary-light py-3 px-3 text-[#7b7389] mb-4 text-sm cursor-pointer">
-        Continue with Github
-      </button> */}
 
       <p className="text-text-muted text-sm text-center">
         Already have an account?{" "}
@@ -541,8 +380,9 @@ aria-describedby={
           Log in
         </Link>
       </p>
+
       {showToast && (
-        <Toast message={"Account has been created successfully!"} />
+        <Toast message="Account has been created successfully!" />
       )}
     </div>
   );
