@@ -1,13 +1,18 @@
 require("dotenv").config();
 const { Resend } = require("resend");
-
+const logger = require("../utilities/logger");
+if (!process.env.RESEND_API_KEY) {
+  throw new Error("RESEND API KEY is not set");
+}
+if (!process.env.RESEND_FROM_EMAIL) {
+  throw new Error("RESEND FROM EMAIL is not set");
+}
 const resend = new Resend(process.env.RESEND_API_KEY);
-
 
 async function sendPasswordResetEmail(toEmail, resetLink) {
   try {
-    const { data, error } = await resend.emails.send({
-      from: "Leaflet <onboarding@resend.dev>",
+    const emailRequest=resend.emails.send({
+      from: `Leaflet <${process.env.RESEND_FROM_EMAIL}>`,
       to: [toEmail],
       subject: "Reset your Leaflet password",
       html: `
@@ -36,12 +41,30 @@ async function sendPasswordResetEmail(toEmail, resetLink) {
         </div>
       `,
     });
+    const timeout = new Promise((_, reject) => {
+      setTimeout(() => {
+        reject(new Error("Password reset email request timed out"));
+      }, 10000);
+    });
+      const { data, error } = await Promise.race([
+      emailRequest,
+      timeout,
+    ]);
+
     if (error) {
       throw error;
     }
     return data;
   } catch (error) {
-    console.error("Password reset email error:", error);
+     logger.error(
+      {
+        error: {
+          name: error.name,
+          message: error.message,
+        },
+      },
+      "Password reset email failed"
+    );
     throw error;
   }
 }

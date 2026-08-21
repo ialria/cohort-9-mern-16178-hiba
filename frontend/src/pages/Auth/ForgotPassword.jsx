@@ -1,33 +1,41 @@
 import LeafletLogo from "../../icons/leaflet_logo.jsx";
 import { Mail, Lock, Check } from "../../icons/icons.jsx";
-import { useState, useEffect } from "react";
+import { useState, useRef,useEffect } from "react";
 import Button from "../../components/Button.jsx";
 import { Link } from "react-router-dom";
+import { apiFetch } from "../../config/api.js";
 function ForgotPassword() {
-  const [email, setEmail] = useState("");
   const [emailSent, setEmailSent] = useState(false);
+  const headingReference=useRef(null);
+  useEffect(() => {
+  if (emailSent) {
+    headingReference.current?.focus();
+  }
+}, [emailSent]);
+  const [email, setEmail] = useState("");
   const [resending, setResending] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [resendCooldown, setResendCooldown] = useState(0);
   const [errors, setErrors] = useState({});
-  
-const cooldownActive = resendCooldown > 0;
 
-useEffect(() => {
-  if (!cooldownActive) {
-    return;
-  }
- const timer = setInterval(() => {
-    setResendCooldown((prev) => {
-      if (prev <= 1) {
-        clearInterval(timer);
-        return 0;
-      }
+  const cooldownActive = resendCooldown > 0;
 
-      return prev - 1;
-    });
-  }, 1000);
-  return () => clearInterval(timer);
-}, [cooldownActive]);
+  useEffect(() => {
+    if (!cooldownActive) {
+      return;
+    }
+    const timer = setInterval(() => {
+      setResendCooldown((prev) => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          return 0;
+        }
+
+        return prev - 1;
+      });
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [cooldownActive]);
 
   function validateForm() {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -42,21 +50,27 @@ useEffect(() => {
     return newErrors;
   }
   async function sendResetEmail() {
-    const response = await fetch(
-       `${import.meta.env.VITE_API_URL}/api/auth/forgot-password`,
+    try{
+  const response = await apiFetch(
+      "/api/auth/forgot-password",
       {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
         body: JSON.stringify({
           email,
         }),
       },
     );
-
-    const data = await response.json();
+  const data = await response.json().catch(()=>({}));
     return { response, data };
+
+    }catch (error){
+       throw new Error("Failed to send password reset email.", {
+      cause: error,
+    });
+    }
+  
+
+  
   }
   async function handleSubmit(e) {
     e.preventDefault();
@@ -67,14 +81,21 @@ useEffect(() => {
       return;
     }
     setErrors({});
+    setIsSubmitting(true);
+
     try {
       const { response, data } = await sendResetEmail();
 
-      if (!response.ok) {
-        setErrors({
-          email: data.message || "Something went wrong.",
-        });
-        // console.log(data);
+   if (!response.ok) {
+  if (response.status === 409) {
+    setErrors({
+      email: data.message,
+    });
+  } else {
+    setErrors({
+      form: data.message,
+    });
+  }
         return;
       }
 
@@ -84,8 +105,10 @@ useEffect(() => {
       console.error("Forgot password error:", error);
 
       setErrors({
-        email: "Something went wrong. Please try again.",
+    form: "Something went wrong. Please try again.",
       });
+    } finally {
+      setIsSubmitting(false);
     }
   }
 
@@ -100,19 +123,19 @@ useEffect(() => {
     try {
       const { response, data } = await sendResetEmail();
 
-      if (!response.ok) {
-        setErrors({
-          email: data.message || "Something went wrong.",
-        });
-        return;
-      }
+    if (!response.ok) {
+  setErrors({
+    form: data.message || "Something went wrong.",
+  });
+  return;
+}
       setResendCooldown(60);
     } catch (error) {
       console.error("Resend email error:", error);
 
-      setErrors({
-        email: "Something went wrong. Please try again.",
-      });
+    setErrors({
+  form: "Something went wrong. Please try again.",
+});
     } finally {
       setResending(false);
     }
@@ -136,7 +159,7 @@ useEffect(() => {
             </div>
 
             <header className="flex flex-col items-center text-center py-6 gap-3 max-w-md">
-              <h2 className="text-2xl font-semibold text-text">
+              <h2 ref={headingReference} tabIndex={-1} className="text-2xl font-semibold text-text">
                 Check your email
               </h2>
 
@@ -173,6 +196,9 @@ useEffect(() => {
                     ? "Sending..."
                     : "Resend email"}
               </button>
+              {errors.form && (
+                <p className="text-error text-xs mt-2">{errors.form}</p>
+              )}
             </div>
 
             <div className="mt-6">
@@ -208,10 +234,11 @@ useEffect(() => {
                   value={email}
                   onChange={(e) => {
                     setEmail(e.target.value);
-                    if (errors.email) {
+                    if (errors.email || errors.form) {
                       setErrors((prev) => ({
                         ...prev,
                         email: "",
+                        form:""
                       }));
                     }
                   }}
@@ -222,15 +249,19 @@ useEffect(() => {
                       : "border-text-muted/30"
                   }`}
                 />
-                {errors.email && (
-                  <p className="text-error text-xs">{errors.email}</p>
+                {errors.email && ( 
+  <p className="text-error text-xs">{errors.email}</p>
+)}
+                {errors.form && (
+                  <p className="text-error text-xs">{errors.form}</p>
                 )}
               </div>
               <Button
                 type="submit"
+                disabled={isSubmitting}
                 className=" rounded-lg w-full bg-primary text-surface"
               >
-                Send Reset Link
+                {isSubmitting ? "Sending..." : "Send Reset Link"}
               </Button>
             </form>
             <div className="mt-2">

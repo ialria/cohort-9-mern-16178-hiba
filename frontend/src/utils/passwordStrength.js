@@ -1,14 +1,29 @@
 import { ZxcvbnFactory } from "@zxcvbn-ts/core";
-import * as zxcvbnCommonPackage from "@zxcvbn-ts/language-common";
-import * as zxcvbnEnPackage from "@zxcvbn-ts/language-en";
-
-const zxcvbn = new ZxcvbnFactory({
-  translations: zxcvbnEnPackage.translations,
-  graphs: zxcvbnCommonPackage.adjacencyGraphs,
-  dictionary: {
-    ...zxcvbnCommonPackage.dictionary,
-    ...zxcvbnEnPackage.dictionary,
-  },
-});
-
-export default zxcvbn;
+let checker = null;
+let checkerPromise = null;
+async function loadChecker() {
+  if (checker) {
+    return checker;
+  }
+  if (!checkerPromise) {
+    checkerPromise = Promise.all([
+      import("@zxcvbn-ts/language-common"),
+      import("@zxcvbn-ts/language-en"),
+    ]).then(([common, english]) => {
+      checker = new ZxcvbnFactory({
+        translations: english.translations,
+        graphs: common.adjacencyGraphs,
+        dictionary: {
+          ...common.dictionary,
+          ...english.dictionary,
+        },
+      });
+      return checker;
+    }) .catch((error) => {
+        checkerPromise = null;
+        throw error;
+      });
+  }
+  return checkerPromise;
+}
+export default loadChecker;

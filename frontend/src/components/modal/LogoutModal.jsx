@@ -3,7 +3,7 @@ import Modal from "./Modal";
 import Button from "../Button";
 import { LogOut } from "../../icons/icons";
 import { useModal } from "../../context/ModalContext";
-
+import { apiFetch } from "../../config/api";
 function LogoutModal() {
   const navigate = useNavigate();
 
@@ -12,18 +12,29 @@ function LogoutModal() {
     closeLogoutModal,
   } = useModal();
 
- const handleLogout = async () => {
-  try {
-    await fetch("http://localhost:5000/api/auth/logout", {
-      method: "POST",
-      credentials: "include",
-    });
+  async function handleLogout() {
+    try{
+const response=await apiFetch("/api/auth/logout",{
+  method: "POST",
+});
+if(!response.ok){
+  throw new Error("Logout Failed!"
 
-    navigate("/login");
-  } catch (error) {
-    console.error("Logout failed:", error);
+  );
+}
+closeLogoutModal();
+navigate("/login")
+    }catch(error){
+
+ console.error("Logout error:", error);
+    }
+    // finally{
+    //      closeLogoutModal();
+    // navigate("/login"); 
+    // }
+
   }
-};
+
 
   return (
     <Modal

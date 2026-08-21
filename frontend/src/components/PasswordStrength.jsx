@@ -8,7 +8,7 @@ function PasswordStrength({ passwordStrength }) {
 
   return (
     <div className="mt-2 flex items-center justify-between">
-      <div className="flex gap-1.5">
+      <div className="flex gap-1.5" aria-hidden="true">
         {[0, 1, 2, 3, 4, 5, 6, 7].map((index) => (
           <span
             key={index}

@@ -9,9 +9,28 @@ for (const variable of requiredVariables) {
 }
 
 const app = require("./app");
-
+const prisma = require("./config/prisma.js");
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
+
+const gracefulShutdown = async (signal) => {
+  console.log(`${signal} received. Shutting down gracefully...`);
+
+  server.close(async () => {
+    try {
+      await prisma.$disconnect();
+      console.log("Prisma disconnected.");
+
+      process.exit(0);
+    } catch (error) {
+      console.error("Prisma disconnect failed:", error);
+      process.exit(1);
+    }
+  });
+};
+
+process.on("SIGTERM", () => gracefulShutdown("SIGTERM"));
+process.on("SIGINT", () => gracefulShutdown("SIGINT"));

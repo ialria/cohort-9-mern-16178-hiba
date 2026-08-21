@@ -1,22 +1,22 @@
-import { useState ,useEffect, useRef} from "react";
+import { useState, useEffect, useRef } from "react";
 import { Eye, EyeOff } from "../../icons/icons.jsx";
 import { Link, useNavigate } from "react-router-dom";
 import confetti from "canvas-confetti";
 import Toast from "../../components/Toast.jsx";
 import zxcvbn from "../../utils/passwordStrength.js";
 import PasswordStrength from "../../components/PasswordStrength.jsx";
-
+import { apiFetch } from "../../config/api.js";
 function SignupForm() {
   const redirectTimer = useRef(null);
-useEffect(() => {
-  return () => {
-    if (redirectTimer.current) {
-      clearTimeout(redirectTimer.current);
-    }
-  };
-}, []);
+  useEffect(() => {
+    return () => {
+      if (redirectTimer.current) {
+        clearTimeout(redirectTimer.current);
+      }
+    };
+  }, []);
 
-
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -62,18 +62,19 @@ useEffect(() => {
 
   async function handleSubmit(e) {
     e.preventDefault();
+    if (isSubmitting) {
+      return;
+    }
     const foundErrors = validateForm();
     if (Object.keys(foundErrors).length > 0) {
       setErrors(foundErrors);
       return;
     }
     setErrors({});
+    setIsSubmitting(true);
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/signup`, {
+      const response = await apiFetch("/api/auth/signup", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
         body: JSON.stringify({
           username,
           email,
@@ -97,20 +98,28 @@ useEffect(() => {
           scalar: 0.6,
         });
 
-      redirectTimer.current = setTimeout(() => {
-  navigate("/login");
-}, 1500);
+        redirectTimer.current = setTimeout(() => {
+          navigate("/login");
+        }, 1500);
       }
       if (!response.ok) {
-        setErrors({
-          email: data.message,
-        });
+        if (response.status === 409) {
+          setErrors({
+            email: data.message,
+          });
+        } else {
+          setErrors({
+            form: data.message || "Something went wrong. Please try again.",
+          });
+        }
         return;
       }
     } catch (error) {
-     setErrors({
-    form: "Something went wrong. Please try again.",
-  });
+      setErrors({
+        form: "Something went wrong. Please try again.",
+      });
+    } finally {
+      setIsSubmitting(false);
     }
   }
 
@@ -143,13 +152,17 @@ useEffect(() => {
             id="username"
             type="text"
             placeholder="Your username"
+            aria-invalid={!!errors.username}
+            aria-describedby={errors.username ? "username-error" : undefined}
             className={`w-full border rounded-lg px-3 py-2 bg-surface placeholder:text-text-muted ${
               errors.username ? "border-red-400" : "border-border"
             }`}
           />
 
           {errors.username && (
-            <p className="text-red-500 text-xs">{errors.username}</p>
+            <p id="username-error" className="text-red-500 text-xs">
+              {errors.username}
+            </p>
           )}
         </div>
         <div className="mb-4">
@@ -170,12 +183,16 @@ useEffect(() => {
             id="email"
             type="email"
             placeholder="you@example.com"
+            aria-invalid={!!errors.email}
+            aria-describedby={errors.email ? "email-error" : undefined}
             className={`w-full border rounded-lg px-3 py-2 bg-surface placeholder:text-text-muted ${
               errors.email ? "border-red-400" : "border-border"
             }`}
           />
           {errors.email && (
-            <p className="text-red-500 text-xs">{errors.email}</p>
+            <p id="email-error" className="text-red-500 text-xs">
+              {errors.email}
+            </p>
           )}
         </div>
         <div className="mb-4 ">
@@ -185,7 +202,7 @@ useEffect(() => {
           <div className="relative">
             <input
               value={password}
-              onChange={(e) => {
+              onChange={async (e) => {
                 const value = e.target.value;
                 setPassword(value);
                 if (errors.password) {
@@ -195,8 +212,14 @@ useEffect(() => {
                   }));
                 }
                 if (value.length > 0) {
-                  const result = zxcvbn.check(value);
-                  setPasswordStrength(result);
+                  try {
+                    const checker = await zxcvbn();
+                    const result = checker.check(value);
+                    setPasswordStrength(result);
+                  } catch (error) {
+                    console.error("Password strength checker error:", error);
+                    setPasswordStrength(null);
+                  }
                 } else {
                   setPasswordStrength(null);
                 }
@@ -204,6 +227,8 @@ useEffect(() => {
               id="password"
               type={showPassword ? "text" : "password"}
               placeholder="......."
+              aria-invalid={!!errors.password}
+              aria-describedby={errors.password ? "password-error" : undefined}
               className={`w-full border rounded-lg px-3 py-2 pr-10 bg-surface placeholder:text-text-muted placeholder:text-3xl ${
                 errors.password ? "border-red-400" : "border-border"
               }`}
@@ -219,10 +244,12 @@ useEffect(() => {
               {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}{" "}
             </button>
           </div>
-         
+
           <PasswordStrength passwordStrength={passwordStrength} />
           {errors.password && (
-            <p className="text-red-500 text-xs">{errors.password}</p>
+            <p id="password-error" className="text-red-500 text-xs">
+              {errors.password}
+            </p>
           )}
         </div>
         <div className="mb-2">
@@ -244,6 +271,10 @@ useEffect(() => {
               id="confirmPassword"
               type={showConfirmPassword ? "text" : "password"}
               placeholder="......."
+              aria-invalid={!!errors.confirmPassword}
+              aria-describedby={
+                errors.confirmPassword ? "confirm-password-error" : undefined
+              }
               className={`w-full border rounded-lg px-3 py-2 pr-10 bg-surface placeholder:text-text-muted placeholder:text-3xl  ${
                 errors.confirmPassword ? "border-red-400" : "border-border"
               }`}
@@ -268,7 +299,9 @@ useEffect(() => {
             </button>
           </div>
           {errors.confirmPassword && (
-            <p className="text-red-500 text-xs">{errors.confirmPassword}</p>
+            <p id="confirm-password-error" className="text-red-500 text-xs">
+              {errors.confirmPassword}
+            </p>
           )}
         </div>
         {/* <div className="mb-4 flex items-center">
@@ -308,17 +341,16 @@ useEffect(() => {
     {errors.terms}
   </p>
 )} */}
-{errors.form && (
-  <p className="text-red-500 text-xs mb-2">
-    {errors.form}
-  </p>
-)}
+        {errors.form && (
+          <p className="text-red-500 text-xs mb-2">{errors.form}</p>
+        )}
 
         <button
           type="submit"
+          disabled={isSubmitting}
           className="w-full rounded-lg bg-primary py-3 px-3 text-background my-3 cursor-pointer"
         >
-          Create Account
+          {isSubmitting ? "Creating Account..." : "Create Account"}
         </button>
       </form>
 
