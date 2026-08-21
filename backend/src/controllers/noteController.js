@@ -77,7 +77,7 @@ if (!Number.isInteger(parsedNoteId) || parsedNoteId <= 0) {
     message: "Invalid note ID",
   });
 }
-    const { title, noteContent } = req.body;
+    const { title, noteContent,updatedAt } = req.body;
 
     const note = await prisma.note.findFirst({
       where: {
@@ -91,17 +91,30 @@ if (!Number.isInteger(parsedNoteId) || parsedNoteId <= 0) {
         message: "Couldn't find note",
       });
     }
+    const result = await prisma.note.updateMany({
+  where: {
+    id: parsedNoteId,
+    userId: req.userId,
+    updatedAt: new Date(updatedAt),
+  },
+  data: {
+    title: title?.trim() || "Untitled Note",
+    content: noteContent,
+    editedAt: new Date(),
+  },
+});
 
-    const updatedNote = await prisma.note.update({
-      where: {
-        id: note.id,
-      },
-      data: {
-        title: title?.trim() || "Untitled Note",
-        content: noteContent,
-        editedAt: new Date(),
-      },
-    });
+if (result.count === 0) {
+  return res.status(409).json({
+    message: "Note was updated by another request. Please reload and try again.",
+  });
+}
+
+    const updatedNote = await prisma.note.findUnique({
+  where: {
+    id: parsedNoteId,
+  },
+});
 
     return res.status(200).json({
       message: "Note updated successfully",

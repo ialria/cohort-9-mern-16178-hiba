@@ -8,7 +8,9 @@ if(!token){
     });
 }
 try{
-const decodedData=jwt.verify(token, process.env.JWT_SECRET);
+const decodedData=jwt.verify(token, process.env.JWT_SECRET,{
+    algorithms:["HS256"]
+});
 req.userId=decodedData.userId;
 next();
 }

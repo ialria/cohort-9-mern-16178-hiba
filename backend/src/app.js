@@ -6,6 +6,13 @@ const helmet = require("helmet");
 const authRoutes = require("./routes/authRoute");
 const noteRoutes=require("./routes/noteRoute");
 const app = express();
+const trustedProxies = Number(process.env.TRUST_PROXY_HOPS || 0);
+
+if (!Number.isInteger(trustedProxies) || trustedProxies < 0) {
+  throw new Error("TRUST_PROXY_HOPS must be a non-negative integer");
+}
+
+app.set("trust proxy", trustedProxies);
 app.use(helmet());
 app.use(cookieParser());
 app.use(express.json({ limit: "100kb" }));

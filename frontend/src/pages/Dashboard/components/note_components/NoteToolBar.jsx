@@ -16,7 +16,7 @@ function NoteToolBar({ onSave, saveStatus }) {
       <div className="flex gap-2">
         <Button
           onClick={onSave}
-          disabled={saveStatus === "saving" || saveStatus === "saved"}
+          disabled={saveStatus !== "unsaved"}
           className="bg-primary text-surface"
         >
           {saveStatus === "saved" ? "Saved note" : "Save note"}

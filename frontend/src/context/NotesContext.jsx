@@ -10,6 +10,7 @@ useEffect(() => {
   });
 }, []);
   async function createNote(title, noteContent) {
+    try{
     const response = await apiFetch("/api/notes", {
       method: "POST",
       body: JSON.stringify({
@@ -22,35 +23,63 @@ useEffect(() => {
       throw new Error(data.message || "Failed to create note");
     }
     setNotes((prev) => [...prev, data.note]);
+    setNotesError(null);
 
     return data.note;
   }
+  catch(error){
+      setNotesError(error.message || "Failed to create note");
+    throw error;
+  }
+  }
 
-  async function updateNote(id, title, noteContent) {
+async function updateNote(id, title, noteContent, updatedAt) {
+  try {
     const response = await apiFetch(`/api/notes/${id}`, {
       method: "PATCH",
-      body: JSON.stringify({ title, noteContent }),
+      body: JSON.stringify({
+        title,
+        noteContent,
+        updatedAt,
+      }),
     });
+
     const data = await response.json();
 
     if (!response.ok) {
       throw new Error(data.message || "Error! Failed to update note");
     }
-    setNotes((prev) => prev.map((note) => (note.id === id ? data.note : note)));
-    return data.note;
-  }
 
-  async function getAllNotes() {
+    setNotes((prev) =>
+      prev.map((note) => (note.id === id ? data.note : note))
+    );
+
+    setNotesError(null);
+
+    return data.note;
+  } catch (error) {
+    setNotesError(error.message || "Oops! Failed to update note");
+    throw error;
+  }
+}
+
+async function getAllNotes() {
+  try {
     const response = await apiFetch("/api/notes");
 
     const data = await response.json();
+
     if (!response.ok) {
-      throw new Error(data.message || "Failed to fetch notes");
+      throw new Error(data.message || "Error! Failed to fetch notes");
     }
 
     setNotes(data.allNotes);
+    setNotesError(null);
+  } catch (error) {
+    setNotesError(error.message || "Error! Failed to load notes.");
+    throw error;
   }
-
+}
  async function restoreNote(id) {
    try {
     const response = await apiFetch(`/api/notes/${id}/restore`, {
@@ -117,6 +146,7 @@ useEffect(() => {
     }
   }
   const [notes, setNotes] = useState([]);
+  const [notesError, setNotesError] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   return (
     <NotesContext.Provider
@@ -132,6 +162,7 @@ useEffect(() => {
         createNote,
         getAllNotes,
         updateNote,
+        notesError
       }}
     >
       {children}

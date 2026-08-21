@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import NoteToolBar from "../components/note_components/NoteToolBar";
 import TextArea from "../../../components/TextArea.jsx";
 import ReactQuill from "react-quill-new";
@@ -7,9 +7,9 @@ import { useState, useEffect, useRef } from "react";
 import { useNotes } from "../../../context/NotesContext.jsx";
 import Button from "../../../components/Button";
 
-
 function NoteView() {
   const { noteId } = useParams();
+   const navigate = useNavigate();
   const editorRef = useRef(null);
   useEffect(() => {
   const editor = editorRef.current?.querySelector(".ql-editor");
@@ -38,26 +38,32 @@ useEffect(() => {
   if (note) {
     setTitle(note.title || "");
     setContent(note.content || "");
+    setSaveStatus("saved");
+  } else {
+    setTitle("");
+    setContent("");
+    setSaveStatus("idle");
   }
 }, [note]);
 
 const handleSave = async () => {
+   if (saveStatus !== "unsaved") {
+    return;
+  }
   const plainTextContent = content.replace(/<[^>]*>/g, "").trim();
   if (!plainTextContent) {
     return;
   }
   try {
     setSaveStatus("saving");
-    //  console.log("TITLE BEFORE SAVE:", title);
-    // console.log("CONTENT BEFORE SAVE:", content);
+
 let savedNote;
 if(note){
-  savedNote=await updateNote(note.id, title, content);
+  savedNote=await updateNote(note.id, title, content,note.updatedAt);
 }else{
   savedNote=await createNote(title, content);
+   navigate(`/notes/${savedNote.id}`);
 }
-    
-    // console.log("Note created:", note);
      setSaveStatus("saved");
   } catch (error) {
     console.error("Failed to create note:", error);

@@ -112,6 +112,7 @@ function SignupForm() {
           },
           scalar: 0.6,
         });
+          setIsSubmitting(false);
 
         redirectTimer.current = setTimeout(() => {
           navigate("/login");
@@ -129,14 +130,15 @@ function SignupForm() {
           form: data.message || "Something went wrong. Please try again.",
         });
       }
+        
     } catch (error) {
       setErrors({
         form: "Something went wrong. Please try again.",
       });
-    } finally {
       setIsSubmitting(false);
-    }
+    
   }
+}
 
   return (
     <div className="w-full md:w-1/2 bg-background min-h-screen py-10 px-6 md:px-10 lg:py-24 lg:px-24 xl:px-36">
