@@ -28,5 +28,6 @@ SlidersHorizontal,
 Moon,
 Calendar,
 Lock,
-Camera
+Camera,
+Check
 } from "lucide-react";

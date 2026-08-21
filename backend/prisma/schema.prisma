@@ -1,0 +1,51 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+model note {
+  id         Int      @id @default(autoincrement())
+  title      String
+  content    String   @db.LongText
+  isFavorite Boolean  @default(false)
+  isDeleted  Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  userId     Int
+  user       user     @relation(fields: [userId], references: [id], map: "Note_userId_fkey")
+
+  @@index([userId], map: "Note_userId_fkey")
+}
+
+model passwordresettoken {
+  id             Int      @id @default(autoincrement())
+  userId         Int
+  createdAt      DateTime @default(now())
+  hashedToken    String   @unique(map: "PasswordResetToken_hashedToken_key")
+  tokenExpiresAt DateTime
+  user           user     @relation(fields: [userId], references: [id], onDelete: Cascade, map: "PasswordResetToken_userId_fkey")
+
+  @@index([userId], map: "PasswordResetToken_userId_fkey")
+}
+
+model user {
+  id                 Int                  @id @default(autoincrement())
+  username           String
+  email              String               @unique(map: "User_email_key")
+  password           String
+  avatarUrl          String?
+  bio                String?
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @updatedAt
+  role               user_role            @default(USER)
+  note               note[]
+  passwordresettoken passwordresettoken[]
+}
+
+enum user_role {
+  USER
+  ADMIN
+}

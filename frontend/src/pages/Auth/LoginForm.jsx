@@ -6,9 +6,10 @@ function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loginError, setLoginError] = useState("");
   const [errors, setErrors] = useState({});
   const navigate=useNavigate();
-
+const [isSubmitting, setIsSubmitting] = useState(false);
   function validateForm() {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const newErrors = {};
@@ -20,14 +21,15 @@ function LoginForm() {
     }
     if (password.trim() === "") {
       newErrors.password = "Please enter your password.";
-    } else if (password.length < 6) {
-      newErrors.password = "Password must be at least 6 characters long";
+    } else if (password.length < 8) {
+      newErrors.password = "Password must be at least 8 characters long";
     }
     return newErrors;
   }
 
-  function handleSubmit(e) {
+ async function handleSubmit(e) {
     e.preventDefault();
+      setLoginError("");
     const foundErrors = validateForm();
     if (Object.keys(foundErrors).length > 0) {
       setErrors(foundErrors);
@@ -35,7 +37,38 @@ function LoginForm() {
       return;
     }
     setErrors({});
-    navigate("/dashboard");
+      setIsSubmitting(true);
+  try{
+const response= await fetch(`${import.meta.env.VITE_API_URL}/api/auth/login`,{
+  method:"POST",
+  headers:{
+    "Content-type":"application/json"
+  },
+  credentials:"include",
+  body:JSON.stringify({
+    email, password
+  })
+});
+
+const data=await response.json();
+if (!response.ok) {
+  setLoginError(data.message || "Invalid email or password.");
+  return;
+}
+
+  navigate("/dashboard");
+
+  }catch (error){
+    // console.log(error);
+        setLoginError(
+      "Something went wrong. Please try again."
+    );
+  }finally{
+   setIsSubmitting(false);
+  }
+
+
+    
   }
 
   return (
@@ -55,7 +88,15 @@ function LoginForm() {
             id="email"
             type="email"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) =>{ setEmail(e.target.value);
+                setLoginError("");
+                  if (errors.email) {
+                setErrors((prev) => ({
+                  ...prev,
+                  email: "",
+                }));
+              }
+            }}
             placeholder="you@example.com"
             className={`w-full border rounded-lg px-3 py-2 bg-surface placeholder:text-text-muted ${
               errors.email ? "border-red-400" : "border-border"
@@ -74,7 +115,15 @@ function LoginForm() {
               id="password"
               type={showPassword ? "text" : "password"}
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) =>{ setPassword(e.target.value);
+                  setLoginError("");
+                    if (errors.password) {
+                setErrors((prev) => ({
+                  ...prev,
+                  password: "",
+                }));
+              }
+              }}
               placeholder="......."
               className={`w-full border rounded-lg px-3 py-2 pr-10 bg-surface placeholder:text-text-muted placeholder:text-3xl  ${
                 errors.password ? "border-red-400" : "border-border"
@@ -103,12 +152,24 @@ function LoginForm() {
         >
           Forgot password?
         </Link>
-        <button
-          type="submit"
-          className="w-full rounded-lg bg-primary py-3 px-3 text-background mb-4 cursor-pointer"
-        >
-          Log in
-        </button>
+<div className="clear-both" />
+
+<div className="relative">
+  {loginError && (
+    <p className="absolute bottom-full left-0 mb-1 text-red-500 text-xs">
+      {loginError}
+    </p>
+  )}
+
+  <button
+    type="submit"
+    disabled={isSubmitting}
+    className="w-full rounded-lg bg-primary py-3 px-3 text-background mb-4 cursor-pointer"
+  >
+    Log in
+  </button>
+</div>
+
         <p className="text-text-muted text-sm text-center">
           New here?{" "}
           <Link

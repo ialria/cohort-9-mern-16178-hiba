@@ -12,6 +12,7 @@ import FavouriteView from "./pages/Dashboard/views/main_content/FavouriteView.js
 import TrashView from "./pages/Dashboard/views/main_content/TrashView.jsx";
 import RecentView from "./pages/Dashboard/views/main_content/RecentView.jsx";
 import EditProfile from "./pages/Dashboard/views/EditProfile.jsx";
+import ResetPassword from "./pages/Auth/ResetPassword.jsx";
 function App() {
   return (
     <Routes>
@@ -33,6 +34,7 @@ function App() {
           </AuthLayout>
         }
       />
+      <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/forgot_password" element={<ForgotPassword />} />
       {/* <Route path="/termsOfService" element={<TermsOfService />} />
       <Route path="/privacyPolicy" element={<PrivacyPolicy />} /> */}
