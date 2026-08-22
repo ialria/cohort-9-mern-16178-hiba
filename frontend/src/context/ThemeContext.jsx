@@ -6,9 +6,18 @@ export function ThemeProvider({ children }) {
   });
   
   const [accentColor, setAccentColor] = useState(() => {
-    return localStorage.getItem("accentColor") || "purple"; //store theme and then accentcolor too across all views 
+    return localStorage.getItem("accentColor") || "purple";
   });
+  useEffect(() => {
+    const root = document.documentElement;
 
+    if (theme === "dark") {
+      root.classList.add("dark");
+    } else {
+      root.classList.remove("dark");
+    }
+    localStorage.setItem("theme", theme);
+  }, [theme]);
     useEffect(() => {
     const root = document.documentElement;
  root.classList.toggle("dark", theme === "dark");

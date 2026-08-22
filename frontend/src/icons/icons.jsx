@@ -29,8 +29,12 @@ Moon,
 Calendar,
 Lock,
 Camera,
+<<<<<<< HEAD
 Check, Palette,
 Download,
 Upload,
 ArrowDownUp
+=======
+Check, Palette
+>>>>>>> e82203e (Implemented Profile and Edit Profile Functionality)
 } from "lucide-react";
