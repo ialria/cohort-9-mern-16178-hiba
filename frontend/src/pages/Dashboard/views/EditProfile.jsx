@@ -17,7 +17,7 @@ function EditProfile() {
 
   const [selectedImage, setSelectedImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
-
+const [removeImage, setRemoveImage] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
@@ -39,28 +39,37 @@ function EditProfile() {
     }));
   };
 
-  const handleImageChange = (event) => {
-    const file = event.target.files?.[0];
+const handleImageChange = (event) => {
+  const file = event.target.files?.[0];
 
-    if (!file) return;
+  if (!file) return;
 
-    if (!["image/jpeg", "image/png"].includes(file.type)) {
-      setError("Please select a JPG or PNG image.");
-      return;
-    }
+  if (!["image/jpeg", "image/png"].includes(file.type)) {
+    setError("Please select a JPG or PNG image.");
+    return;
+  }
 
-    if (file.size > 2 * 1024 * 1024) {
-      setError("Image must be smaller than 2MB.");
-      return;
-    }
+  if (file.size > 2 * 1024 * 1024) {
+    setError("Image must be smaller than 2MB.");
+    return;
+  }
 
-    setError("");
-    setSelectedImage(file);
-    setImagePreview(URL.createObjectURL(file));
+  setError("");
+  setSelectedImage(file);
+  setRemoveImage(false);
+
+  const reader = new FileReader();
+
+  reader.onloadend = () => {
+    setImagePreview(reader.result);
   };
-  const handleRemoveImage = () => {
+
+  reader.readAsDataURL(file);
+};
+const handleRemoveImage = () => {
   setSelectedImage(null);
   setImagePreview(null);
+  setRemoveImage(true);
 
   if (fileInputRef.current) {
     fileInputRef.current.value = "";
@@ -84,6 +93,11 @@ function EditProfile() {
       await updateProfile({
         ...formData,
         username,
+         ...(selectedImage && imagePreview
+    ? { avatarUrl: imagePreview }
+    : removeImage
+      ? { avatarUrl: null }
+      : {}),
       });
 
       navigate("/profile");
@@ -130,8 +144,8 @@ function EditProfile() {
             <div className=" border rounded-xl border-text-muted/30 flex flex-col items-center justify-start py-4 px-4">
               <h3 className="text-text font-semibold">Profile Picture</h3>
            <div className="relative w-20 h-20 my-5">
-  <div className="w-20 h-20 rounded-full overflow-hidden border bg-primary flex items-center justify-center">
-    {imagePreview || profile?.avatarUrl ? (
+  <div className="w-26 h-26 rounded-full overflow-hidden border bg-primary flex items-center justify-center ">
+    {imagePreview || (profile?.avatarUrl && !removeImage) ? (
       <img
         src={imagePreview || profile.avatarUrl}
         alt="Profile"
@@ -148,10 +162,10 @@ function EditProfile() {
     aria-label="Change profile picture"
     type="button"
     onClick={() => fileInputRef.current?.click()}
-    className="w-8 h-8 flex items-center justify-center rounded-full bg-surface border border-text-muted/30 absolute bottom-0 -right-3"
+    className="w-10 h-10 flex items-center justify-center rounded-full bg-surface border border-text-muted/30 absolute -bottom-4 -right-9"
   >
     <Camera
-      size={18}
+      size={20}
       strokeWidth={1.5}
       className="text-text-muted"
     />
@@ -164,7 +178,7 @@ function EditProfile() {
                 onChange={handleImageChange}
                 className="hidden"
               />
-              <p className="text-xs text-text-muted">
+              <p className="text-xs text-text-muted mt-3">
                 JPG or PNG. Max size 2MB
               </p>
               {/* <Button  type="button"
@@ -175,7 +189,7 @@ function EditProfile() {
     <Button
       type="button"
       onClick={handleRemoveImage}
-      className="bg-delete-bgLight text-error hover:bg-error hover:text-surface transition-all duration-150 my-4 flex gap-2"
+      className="bg-delete-bgLight text-error hover:bg-error hover:text-surface transition-all duration-150 my-4 flex gap-2 "
     >
       Remove<Trash2 size={18} strokeWidth={2}/>
     </Button>

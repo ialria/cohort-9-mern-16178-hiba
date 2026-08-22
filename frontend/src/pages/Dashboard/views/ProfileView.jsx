@@ -85,11 +85,19 @@ const recentNotes = [...activeNotes]
         >
           <Card className="col-span-full lg:col-span-2">
             <div className="flex items-center  gap-2 md:gap-4">
-              <div className="border  w-12 h-12 md:w-26 md:h-26 flex items-center justify-center  bg-primary rounded-full">
-                <p className=" text-2xl md:text-5xl font-semibold text-surface">
-                  {getInitials(profile?.username)}
-                </p>
-              </div>
+           <div className="border w-12 h-12 md:w-26 md:h-26 flex items-center justify-center bg-primary rounded-full overflow-hidden">
+  {profile?.avatarUrl ? (
+    <img
+      src={profile.avatarUrl}
+      alt={`${profile.username || "User"} profile`}
+      className="w-full h-full object-cover"
+    />
+  ) : (
+    <p className="text-2xl md:text-5xl font-semibold text-surface">
+      {getInitials(profile?.username || "U")}
+    </p>
+  )}
+</div>
               <div>
                 <h2 className="text-text md:text-xl  font-semibold"> {profile?.username || "User"}</h2>
                 <p className="text-text-muted  text-xs md:text-sm">

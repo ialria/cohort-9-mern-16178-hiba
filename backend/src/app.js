@@ -16,7 +16,7 @@ if (!Number.isInteger(trustedProxies) || trustedProxies < 0) {
 app.set("trust proxy", trustedProxies);
 app.use(helmet());
 app.use(cookieParser());
-app.use(express.json({ limit: "100kb" }));
+app.use(express.json({ limit: "4mb" }));
 
 app.use(
   cors({

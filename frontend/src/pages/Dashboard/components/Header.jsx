@@ -1,5 +1,5 @@
 import { Search, Menu } from "./../../../icons/icons.jsx";
-import { useState } from "react";
+import { useState , useRef, useEffect} from "react";
 import { useNotes } from "../../../context/NotesContext.jsx";
 import UserMenu from "./UserMenu.jsx";
 import { sidebarItems } from "../data/sidebarItems.js";
@@ -9,6 +9,7 @@ import { useProfile } from "../../../context/ProfileContext.jsx";
 import NotesSearchResults from "./NotesSearchResults.jsx";
 function Header() {
   const { profile , getInitials} = useProfile();
+  const userMenuRef = useRef(null);
   const location=useLocation();
   const [isOpen, setIsOpen] = useState(false);
 const { searchTerm, setSearchTerm } = useNotes();
@@ -19,6 +20,22 @@ const { searchTerm, setSearchTerm } = useNotes();
     : undefined) ??  sidebarItems.find((item) => item.id === "notes");
   const { drawerOpen,setDrawerOpen } = useSidebar();
   const showSearch = currentItem.id === "notes";
+  useEffect(() => {
+  const handleClickOutside = (event) => {
+    if (
+      userMenuRef.current &&
+      !userMenuRef.current.contains(event.target)
+    ) {
+      setIsOpen(false);
+    }
+  };
+
+  document.addEventListener("mousedown", handleClickOutside);
+
+  return () => {
+    document.removeEventListener("mousedown", handleClickOutside);
+  };
+}, []);
   return (
     <header className="sticky top-0 z-20  ">
       <div
@@ -66,11 +83,11 @@ focus-visible:ring-primary hover:bg-primary-light p-3 transition-all duration-15
   <NotesSearchResults />
 
           </div>
-          <div className="relative">
+          <div ref={userMenuRef}  className="relative">
             <button
               aria-label="User menu"
                 aria-expanded={isOpen}
-              className="shrink-0 w-10 h-10 rounded-full bg-primary flex justify-center items-center text-surface  text-md md:text-xl font-semibold "
+              className="shrink-0 w-14 h-14 rounded-full bg-primary flex justify-center items-center text-surface  text-md md:text-xl font-semibold overflow-hidden cursor-pointer"
               type="button"
               onClick={() => setIsOpen((prev) => !prev)}
             >
