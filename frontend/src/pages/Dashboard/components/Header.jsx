@@ -5,8 +5,10 @@ import UserMenu from "./UserMenu.jsx";
 import { sidebarItems } from "../data/sidebarItems.js";
 import { useLocation } from "react-router-dom";
 import { useSidebar } from "../../../context/SidebarContext.jsx";
+import { useProfile } from "../../../context/ProfileContext.jsx";
 import NotesSearchResults from "./NotesSearchResults.jsx";
 function Header() {
+  const { profile , getInitials} = useProfile();
   const location=useLocation();
   const [isOpen, setIsOpen] = useState(false);
 const { searchTerm, setSearchTerm } = useNotes();
@@ -33,7 +35,7 @@ const { searchTerm, setSearchTerm } = useNotes();
 focus-visible:ring-2
 focus-visible:ring-primary hover:bg-primary-light p-3 transition-all duration-150 rounded-full block md:hidden"
         >
-          <Menu size={22} />
+          <Menu size={22} className="text-text"/>
         </button>
             {!showSearch && (
           <h1 className="text-text text-2xl font-semibold md:hidden">
@@ -52,7 +54,7 @@ focus-visible:ring-primary hover:bg-primary-light p-3 transition-all duration-15
    onChange={(event) => setSearchTerm(event.target.value)}
               placeholder="Search notes"
               aria-label="Search notes"
-              className="w-full md:w-96 border border-border h-10 md:h-11 pl-4 pr-10 bg-surface rounded-full"
+              className="text-text w-full md:w-96 border border-border h-10 md:h-11 pl-4 pr-10 bg-surface rounded-full"
             />
             <button
               type="button"
@@ -72,7 +74,15 @@ focus-visible:ring-primary hover:bg-primary-light p-3 transition-all duration-15
               type="button"
               onClick={() => setIsOpen((prev) => !prev)}
             >
-              H
+               {profile?.avatarUrl ? (
+    <img
+      src={profile.avatarUrl}
+      alt="Profile"
+      className="w-full h-full object-cover"
+    />
+  ) : (
+    getInitials(profile?.username || "U")
+  )}
             </button>
             {isOpen && <UserMenu />}
           </div>

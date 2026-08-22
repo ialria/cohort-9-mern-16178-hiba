@@ -25,6 +25,30 @@ export function ProfileProvider({ children }) {
       setLoading(false);
     }
   };
+    const updateProfile = async (profileData) => {
+    const response = await apiFetch("/api/profile", {
+      method: "PUT",
+      body: JSON.stringify(profileData),
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.message || "Failed to update profile");
+    }
+
+    setProfile(data);
+    return data;
+  };
+
+const getInitials = (username = "") => {
+  return username
+    .trim()
+    .split(/\s+/)
+    .map((name) => name[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
+};
 
 
   return (
@@ -33,6 +57,8 @@ export function ProfileProvider({ children }) {
         profile,
         loading,
         getProfile,
+        updateProfile,
+        getInitials
       }}
     >
       {children}

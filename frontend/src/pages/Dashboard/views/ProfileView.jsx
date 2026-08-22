@@ -10,7 +10,7 @@ import {
   Trash2,
   Clock,
   SlidersHorizontal,
-  Bell,
+  Palette,
   ChevronRight,
   LogOut,
   Moon,
@@ -22,6 +22,7 @@ import { Link } from "react-router-dom";
 import { useModal } from "../../../context/ModalContext.jsx";
 import { useProfile } from "../../../context/ProfileContext.jsx";
 import formatDate from "../../../utils/formateDate.js";
+import { useTheme } from "../../../context/ThemeContext.jsx";
 function Card({ children, className = "" }) {
   return (
     <div
@@ -60,24 +61,33 @@ function ProfileView() {
   const { openLogoutModal } = useModal();
   const { collapsed } = useSidebar();
   const { notes } = useNotes();
-  const { profile, loading } = useProfile();
+  const { profile, loading,getInitials } = useProfile();
+
+  const { theme, toggleTheme , accentColor, setAccentColor} = useTheme();
   const notesNum = notes.filter((note) => !note.isDeleted).length;
   const favouriteNum = notes.filter(
     (note) => note.isFavorite && !note.isDeleted,
   ).length;
   const deletedNum = notes.filter((note) => note.isDeleted).length;
+  const activeNotes = notes.filter((note) => !note.isDeleted);
+const recentNotes = [...activeNotes]
+  .sort(
+    (a, b) =>
+      new Date(b.updatedAt || b.createdAt) -
+      new Date(a.updatedAt || a.createdAt),
+  )
+  .slice(0, 3);
   return (
     <DashboardLayout>
       <main className="px-5 md:px-8 flex flex-col gap-4 pb-8">
         <div
           className={`grid grid-cols-1 gap-4 w-full ${collapsed ? "md:grid-cols-1" : "md:grid-cols-2"} lg:grid-cols-3`}
         >
-          {/* top profile card */}
           <Card className="col-span-full lg:col-span-2">
             <div className="flex items-center  gap-2 md:gap-4">
               <div className="border  w-12 h-12 md:w-26 md:h-26 flex items-center justify-center  bg-primary rounded-full">
                 <p className=" text-2xl md:text-5xl font-semibold text-surface">
-                  H
+                  {getInitials(profile?.username)}
                 </p>
               </div>
               <div>
@@ -95,15 +105,13 @@ function ProfileView() {
                     strokeWidth={1.5}
                     className="text-surface"
                   />
-                  <span className=" md:text-md text-surface">Edit</span>
-                  <span className="hidden md:block text-surface">Profile</span>
+                  <span className=" md:text-md text-surface flex gap-1">Edit <span className="hidden md:block text-surface">Profile</span></span>
+                 
                 </Button>
               </Link>
             </div>
           </Card>
-          {/* account info + activity */}
 
-          {/* account into */}
           <Card className=" flex-col gap-4 flex-4 items-start">
             <InnerElement
               icon={User}
@@ -117,22 +125,21 @@ function ProfileView() {
                 </p>
               </div>
             </InnerElement>
-            <InnerElement icon={Mail}>
+            <InnerElement icon={Mail} iconClassName="text-text-muted">
               <div>
                 <p className="text-sm text-text">Email</p>
                 <p className="text-xs text-text-muted">  {profile?.email || ""}</p>
               </div>
             </InnerElement>{" "}
-            <InnerElement icon={Calendar}>
+            <InnerElement icon={Calendar} iconClassName="text-text-muted">
               <div>
                 <p className="text-sm text-text">Joined</p>
                 <p className="text-xs text-text-muted">  {profile?.createdAt ? formatDate(profile.createdAt) : ""}</p>
               </div>
             </InnerElement>
           </Card>
-          {/* recent activity */}
           <Card
-            className={` flex-col  gap-4 flex-6  ${collapsed ? "lg:col-span-2" : "lg:col-span-1"}`}
+            className={` flex-col justify-start gap-4 flex-6  ${collapsed ? "lg:col-span-2" : "lg:col-span-1"}`}
           >
             <InnerElement
               icon={Clock}
@@ -140,14 +147,14 @@ function ProfileView() {
               iconClassName="text-notes"
               iconWrapperClass="bg-notes-bg"
             >
-              <div className="flex items-center justify-between w-full">
+              <div className="flex items-between justify-between w-full">
                 <p className="text-sm font-semibold text-text">
                   Recent Activity
                 </p>
-                <p className="text-notes text-sm font-semibold"> View all</p>
+                {/* <p className="text-notes text-sm font-semibold"> View all</p> */}
               </div>
             </InnerElement>
-            <InnerElement icon={FileText}>
+            {/* <InnerElement icon={FileText}>
               <div className="flex justify-between items-center w-full">
                 <p className="text-sm text-text flex flex-col items-start justify-center">
                   Retro Notes{" "}
@@ -173,12 +180,33 @@ function ProfileView() {
                 </p>
                 <Star size={18} className="text-fav fill-fav" />
               </div>
-            </InnerElement>
+            </InnerElement> */}
+            {recentNotes.length > 0 ? (
+  recentNotes.map((note) => (
+    <InnerElement key={note.id} icon={FileText} iconClassName="text-text-muted">
+      <div className="flex justify-between items-between w-full">
+        <p className="text-sm text-text flex flex-col items-start justify-center">
+          {note.title || "Untitled Note"}
+
+          <span className="text-xs text-text-muted">
+            {formatDate(note.updatedAt || note.createdAt)}
+          </span>
+        </p>
+
+        {note.isFavorite && (
+          <Star size={18} className="text-fav fill-fav" />
+        )}
+      </div>
+    </InnerElement>
+  ))
+) : (
+  <p className="text-sm text-text-muted">
+    No recent activity
+  </p>
+)}
           </Card>
 
-          {/* preferences + {demo } recent*/}
 
-          {/* preferences */}
           <Card className=" flex-col  gap-4 flex-4 justify-start">
             <InnerElement
               icon={SlidersHorizontal}
@@ -190,27 +218,65 @@ function ProfileView() {
                 <p className="text-sm font-semibold text-text">Preferences</p>
               </div>
             </InnerElement>
-            <InnerElement icon={Moon}>
+            <InnerElement icon={Moon} iconClassName="text-text-muted">
               <div className="flex justify-between items-end w-full">
                 <p className="text-sm text-text">Appearance</p>
-                <p className="text-text-muted text-xs flex gap-1">
-                  {" "}
-                  System
+               <button
+    type="button"
+    onClick={toggleTheme}
+    className="text-text-muted text-xs flex items-center gap-1"
+  >
+    {theme === "light" ? "Light" : "Dark"}
                   <ChevronRight size={18} />
-                </p>
+                </button>
               </div>
             </InnerElement>
-            <InnerElement icon={Bell}>
-              <div className="flex justify-between items-end w-full">
-                <p className="text-sm text-text">Notifications </p>
-                <p className="text-text-muted text-xs flex gap-1">
-                  {" "}
-                  On <ChevronRight size={18} />
-                </p>
-              </div>
-            </InnerElement>
+    <InnerElement
+  icon={Palette}
+  iconSize={20}
+  iconClassName="text-notes"
+  iconWrapperClass="bg-notes-bg"
+>
+  <div className="flex items-center justify-between w-full">
+    <p className="text-sm text-text">Accent Color</p>
+
+ <div className="flex items-center gap-2">
+  <button
+    type="button"
+    aria-label="Purple"
+    onClick={() => setAccentColor("purple")}
+    className={`w-7 h-7 rounded-full bg-[#362b4a] ${
+      accentColor === "purple"
+        ? "ring-2 ring-primary/30 ring-offset-2 ring-offset-surface"
+        : ""
+    }`}
+  />
+
+  <button
+    type="button"
+    aria-label="Deep Teal"
+    onClick={() => setAccentColor("teal")}
+    className={`w-7 h-7 rounded-full bg-[#2C4A47] ${
+      accentColor === "teal"
+        ? "ring-2 ring-primary/30 ring-offset-2 ring-offset-surface"
+        : ""
+    }`}
+  />
+
+  <button
+    type="button"
+    aria-label="Muted Forest"
+    onClick={() => setAccentColor("forest")}
+    className={`w-7 h-7 rounded-full bg-[#3D5240] ${
+      accentColor === "forest"
+        ? "ring-2 ring-primary/30 ring-offset-2 ring-offset-surface"
+        : ""
+    }`}
+  />
+</div>
+  </div>
+</InnerElement>
           </Card>
-          {/* activity overview */}
           <Card
             className={` flex-col ${collapsed ? "lg:col-span-2" : "lg:col-span-1"} gap-4 flex-6 justify-start`}
           >
@@ -273,13 +339,12 @@ function ProfileView() {
               >
                 <div className="flex flex-col items-center">
                   <p className="text-sm font-semibold text-text">Recent</p>
-                  <p className="text-sm text-text-muted">0</p>
+                  <p className="text-sm text-text-muted">{recentNotes.length}</p>
                 </div>
               </InnerElement>
             </div>
           </Card>
 
-          {/* account actions */}
           <Card
             className={`col-span-full flex-col  gap-4 flex-6 ${collapsed ? "lg:col-span-1" : "lg:col-span-full"} justify-start`}
           >

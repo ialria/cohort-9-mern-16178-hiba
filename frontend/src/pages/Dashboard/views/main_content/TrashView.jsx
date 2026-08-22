@@ -10,7 +10,7 @@ function TrashView(){
           <section className={`grid grid-cols-1 ${collapsed? "md:gap-3 md:px-4": "md:gap-6 md:px-8"} md:grid-cols-2 px-5 gap-4`}>
         {
          trashNotes.length === 0 ? (
-                <p>No notes in trash yet.</p>
+                <p className="text-text-muted">No notes in trash yet.</p>
             ) : (
                       trashNotes.map(note => (
           <article key={note.id} className={`group flex w-full flex-col border border-text-muted/30 px-4 rounded-3xl ${collapsed ? "md:px-4" : "md:px-6"} py-4 md:py-8 bg-background hover:border-primary-light hover:shadow-lg hover:translate-y-1 duration-150`}>
