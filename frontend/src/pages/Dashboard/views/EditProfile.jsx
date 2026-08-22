@@ -144,7 +144,7 @@ const handleRemoveImage = () => {
             <div className=" border rounded-xl border-text-muted/30 flex flex-col items-center justify-start py-4 px-4">
               <h3 className="text-text font-semibold">Profile Picture</h3>
            <div className="relative w-20 h-20 my-5">
-  <div className="w-26 h-26 rounded-full overflow-hidden border bg-primary flex items-center justify-center ">
+  <div className="w-26 h-26 rounded-full overflow-hidden bg-primary flex items-center justify-center ">
     {imagePreview || (profile?.avatarUrl && !removeImage) ? (
       <img
         src={imagePreview || profile.avatarUrl}

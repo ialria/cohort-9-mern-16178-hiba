@@ -85,7 +85,7 @@ const recentNotes = [...activeNotes]
         >
           <Card className="col-span-full lg:col-span-2">
             <div className="flex items-center  gap-2 md:gap-4">
-           <div className="border w-12 h-12 md:w-26 md:h-26 flex items-center justify-center bg-primary rounded-full overflow-hidden">
+           <div className="w-12 h-12 md:w-26 md:h-26 flex items-center justify-center bg-primary rounded-full overflow-hidden">
   {profile?.avatarUrl ? (
     <img
       src={profile.avatarUrl}

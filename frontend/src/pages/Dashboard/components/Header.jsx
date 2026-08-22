@@ -83,26 +83,29 @@ focus-visible:ring-primary hover:bg-primary-light p-3 transition-all duration-15
   <NotesSearchResults />
 
           </div>
-          <div ref={userMenuRef}  className="relative">
-            <button
-              aria-label="User menu"
-                aria-expanded={isOpen}
-              className="shrink-0 w-14 h-14 rounded-full bg-primary flex justify-center items-center text-surface  text-md md:text-xl font-semibold overflow-hidden cursor-pointer"
-              type="button"
-              onClick={() => setIsOpen((prev) => !prev)}
-            >
-               {profile?.avatarUrl ? (
-    <img
-      src={profile.avatarUrl}
-      alt="Profile"
-      className="w-full h-full object-cover"
-    />
-  ) : (
-    getInitials(profile?.username || "U")
-  )}
-            </button>
-            {isOpen && <UserMenu />}
-          </div>
+          {showSearch && (
+  <div ref={userMenuRef} className="relative">
+    <button
+      aria-label="User menu"
+      aria-expanded={isOpen}
+      className="shrink-0 w-14 h-14 rounded-full bg-primary flex justify-center items-center text-surface text-md md:text-xl font-semibold overflow-hidden cursor-pointer"
+      type="button"
+      onClick={() => setIsOpen((prev) => !prev)}
+    >
+      {profile?.avatarUrl ? (
+        <img
+          src={profile.avatarUrl}
+          alt="Profile"
+          className="w-full h-full object-cover"
+        />
+      ) : (
+        getInitials(profile?.username || "U")
+      )}
+    </button>
+
+    {isOpen && <UserMenu />}
+  </div>
+)}
         </div>
       </div>
       {showSearch && (
