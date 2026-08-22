@@ -133,7 +133,8 @@ const handleContentChange = (value) => {
 
         </header>
       </article>
- <section className="px-10 md:px-22">
+{/* <EditorToolButton /> */}
+ <section className="px-10 md:px-22 mb-4">
   <div ref={editorRef}>           <ReactQuill  theme="snow" value={content} modules={modules} onChange={handleContentChange} placeholder="Start typing ..." className="mt-6 text-base
     text-text
     placeholder:text-text-muted" /> 
