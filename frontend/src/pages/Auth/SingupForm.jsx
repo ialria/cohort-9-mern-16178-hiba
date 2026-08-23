@@ -112,7 +112,6 @@ const passwordCheckId = useRef(0);
           scalar: 0.6,
         });
 
-
         redirectTimer.current = setTimeout(() => {
           navigate("/login");
         }, 1500);
