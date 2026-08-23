@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom";
 import { useProfile } from "../../../context/ProfileContext";
 function EditProfile() {
   const { setDrawerOpen } = useSidebar();
-  const { profile, updateProfile } = useProfile();
+  const { profile, updateProfile,loading } = useProfile();
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
   const imageSelectionRef = useRef(0);
@@ -15,7 +15,7 @@ function EditProfile() {
     username: "",
     bio: "",
   });
-
+const [imageLoading, setImageLoading] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
 const [removeImage, setRemoveImage] = useState(false);
@@ -44,7 +44,6 @@ const handleImageChange = (event) => {
   const file = event.target.files?.[0];
 
   if (!file) return;
-    const selectionId = ++imageSelectionRef.current;
 
   if (!["image/jpeg", "image/png"].includes(file.type)) {
     setError("Please select a JPG or PNG image.");
@@ -55,10 +54,12 @@ const handleImageChange = (event) => {
     setError("Image must be smaller than 2MB.");
     return;
   }
+    const selectionId = ++imageSelectionRef.current;
 
   setError("");
   setSelectedImage(file);
   setRemoveImage(false);
+ setImageLoading(true);
 
   const reader = new FileReader();
 
@@ -67,6 +68,7 @@ const handleImageChange = (event) => {
       return;
     }
     setImagePreview(reader.result);
+     setImageLoading(false);
   };
 
   reader.readAsDataURL(file);
@@ -76,7 +78,7 @@ const handleRemoveImage = () => {
   setSelectedImage(null);
   setImagePreview(null);
   setRemoveImage(true);
-
+setImageLoading(false);
   if (fileInputRef.current) {
     fileInputRef.current.value = "";
   }
@@ -258,10 +260,10 @@ const handleRemoveImage = () => {
                     </Button> */}
                     <Button
                       type="submit"
-                         disabled={saving}
+                         disabled={loading ||saving || imageLoading}
                       className="w-full bg-primary text-surface hover:bg-primary-light hover:text-primary transition-all duration-150"
                     >
-                       {saving ? "Saving..." : "Save"}
+                    {saving ? "Saving..." : imageLoading ? "Loading image..." : "Save"}
                     </Button>
                   </div>
                 </form>

@@ -47,7 +47,7 @@ useEffect(() => {
 }, [note]);
 
 const handleSave = async () => {
-   if (saveStatus !== "unsaved") {
+   if (saveStatus !== "unsaved" && saveStatus !== "error") {
     return;
   }
   const plainTextContent = content.replace(/<[^>]*>/g, "").trim();

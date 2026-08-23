@@ -3,7 +3,7 @@ import { apiFetch } from "../config/api";
 const ProfileContext = createContext();
 
 export function ProfileProvider({ children }) {
-  const [profile, setProfile] = useState(null);
+  const [profile, setProfile, ] = useState(null);
   const [loading, setLoading] = useState(true);
   useEffect(() => {
     getProfile();
