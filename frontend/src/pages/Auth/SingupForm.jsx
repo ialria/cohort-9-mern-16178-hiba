@@ -30,9 +30,6 @@ function SignupForm() {
   const [confirmPassword, setConfirmPassword] = useState("");
 
   const navigate = useNavigate();
-
-  // const [acceptedTerms, setAcceptedTerms] = useState(false);
-
   function validateForm() {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const newErrors = {};
@@ -60,10 +57,6 @@ function SignupForm() {
     if (username.trim() === "") {
       newErrors.username = "Please enter your username.";
     }
-
-    // if (!acceptedTerms) {
-    //   newErrors.terms = "Please accept the Terms of Service.";
-    // }
 
     return newErrors;
   }
@@ -136,7 +129,6 @@ function SignupForm() {
     } finally {
       setRegistrationComplete(true);
       setIsSubmitting(false);
-      return;
     }
   }
 

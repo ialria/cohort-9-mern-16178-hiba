@@ -37,7 +37,7 @@ const updateProfile=async (req, res)=>{
 const {username, bio, avatarUrl}=req.body;
 if(!username || !username.trim()){
     return res.status(400).json({
-        message:"Usesrname is required!"
+        message:"Username is required!"
     });
 }
  if (avatarUrl !== undefined && avatarUrl !== null) {

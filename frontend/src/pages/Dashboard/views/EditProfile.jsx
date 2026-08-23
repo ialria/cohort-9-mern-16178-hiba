@@ -10,6 +10,7 @@ function EditProfile() {
   const { profile, updateProfile } = useProfile();
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
+  const imageSelectionRef = useRef(0);
   const [formData, setFormData] = useState({
     username: "",
     bio: "",
@@ -43,6 +44,7 @@ const handleImageChange = (event) => {
   const file = event.target.files?.[0];
 
   if (!file) return;
+    const selectionId = ++imageSelectionRef.current;
 
   if (!["image/jpeg", "image/png"].includes(file.type)) {
     setError("Please select a JPG or PNG image.");
@@ -61,12 +63,16 @@ const handleImageChange = (event) => {
   const reader = new FileReader();
 
   reader.onloadend = () => {
+     if (selectionId !== imageSelectionRef.current) {
+      return;
+    }
     setImagePreview(reader.result);
   };
 
   reader.readAsDataURL(file);
 };
 const handleRemoveImage = () => {
+   imageSelectionRef.current++;
   setSelectedImage(null);
   setImagePreview(null);
   setRemoveImage(true);

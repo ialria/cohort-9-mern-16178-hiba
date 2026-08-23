@@ -1,6 +1,5 @@
 require("dotenv").config();
 const logger = require("./utilities/logger");
-
 const requiredVariables = ["JWT_SECRET", "FRONTEND_URL", "DATABASE_URL"];
 
 for (const variable of requiredVariables) {
@@ -31,8 +30,11 @@ server.on("error", async (error) => {
       "Server failed to start",
     );
   }
+  try{
   await prisma.$disconnect();
+  }finally{
   process.exit(1);
+  }
 });
 let isShuttingDown = false;
 

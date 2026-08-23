@@ -33,7 +33,7 @@
 }
 
 
-/*  PURPLE - LIGHT theme */
+/* PURPLE - LIGHT theme */
 
 :root {
   --primary: #362b4a;
@@ -68,7 +68,7 @@
 }
 
 
-/*   PURPLE - DARK Theme Colors */
+/* PURPLE - DARK Theme Colors */
 
 .dark {
   --primary: #b9a5d6;
@@ -102,7 +102,7 @@
   --warning: #fbbf24;
 }
 
-/*    TEAL - LIGHT Theme*/
+/* TEAL - LIGHT Theme */
 
 :root[data-accent="teal"] {
   --primary: #2c4a47;
@@ -111,7 +111,7 @@
 }
 
 
-/*   TEAL - DARK Theme*/
+/* TEAL - DARK Theme */
 
 :root.dark[data-accent="teal"] {
   --primary: #8fb8b2;
@@ -129,7 +129,7 @@
 }
 
 
-/*   FOREST - LIGHT Theme */
+/* FOREST - LIGHT Theme */
 
 :root[data-accent="forest"] {
   --primary: #3d5240;
@@ -138,7 +138,7 @@
 }
 
 
-/*   FOREST - DARk Theme */
+/* FOREST - DARk Theme */
 
 :root.dark[data-accent="forest"] {
   --primary: #9caf9d;

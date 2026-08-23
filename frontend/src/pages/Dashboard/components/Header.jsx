@@ -83,7 +83,7 @@ focus-visible:ring-primary hover:bg-primary-light p-3 transition-all duration-15
   <NotesSearchResults />
 
           </div>
-          {showSearch && (
+          
   <div ref={userMenuRef} className="relative">
     <button
       aria-label="User menu"
@@ -105,7 +105,7 @@ focus-visible:ring-primary hover:bg-primary-light p-3 transition-all duration-15
 
     {isOpen && <UserMenu />}
   </div>
-)}
+
         </div>
       </div>
       {showSearch && (
