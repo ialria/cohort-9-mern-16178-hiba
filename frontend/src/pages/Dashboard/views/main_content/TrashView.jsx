@@ -4,10 +4,16 @@ import {useSidebar} from "../../../../context/SidebarContext.jsx";
 import formatDate from "../../../../utils/formateDate.js";
 function TrashView(){
     const {collapsed}=useSidebar();
-        const {notes, restoreNote,deleteForever} = useNotes();
+        const {notes, restoreNote,deleteForever, notesError} = useNotes();
     const trashNotes=notes.filter(note=>note.isDeleted);
     return (
           <section className={`grid grid-cols-1 ${collapsed? "md:gap-3 md:px-4": "md:gap-6 md:px-8"} md:grid-cols-2 px-5 gap-4`}>
+ {notesError && (
+      <p className="col-span-full text-sm text-delete-primary">
+        {notesError}
+      </p>
+    )}
+
         {
          trashNotes.length === 0 ? (
                 <p className="text-text-muted">No notes in trash yet.</p>

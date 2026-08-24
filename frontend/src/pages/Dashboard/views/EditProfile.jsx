@@ -64,11 +64,20 @@ const handleImageChange = (event) => {
   const reader = new FileReader();
 
   reader.onloadend = () => {
-     if (selectionId !== imageSelectionRef.current) {
-      return;
-    }
-    setImagePreview(reader.result);
-     setImageLoading(false);
+    if (selectionId !== imageSelectionRef.current) {
+    return;
+  }
+
+  if (reader.error || !reader.result) {
+    setSelectedImage(null);
+    setImagePreview(null);
+    setImageLoading(false);
+    setError("Failed to read the selected image. Please try again.");
+    return;
+  }
+
+  setImagePreview(reader.result);
+  setImageLoading(false);
   };
 
   reader.readAsDataURL(file);
@@ -189,11 +198,8 @@ setImageLoading(false);
               <p className="text-xs text-text-muted mt-3">
                 JPG or PNG. Max size 2MB
               </p>
-              {/* <Button  type="button"
-                onClick={() => fileInputRef.current?.click()} className="bg-primary-lighter mt-3 hover:bg-primary hover:text-surface transition-all duration-150">
-                Change photo
-              </Button> */}
-                {(imagePreview || profile?.avatarUrl) && (
+     
+              {(imagePreview || (profile?.avatarUrl && !removeImage)) && (
     <Button
       type="button"
       onClick={handleRemoveImage}
@@ -230,6 +236,7 @@ setImageLoading(false);
                       id="userName"
                       type="text"
                       name="username"
+                      disabled={loading}
                        value={formData.username}
                       onChange={handleChange}
                       className=" text-text w-full border border-text-muted/40 rounded-lg px-3 py-2 bg-surface placeholder:text-text-muted"
@@ -245,6 +252,7 @@ setImageLoading(false);
                       name="bio"
                       value={formData.bio}
                       onChange={handleChange}
+                      disabled={loading}
                       rows={4}
                       placeholder="Tell us a little about yourself..."
                       className="w-full border rounded-lg px-3 py-2 border-text-muted/40 bg-surface text-text placeholder:text-text-muted resize-none"

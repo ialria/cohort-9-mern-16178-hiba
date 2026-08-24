@@ -32,7 +32,7 @@ server.on("error", async (error) => {
   }
   try{
   await prisma.$disconnect();
-  }catch (disconnetError){
+  }catch (disconnectError){
     logger.error(
     { error: disconnectError },
     "Prisma disconnect failed after server error",

@@ -3,7 +3,7 @@ import { apiFetch } from "../config/api";
 const ProfileContext = createContext();
 
 export function ProfileProvider({ children }) {
-  const [profile, setProfile, ] = useState(null);
+  const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   useEffect(() => {
     getProfile();
@@ -26,6 +26,7 @@ export function ProfileProvider({ children }) {
     }
   };
     const updateProfile = async (profileData) => {
+      try{
     const response = await apiFetch("/api/profile", {
       method: "PUT",
       body: JSON.stringify(profileData),
@@ -38,6 +39,9 @@ export function ProfileProvider({ children }) {
 
     setProfile(data);
     return data;
+    }catch (error){
+      throw error;
+    }
   };
 
 const getInitials = (username = "") => {
