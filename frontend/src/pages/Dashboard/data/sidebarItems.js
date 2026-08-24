@@ -1,6 +1,6 @@
 import {
   FileText,
-  Star,
+  Pin,
   Trash2,
   Settings,
   Clock,
@@ -12,10 +12,10 @@ export const sidebarItems=[
     title: "All Notes",
     icon: FileText
 },{
-    id:"favourites",
-     path:"/dashboard/favorites",
-    title: "Favourites",
-    icon: Star
+    id:"pin",
+     path:"/dashboard/pin",
+    title: "Pin",
+    icon: Pin
 },
 {
     id:"recent",

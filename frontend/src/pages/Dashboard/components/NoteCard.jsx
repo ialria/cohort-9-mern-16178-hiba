@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom";
-import {Star,Ellipsis, FileText} from "../../../icons/icons.jsx"
-import NoteView from "../views/NoteView.jsx";
+import {Pin,Ellipsis, FileText} from "../../../icons/icons.jsx"
 import {useState} from "react";
 import formatDate from "../../../utils/formateDate.js";
 
@@ -8,10 +7,11 @@ import formatDate from "../../../utils/formateDate.js";
 function NoteCard({ note, previewLines = 3,
   showDate = true,
   MenuComponent,
-  onFavourite,
-  showFavorite=false,
+  onPin,
+  showPin=false,
   compact=false,
-  onDelete}) {
+  onDelete,
+onExport}) {
   const [showMenu, setShowMenu]=useState(false);
 function getPreview(content) {
   return content
@@ -19,17 +19,6 @@ function getPreview(content) {
     .replace(/&nbsp;/g, " ")
     .trim();
 }
-
-
-//   const [isFavourite,setIsFavourite]=useState(false);
-//   const[isDelete,setIsDelete]=useState(false);
-// function handleFavourite(){
-//   setIsFavourite((prev)=>!prev);
-// }
-// function handleDelete(){
-//   setIsDelete((prev)=>!prev);
-//     //  console.log("Delete clicked");
-// }
 
   return (
     <Link to={`/notes/${note.id}`} className="block">
@@ -48,14 +37,14 @@ function getPreview(content) {
   e.preventDefault();
   e.stopPropagation();
   setShowMenu((prev)=>!prev)}} className="p-1 hidden group-hover:block transition-opacity duration-150 bg-primary-lighter rounded-lg hover:bg-text-muted/14"><Ellipsis className="text-text-muted " size={18} strokeWidth={2}/></button>
- {showMenu && <MenuComponent onFavourite={onFavourite} onDelete={onDelete} isFavourite={note.isFavorite}/>}
+ {showMenu && <MenuComponent onPin={onPin} onDelete={onDelete} isPinned={note.isPinned} onExport={onExport}/>}
       </div>
    
    <div className="mt-1 md:mt-4 flex justify-between items-center  gap-3 md:gap-8">
      <p className={` text-text-muted text-sm ${previewLines===1? "line-clamp-1": "line-clamp-3"}`}>{getPreview(note.content)}</p>
-{showFavorite && note.isFavorite && ( <Star size={18} strokeWidth={2} className="shrink-0 text-yellow-400 fill-yellow-400 cursor-pointer"/>)}
+{showPin && note.isPinned && ( <Pin size={18} strokeWidth={2} className="shrink-0 text-pin fill-pin cursor-pointer"/>)}
    </div>
-  {!showFavorite && 
+  {!showPin && 
     <div className="mt-auto flex justify-between text-text-disabled">
       {showDate && (
   <p className="text-xs "> {note.editedAt
@@ -64,7 +53,7 @@ function getPreview(content) {
 
       )}
    
-   {note.isFavorite && (<button type="button"> <Star size={18} strokeWidth={1.5} className=" text-yellow-400 fill-yellow-400 cursor-pointer"/></button>)}
+   {note.isPinned && (<button type="button"> <Pin size={18} strokeWidth={1.5} className="text-pin fill-pin cursor-pointer"/></button>)}
     </div>
     }
     </article> 

@@ -137,7 +137,7 @@ if (result.count === 0) {
   }
 };
 
-const toggleFavourite = async (req, res) => {
+const togglePin = async (req, res) => {
   try {
     const { noteId } = req.params;
     const parsedNoteId = Number(noteId);
@@ -159,16 +159,16 @@ if (!Number.isInteger(parsedNoteId) || parsedNoteId <= 0) {
       });
     }
 
-    const targetFavorite = !note.isFavorite;
+    const targetPinned = !note.isPinned;
 
     const result = await prisma.note.updateMany({
       where: {
         id: note.id,
         userId: req.userId,
-        isFavorite: note.isFavorite,
+        isPinned: note.isPinned,
       },
       data: {
-        isFavorite: targetFavorite,
+        isPinned: targetPinned,
       },
     });
 
@@ -183,7 +183,7 @@ if (!Number.isInteger(parsedNoteId) || parsedNoteId <= 0) {
       }
     });
     return res.status(200).json({
-      message: "Favourite status updated successfully",
+      message: "Note pin status updated successfully",
       note: updatedNote,
     });
   } catch (error) {
@@ -194,7 +194,7 @@ if (!Number.isInteger(parsedNoteId) || parsedNoteId <= 0) {
           message: error.message,
         },
       },
-      "Updating favourite status failed",
+      "Error! Updating pin status failed",
     );
     return res.status(500).json({
       message: "Error! Something went wrong",
@@ -350,5 +350,5 @@ const deleteForever = async (req, res) => {
 };
 
 module.exports = {
-  createNote, getAllNotes, toggleFavourite , moveToTrash, updateNote, restoreNote, deleteForever
+  createNote, getAllNotes, togglePin , moveToTrash, updateNote, restoreNote, deleteForever
 };

@@ -6,7 +6,7 @@ import {
   Calendar,
   Activity,
   FileText,
-  Star,
+  Pin,
   Trash2,
   Clock,
   SlidersHorizontal,
@@ -14,6 +14,7 @@ import {
   ChevronRight,
   LogOut,
   Moon,
+  Download
 } from "../../../icons/icons.jsx";
 import DashboardLayout from "../../../layouts/DashboardLayout.jsx";
 import { useNotes } from "../../../context/NotesContext.jsx";
@@ -60,13 +61,13 @@ function InnerElement({
 function ProfileView() {
   const { openLogoutModal } = useModal();
   const { collapsed } = useSidebar();
-  const { notes } = useNotes();
+  const { notes , exportAllNotes, exportStatus, exportProgress} = useNotes();
   const { profile, loading,getInitials } = useProfile();
 
   const { theme, toggleTheme , accentColor, setAccentColor} = useTheme();
   const notesNum = notes.filter((note) => !note.isDeleted).length;
-  const favouriteNum = notes.filter(
-    (note) => note.isFavorite && !note.isDeleted,
+  const pinnedNum = notes.filter(
+    (note) => note.isPinned && !note.isDeleted,
   ).length;
   const deletedNum = notes.filter((note) => note.isDeleted).length;
   const activeNotes = notes.filter((note) => !note.isDeleted);
@@ -159,36 +160,9 @@ const recentNotes = [...activeNotes]
                 <p className="text-sm font-semibold text-text">
                   Recent Activity
                 </p>
-                {/* <p className="text-notes text-sm font-semibold"> View all</p> */}
               </div>
             </InnerElement>
-            {/* <InnerElement icon={FileText}>
-              <div className="flex justify-between items-center w-full">
-                <p className="text-sm text-text flex flex-col items-start justify-center">
-                  Retro Notes{" "}
-                  <span className="text-xs text-text-muted">Yesterday</span>
-                </p>
-                <Star size={18} className="text-fav fill-fav" />
-              </div>
-            </InnerElement>
-            <InnerElement icon={FileText}>
-              <div className="flex justify-between items-center w-full">
-                <p className="text-sm text-text flex flex-col items-start justify-center">
-                  Retro Notes{" "}
-                  <span className="text-xs text-text-muted">Yesterday</span>
-                </p>
-                <Star size={18} className="text-fav fill-fav" />
-              </div>
-            </InnerElement>
-            <InnerElement icon={FileText}>
-              <div className="flex justify-between items-center w-full">
-                <p className="text-sm text-text flex flex-col items-start justify-center">
-                  Retro Notes{" "}
-                  <span className="text-xs text-text-muted">Yesterday</span>
-                </p>
-                <Star size={18} className="text-fav fill-fav" />
-              </div>
-            </InnerElement> */}
+        
             {recentNotes.length > 0 ? (
   recentNotes.map((note) => (
     <InnerElement key={note.id} icon={FileText} iconClassName="text-text-muted">
@@ -201,8 +175,8 @@ const recentNotes = [...activeNotes]
           </span>
         </p>
 
-        {note.isFavorite && (
-          <Star size={18} className="text-fav fill-fav" />
+        {note.isPinned && (
+          <Pin size={18} className="text-pin fill-pin" />
         )}
       </div>
     </InnerElement>
@@ -315,15 +289,15 @@ const recentNotes = [...activeNotes]
               </InnerElement>
 
               <InnerElement
-                icon={Star}
+                icon={Pin}
                 iconSize={20}
                 className="flex-1 flex-col"
-                iconClassName="text-fav fill-fav"
-                iconWrapperClass="bg-fav-bg"
+                iconClassName="text-pin fill-pin"
+                iconWrapperClass="bg-pin-bg"
               >
                 <div className="flex flex-col items-center">
-                  <p className="text-sm font-semibold text-text">Favorites</p>
-                  <p className="text-sm text-text-muted">{favouriteNum}</p>
+                  <p className="text-sm font-semibold text-text">Pinned</p>
+                  <p className="text-sm text-text-muted">{pinnedNum}</p>
                 </div>
               </InnerElement>
               <InnerElement
@@ -364,6 +338,66 @@ const recentNotes = [...activeNotes]
             >
               <p className="text-sm font-semibold text-text">Account Actions</p>
             </InnerElement>
+<button
+  type="button"
+  onClick={exportAllNotes}
+  disabled={exportStatus === "exporting" || notesNum === 0}
+  className="w-full text-left disabled:opacity-50 disabled:cursor-not-allowed"
+>
+  <InnerElement
+    icon={Download}
+    iconSize={20}
+    iconClassName="text-notes"
+    iconWrapperClass="bg-notes-bg"
+  >
+    <div className="flex items-center justify-between w-full">
+      <div className="flex items-start justify-center flex-col">
+        <p className="text-sm font-semibold text-text">
+          Export All Notes
+        </p>
+
+        <span className="text-xs text-text-muted">
+          {exportStatus === "exporting"
+            ? `Exporting ${exportProgress}%`
+            : exportStatus === "completed"
+              ? "All notes exported successfully"
+              : "Download your notes as text files"}
+        </span>
+      </div>
+
+      {exportStatus === "exporting" ? (
+        <span className="text-xs text-text-muted">
+          {exportProgress}%
+        </span>
+      ) : (
+        <ChevronRight
+          size={18}
+          strokeWidth={1.5}
+          className="text-text-muted"
+        />
+      )}
+    </div>
+  </InnerElement>
+</button>
+{/* <span className="text-xs text-text-muted">
+  {exportStatus === "exporting"
+    ? `Exporting ${exportProgress} of ${notesNum} notes...`
+    : exportStatus === "completed"
+      ? "All notes exported successfully"
+      : "Download all your notes as a ZIP file"}
+</span> */}
+{exportStatus === "exporting" && (
+  <div className="w-full px-2">
+    <div className="h-1.5 w-full rounded-full bg-primary-lighter overflow-hidden">
+      <div
+        className="h-full bg-primary rounded-full transition-all duration-300"
+        style={{
+          width: `${(exportProgress / notesNum) * 100}%`,
+        }}
+      />
+    </div>
+  </div>
+)}
 
             <button
               type="button"

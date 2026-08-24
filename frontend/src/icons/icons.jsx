@@ -1,6 +1,6 @@
 export {
   House,
-  Star,
+  Pin,
   FileText,
   Trash2,
   Clock,
@@ -29,5 +29,8 @@ Moon,
 Calendar,
 Lock,
 Camera,
-Check, Palette
+Check, Palette,
+Download,
+Upload,
+ArrowDownUp
 } from "lucide-react";

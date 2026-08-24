@@ -2,25 +2,25 @@ import {useNotes} from "../../../../context/NotesContext.jsx";
 import NoteCard from "../../components/NoteCard.jsx";
 import NoteMenu from "../../components/note_components/NoteMenu.jsx";
 import {useSidebar} from "../../../../context/SidebarContext.jsx";
-function FavouriteView(){
+function PinnedView(){
     const {collapsed}=useSidebar();
-    const {notes, handleFavourite, moveToTrash} = useNotes();
-const favouriteNotes=notes.filter(note=>note.isFavorite && !note.isDeleted);
+    const {notes, handlePin, moveToTrash} = useNotes();
+const pinnedNotes=notes.filter(note=>note.isPinned && !note.isDeleted);
     return (
      <section className={`grid grid-cols-1 gap-4 md:grid-cols-2  ${collapsed ? "md:gap-4" : "md:gap-6"} px-5 md:px-8`}>
-            {favouriteNotes.length === 0 ? (
-                <p className="text-text-muted">No favourite notes yet.</p>
+            {pinnedNotes.length === 0 ? (
+                <p className="text-text-muted">No pinned Noted yet.</p>
             ) : (
-                      favouriteNotes.map(note => (
+                      pinnedNotes.map(note => (
             <NoteCard
                 key={note.id}
                 note={note}
                 showDate={false}
                 previewLines={1}
-                showFavorite={true}
+                showPin={true}
                 MenuComponent={NoteMenu}
                 compact={true}
-                onFavourite={() => handleFavourite(note.id)}
+                onPin={() => handlePin(note.id)}
                  onDelete={() => moveToTrash(note.id)}
             />
         ))
@@ -30,4 +30,4 @@ const favouriteNotes=notes.filter(note=>note.isFavorite && !note.isDeleted);
     );
 }
 
-export default FavouriteView
+export default PinnedView
