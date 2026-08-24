@@ -15,6 +15,7 @@ useEffect(() => {
     console.error("Failed to fetch notes:", error);
   });
 }, []);
+
   async function createNote(title, noteContent) {
     const response = await apiFetch("/api/notes", {
       method: "POST",
@@ -332,7 +333,6 @@ zip.file(fileName, fileContent);
     }, 3000);
   }
 }
-
   return (
     <NotesContext.Provider
       value={{

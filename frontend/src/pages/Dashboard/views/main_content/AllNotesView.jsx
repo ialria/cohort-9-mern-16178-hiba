@@ -7,17 +7,14 @@ import { useMemo, useState } from "react";
 import NoteActionBar from "../../components/note_components/NoteActionBar.jsx";
 import NoteMenu from "../../components/note_components/NoteMenu.jsx";
 function AllNotesView(){
-    const {notes, handlePin,moveToTrash, importNotes, exportNote}=useNotes();
+    const {notes, handlePin,moveToTrash, getAllNotes, importNotes, exportNote}=useNotes();
     const navigate=useNavigate();
     const {collapsed}=useSidebar();
  const [sortBy, setSortBy] = useState("date");
   const [sortOrder, setSortOrder] = useState("descending");
-
-const allNotes = useMemo(
-  () => (notes || []).filter((note) => !note.isDeleted),
-  [notes]
-);
-
+const allNotes = (notes || [])
+  .filter((note) => !note.isDeleted)
+  .sort((a, b) => Number(b.isPinned) - Number(a.isPinned));
  function handleSort(newSortBy, newSortOrder) {
     setSortBy(newSortBy);
     setSortOrder(newSortOrder);
@@ -26,12 +23,6 @@ const allNotes = useMemo(
     const notesCopy = [...allNotes];
 
     notesCopy.sort((firstNote, secondNote) => {
-      const pinDifference =
-    Number(secondNote.isPinned) - Number(firstNote.isPinned);
-
-  if (pinDifference !== 0) {
-    return pinDifference;
-  }
       let comparison = 0;
 
       if (sortBy === "date") {
@@ -40,8 +31,8 @@ const allNotes = useMemo(
           new Date(secondNote.createdAt);
       }
       if (sortBy === "title") {
-        comparison = (firstNote.title || "").localeCompare(
-         secondNote.title || ""
+        comparison = firstNote.title.localeCompare(
+          secondNote.title
         );
       }
       if (sortBy === "pinned") {
