@@ -1,6 +1,5 @@
 require("dotenv").config();
 const logger = require("./utilities/logger");
-const requiredEnv = ["JWT_SECRET", "FRONTEND_URL", "DATABASE_URL"];
 
 const requiredVariables = ["JWT_SECRET", "FRONTEND_URL", "DATABASE_URL"];
 
@@ -35,17 +34,34 @@ server.on("error", async (error) => {
   await prisma.$disconnect();
   process.exit(1);
 });
+let isShuttingDown = false;
 
 const gracefulShutdown = async (signal) => {
+  if (isShuttingDown) {
+    return;
+  }
+
+  isShuttingDown = true;
+
+  console.log(`${signal} received. Shutting down gracefully...`);
   logger.info(`${signal} received. Shutting down gracefully...`);
 
+  const shutdownTimeout = setTimeout(() => {
+    logger.error("Graceful shutdown timed out. Forcing process exit.");
+    process.exit(1);
+  }, 10000);
+
   server.close(async () => {
+    clearTimeout(shutdownTimeout);
+
     try {
       await prisma.$disconnect();
+      console.log("Prisma disconnected.");
       logger.info("Prisma disconnected.");
 
       process.exit(0);
     } catch (error) {
+      console.error("Prisma disconnect failed:", error);
       logger.error({ error }, "Prisma disconnect failed");
       process.exit(1);
     }

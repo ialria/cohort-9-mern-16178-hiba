@@ -41,20 +41,28 @@ async function sendPasswordResetEmail(toEmail, resetLink) {
         </div>
       `,
     });
-    const timeout = new Promise((_, reject) => {
-      setTimeout(() => {
-        reject(new Error("Password reset email request timed out"));
-      }, 10000);
-    });
-      const { data, error } = await Promise.race([
-      emailRequest,
-      timeout,
-    ]);
+  let timeoutId;
 
-    if (error) {
-      throw error;
-    }
-    return data;
+try {
+  const timeout = new Promise((_, reject) => {
+    timeoutId = setTimeout(() => {
+      reject(new Error("Password reset email request timed out"));
+    }, 10000);
+  });
+
+  const { data, error } = await Promise.race([
+    emailRequest,
+    timeout,
+  ]);
+
+  if (error) {
+    throw error;
+  }
+
+  return data;
+} finally {
+  clearTimeout(timeoutId);
+}
   } catch (error) {
      logger.error(
       {
