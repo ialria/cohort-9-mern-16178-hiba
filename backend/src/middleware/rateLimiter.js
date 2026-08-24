@@ -7,6 +7,7 @@ const authLimiter = (message)=>rateLimit({
   legacyHeaders: false,
   message: {
     message
+    
   },});
   const loginLimiter=authLimiter("Too many login attempts. Please try again later.")
   const forgotPasswordLimiter=authLimiter("Too many password reset attempts. Please try again later.")
