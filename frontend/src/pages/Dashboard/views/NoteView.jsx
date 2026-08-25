@@ -52,7 +52,7 @@ useEffect(() => {
     setErrorMessage("");
     editRevisionRef.current = 0;
   }
-}, [note?.id]);
+}, [note?.id, isNewNote]);
 
 // save the note when changes are made only
 const handleSave = async () => {
