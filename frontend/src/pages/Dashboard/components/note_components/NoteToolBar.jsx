@@ -1,6 +1,6 @@
 import Button from "./../../../../components/Button.jsx";
 
-function NoteToolBar({ onSave, saveStatus }) {
+function NoteToolBar({ onSave, saveStatus,onCancel }) {
   return (
     <div className="flex justify-between items-center border-b border-text/20 py-2 px-4 md:px-6">
       <p className="text-sm text-text-muted">
@@ -16,6 +16,12 @@ function NoteToolBar({ onSave, saveStatus }) {
       </p>
 
       <div className="flex gap-2">
+         <Button
+          onClick={onCancel}
+          className="bg-surface border border-text/20 text-text hover:bg-text/5"
+        >
+          Cancel
+        </Button>
         <Button
           onClick={onSave}
           disabled={saveStatus !== "unsaved" && saveStatus !== "error"}

@@ -113,14 +113,13 @@ const handleContentChange = (value) => {
     setSaveStatus("unsaved");
   }
 };
+
+const handleCancel = () => {
+  navigate(-1);
+};
   return (
     <main className="h-screen bg-background flex flex-col">
-      <NoteToolBar onSave={handleSave} saveStatus={saveStatus}/>
-      {errorMessage && (
-  <p className="px-6 py-2 text-sm text-error">
-    {errorMessage}
-  </p>
-)}
+      <NoteToolBar onSave={handleSave} onCancel={handleCancel} saveStatus={saveStatus}/>
       <section className="flex-1 overflow-y-auto">
       <article className=" py-8 px-6 md:px-16">
         <header>
