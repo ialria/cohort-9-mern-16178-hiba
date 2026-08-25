@@ -325,11 +325,19 @@ const deleteForever = async (req, res) => {
         message: "Couldn't find note",
       });
     }
-    await prisma.note.delete({
-      where: {
-        id: note.id,
-      },
-    });
+const result = await prisma.note.deleteMany({
+  where: {
+    id: note.id,
+    userId: req.userId,
+    isDeleted: true,
+  },
+});
+
+if (result.count === 0) {
+  return res.status(409).json({
+    message: "Note state changed. Please reload and try again.",
+  });
+}
     return res.status(200).json({
       message: "Note permanently deleted",
     });

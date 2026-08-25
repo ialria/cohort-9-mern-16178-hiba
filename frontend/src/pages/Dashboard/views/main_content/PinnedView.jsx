@@ -9,7 +9,7 @@ const pinnedNotes=notes.filter(note=>note.isPinned && !note.isDeleted);
     return (
      <section className={`grid grid-cols-1 gap-4 md:grid-cols-2  ${collapsed ? "md:gap-4" : "md:gap-6"} px-5 md:px-8`}>
             {pinnedNotes.length === 0 ? (
-                <p className="text-text-muted">No pinned Noted yet.</p>
+                <p className="text-text-muted">No pinned notes yet.</p>
             ) : (
                       pinnedNotes.map(note => (
             <NoteCard

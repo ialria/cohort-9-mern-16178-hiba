@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Eye, EyeOff, Lock, Check } from "../../icons/icons.jsx";
 import LeafletLogo from "../../icons/leaflet_logo.jsx";
 import Button from "../../components/Button.jsx";
@@ -8,6 +8,7 @@ import { useSearchParams, useNavigate } from "react-router-dom";
 import { apiFetch } from "../../config/api.js";
 
 function ResetPassword() {
+  const passwordCheckId = useRef(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -28,7 +29,11 @@ function ResetPassword() {
       newErrors.password = "Password must be at least 8 characters long";
     } else if (password.length > 64) {
       newErrors.password = "Password must be 64 characters or less.";
-    }
+    }else if (!passwordStrength || passwordStrength.score < 3) {
+  newErrors.password =
+    "Password is too weak. Please choose a strong or very strong password.";
+}
+
     if (confirmPassword.trim() === "") {
       newErrors.confirmPassword = "Please confirm your password";
     } else if (password !== confirmPassword) {
@@ -147,6 +152,8 @@ function ResetPassword() {
                   value={password}
                   onChange={async (e) => {
                     const value = e.target.value;
+         const currentCheckId = ++passwordCheckId.current;
+           
                     setPassword(value);
                     if (errors.password) {
                       setErrors((prev) => ({
@@ -158,13 +165,17 @@ function ResetPassword() {
                       try {
                         const checker = await zxcvbn();
                         const result = checker.check(value);
-                        setPasswordStrength(result);
+                         if (currentCheckId === passwordCheckId.current) {
+        setPasswordStrength(result);
+      }
                       } catch (error) {
                         console.error(
                           "Password strength checker error:",
                           error,
                         );
-                        setPasswordStrength(null);
+                         if (currentCheckId === passwordCheckId.current) {
+        setPasswordStrength(null);
+      }
                       }
                     } else {
                       setPasswordStrength(null);

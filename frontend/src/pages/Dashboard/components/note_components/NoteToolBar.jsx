@@ -19,7 +19,7 @@ function NoteToolBar({ onSave, saveStatus }) {
         <Button
           onClick={onSave}
           disabled={saveStatus !== "unsaved" && saveStatus !== "error"}
-          className="bg-primary text-surface"
+          className="bg-primary text-surface disabled:cursor-not-allowed disabled:opacity-50"
         >
           {saveStatus === "saved"
             ? "Saved note"

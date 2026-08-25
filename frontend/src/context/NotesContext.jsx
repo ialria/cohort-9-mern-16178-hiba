@@ -4,13 +4,17 @@ import JSZip from "jszip";
 const NotesContext = createContext();
 
 export function NotesProvider({ children }) {
+    const [notes, setNotes] = useState([]);
+  const [notesError, setNotesError] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [exportStatus, setExportStatus] = useState("idle");
+const [exportProgress, setExportProgress] = useState(0);
+
 useEffect(() => {
   getAllNotes().catch((error) => {
     console.error("Failed to fetch notes:", error);
   });
 }, []);
-const [exportStatus, setExportStatus] = useState("idle");
-const [exportProgress, setExportProgress] = useState(0);
 
   async function createNote(title, noteContent) {
     try{
@@ -121,8 +125,8 @@ async function getNoteById(id) {
       prev.map((note) => (note.id === id ? data.note : note)),
     );
   } catch (error) {
-    setNotesError(error.message || "Failed to restore note");
-  throw error;
+    console.error("Failed to restore note:", error);
+       setNotesError(error.message || "Failed to restore note");
   }
   }
 
@@ -137,8 +141,8 @@ async function getNoteById(id) {
     }
     setNotes((prev) => prev.filter((note) => note.id !== id));
   } catch (error) {
-      setNotesError(error.message || "Failed to permanently delete note");
-  throw error;
+    console.error("Failed to permanently delete note:", error);
+       setNotesError(error.message || "Failed to delete note");
   }}
   async function moveToTrash(id) {
     try {
@@ -154,8 +158,8 @@ async function getNoteById(id) {
         prev.map((note) => (note.id === id ? data.note : note)),
       );
     } catch (error) {
-      setNotesError(error.message || "Failed to move note to trash");
-  throw error;
+      console.error("Failed to move note to trash:", error);
+         setNotesError(error.message || "Failed to move note to trash");
     }
   }
   async function handlePin(id) {
@@ -174,8 +178,8 @@ async function getNoteById(id) {
         prev.map((note) => (note.id === id ? data.note : note)),
       );
     } catch (error) {
-      setNotesError(error.message || "Failed to update favourite");
-  throw error;
+      console.error("Failed to update pin:", error);
+         setNotesError(error.message || "Failed to update note to pin");
     }
   }
   async function importNotes(importedNotes) {
@@ -190,6 +194,7 @@ async function getNoteById(id) {
     return newNotes;
   } catch (error) {
     console.error("Failed to import notes:", error);
+       
     throw error;
   }
 }
@@ -243,7 +248,8 @@ async function exportAllNotes() {
     setExportProgress(0);
 
     const zip = new JSZip();
-
+    // can imoport files even if they have same title (different content)
+const usedNames = new Set();
     for (let i = 0; i < activeNotes.length; i++) {
       const note = activeNotes[i];
 
@@ -261,9 +267,21 @@ async function exportAllNotes() {
         .replace(/&gt;/gi, ">")
         .trim();
 
-      const fileContent = `${title}\n\n${plainTextContent}`;
+     const safeTitle = title
+  .replace(/[\\/:*?"<>|]/g, "_")
+  .slice(0, 100);
 
-      zip.file(`${title}.txt`, fileContent);
+let fileName = `${safeTitle}.txt`;
+let suffix = 1;
+
+while (usedNames.has(fileName)) {
+  fileName = `${safeTitle} (${suffix}).txt`;
+  suffix++;
+}
+
+usedNames.add(fileName);
+
+zip.file(fileName, fileContent);
 
       setExportProgress(i + 1);
     }
@@ -301,9 +319,7 @@ async function exportAllNotes() {
     }, 3000);
   }
 }
-  const [notes, setNotes] = useState([]);
-  const [notesError, setNotesError] = useState(null);
-  const [searchTerm, setSearchTerm] = useState("");
+
   return (
     <NotesContext.Provider
       value={{

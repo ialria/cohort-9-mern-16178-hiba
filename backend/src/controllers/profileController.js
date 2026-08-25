@@ -35,10 +35,16 @@ logger.error({error},"Error fetching profile");
 const updateProfile=async (req, res)=>{
     try{
 const {username, bio, avatarUrl}=req.body;
-if(!username || !username.trim()){
-    return res.status(400).json({
-        message:"Username is required!"
-    });
+if (typeof username !== "string" || !username.trim()) {
+  return res.status(400).json({
+    message: "Username is required!",
+  });
+}
+
+if (bio !== undefined && bio !== null && typeof bio !== "string") {
+  return res.status(400).json({
+    message: "Bio must be a string.",
+  });
 }
  if (avatarUrl !== undefined && avatarUrl !== null) {
       if (

@@ -18,7 +18,7 @@ export function ModalProvider({ children }) {
   }
 
   function closeDeleteModal() {
-    setShowDeleteModal(false);
+    setNoteToDelete(false);
   }
 
   return (

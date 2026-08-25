@@ -8,7 +8,7 @@ import PasswordStrength from "../../components/PasswordStrength.jsx";
 import { apiFetch } from "../../config/api.js";
 function SignupForm() {
   const redirectTimer = useRef(null);
-
+const passwordCheckId = useRef(0);
   useEffect(() => {
     return () => {
       if (redirectTimer.current) {
@@ -47,6 +47,10 @@ function SignupForm() {
     } else if (password.length > 64) {
       newErrors.password = "Password must be 64 characters or less.";
     }
+    else if (!passwordStrength || passwordStrength.score < 3) {
+  newErrors.password =
+    "Password is too weak. Please choose a strong or very strong password.";
+}
 
     if (confirmPassword.trim() === "") {
       newErrors.confirmPassword = "Please confirm your password";
@@ -219,7 +223,7 @@ function SignupForm() {
               value={password}
               onChange={async (e) => {
                 const value = e.target.value;
-
+ const currentCheckId = ++passwordCheckId.current;
                 setPassword(value);
 
                 if (errors.password) {
@@ -233,10 +237,18 @@ function SignupForm() {
                   try {
                     const checker = await zxcvbn();
                     const result = checker.check(value);
-                    setPasswordStrength(result);
+
+                   
+      if (currentCheckId === passwordCheckId.current) {
+        setPasswordStrength(result);
+      }
                   } catch (error) {
                     console.error("Password strength checker error:", error);
-                    setPasswordStrength(null);
+
+                   
+      if (currentCheckId === passwordCheckId.current) {
+        setPasswordStrength(null);
+      }
                   }
                 } else {
                   setPasswordStrength(null);

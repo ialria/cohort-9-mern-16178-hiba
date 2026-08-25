@@ -49,7 +49,7 @@ useEffect(() => {
     setErrorMessage("");
     editRevisionRef.current = 0;
   }
-}, [noteId]);
+}, [note?.id]);
 
 const handleSave = async () => {
    if (saveStatus !== "unsaved" && saveStatus !== "error") {
@@ -58,7 +58,6 @@ const handleSave = async () => {
 
   const plainTextContent = content.replace(/<[^>]*>/g, "").trim();
   if (!plainTextContent) {
-      setErrorMessage("Note content cannot be empty.");
       setSaveStatus("error");
     return;
   }

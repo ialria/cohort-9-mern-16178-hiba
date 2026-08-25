@@ -1,49 +1,21 @@
 import { useRef, useState } from "react";
 import {
-  Download,
   Upload,
   ArrowDownUp,
   Check,
 } from "../../../../icons/icons";
 
-function NoteActionBar({ notes, onSort, onImport }) {
+function NoteActionBar({sortBy, sortOrder, onSort, onImport }) {
   const fileInput = useRef(null);
 
   const [showSortMenu, setShowSortMenu] = useState(false);
-  const [sortBy, setSortBy] = useState("date");
-  const [sortOrder, setSortOrder] = useState("descending");
+function handleSortBy(newSortBy) {
+  onSort(newSortBy, sortOrder);
+}
 
-  function handleSortBy(newSortBy) {
-    setSortBy(newSortBy);
-    onSort(newSortBy, sortOrder);
-  }
-
-  function handleSortOrder(newSortOrder) {
-    setSortOrder(newSortOrder);
-    onSort(sortBy, newSortOrder);
-  }
-
-  function handleExport() {
-    const notesToExport = notes.map((note) => ({
-      title: note.title,
-      content: note.content,
-    }));
-
-    const fileData = JSON.stringify(notesToExport, null, 2);
-
-    const file = new Blob([fileData], {
-      type: "application/json",
-    });
-
-    const fileUrl = URL.createObjectURL(file);
-
-    const link = document.createElement("a");
-    link.href = fileUrl;
-    link.download = "my-notes.json";
-    link.click();
-
-    URL.revokeObjectURL(fileUrl);
-  }
+function handleSortOrder(newSortOrder) {
+  onSort(sortBy, newSortOrder);
+}
 
  function handleImport(event) {
   const files = Array.from(event.target.files);
@@ -55,10 +27,20 @@ function NoteActionBar({ notes, onSort, onImport }) {
   const importedNotes = [];
   let filesRead = 0;
 
+   const processComplete = () => {
+    filesRead++;
+
+    if (filesRead === files.length) {
+      onImport(importedNotes).catch((error) => {
+        console.error("Failed to import notes:", error);
+        alert("Failed to import notes. Please try again.");
+      });
+    }
+  };
   files.forEach((file) => {
     const reader = new FileReader();
 
-    reader.onload = () => {
+    reader.onload =() => {
       try {
         const fileContent = reader.result;
 
@@ -69,12 +51,13 @@ function NoteActionBar({ notes, onSort, onImport }) {
             !Array.isArray(notesFromFile) ||
             !notesFromFile.every(
               (note) =>
-                typeof note === "object" &&
+                typeof note === "object" && note!==null &&
                 typeof note.title === "string" &&
                 typeof note.content === "string"
             )
           ) {
             alert(`Invalid notes file: ${file.name}`);
+              processComplete();
             return;
           }
 
@@ -86,17 +69,19 @@ function NoteActionBar({ notes, onSort, onImport }) {
           });
         } else {
           alert(`Unsupported file: ${file.name}`);
+            processComplete();
           return;
         }
-
-        filesRead++;
-
-        if (filesRead === files.length) {
-          onImport(importedNotes);
-        }
-      } catch (error) {
+          processComplete();
+    }catch (error) {
         alert(`Could not read ${file.name}.`);
+        processComplete();
       }
+    };
+
+ reader.onerror = () => {
+      alert(`Could not read ${file.name}.`);
+      processComplete();
     };
 
     reader.readAsText(file);
@@ -104,6 +89,7 @@ function NoteActionBar({ notes, onSort, onImport }) {
 
   event.target.value = "";
 }
+     
 
   return (
     <div className="flex items-center justify-end gap-2 px-5 md:px-8 mb-5">
@@ -193,15 +179,6 @@ function NoteActionBar({ notes, onSort, onImport }) {
           </div>
         )}
       </div>
-
-      {/* <button
-        type="button"
-        onClick={handleExport}
-        className="flex items-center gap-2 rounded-xl border border-border bg-surface px-4 py-2 text-sm text-text transition hover:bg-primary-light"
-      >
-        <Download size={17} strokeWidth={1.8} />
-        Export
-      </button> */}
 
       <button
         type="button"

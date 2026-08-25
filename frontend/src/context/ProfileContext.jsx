@@ -39,9 +39,9 @@ export function ProfileProvider({ children }) {
 
     setProfile(data);
     return data;
-    }catch (error){
-      throw error;
-    }
+  }catch (error){
+    throw new Error(error.message || "Error! Failed to update user Profile.")
+  }
   };
 
 const getInitials = (username = "") => {

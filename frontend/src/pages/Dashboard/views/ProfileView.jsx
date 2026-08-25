@@ -66,6 +66,8 @@ function ProfileView() {
 
   const { theme, toggleTheme , accentColor, setAccentColor} = useTheme();
   const notesNum = notes.filter((note) => !note.isDeleted).length;
+  const exportPercentage =
+  notesNum > 0 ? Math.round((exportProgress / notesNum) * 100) : 0;
   const pinnedNum = notes.filter(
     (note) => note.isPinned && !note.isDeleted,
   ).length;
@@ -358,7 +360,7 @@ const recentNotes = [...activeNotes]
 
         <span className="text-xs text-text-muted">
           {exportStatus === "exporting"
-            ? `Exporting ${exportProgress}%`
+            ? `Exporting ${exportPercentage}%`
             : exportStatus === "completed"
               ? "All notes exported successfully"
               : "Download your notes as text files"}
@@ -367,7 +369,7 @@ const recentNotes = [...activeNotes]
 
       {exportStatus === "exporting" ? (
         <span className="text-xs text-text-muted">
-          {exportProgress}%
+          {exportPercentage}%
         </span>
       ) : (
         <ChevronRight
@@ -392,7 +394,7 @@ const recentNotes = [...activeNotes]
       <div
         className="h-full bg-primary rounded-full transition-all duration-300"
         style={{
-          width: `${(exportProgress / notesNum) * 100}%`,
+          width: `${exportPercentage}%`,
         }}
       />
     </div>

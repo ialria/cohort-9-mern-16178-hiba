@@ -12,8 +12,8 @@ function DeleteNoteModal({
   }
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
-      <h2 className="text-xl font-semibold text-text">
+    <Modal isOpen={isOpen} onClose={onClose} titleId="delete-note-title">
+      <h2 id="delete-note-title" className="text-xl font-semibold text-text">
         Delete note permanently?
       </h2>
 

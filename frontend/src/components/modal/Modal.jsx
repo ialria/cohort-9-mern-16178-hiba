@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-function Modal({ isOpen, onClose, children }) {
+function Modal({ isOpen, onClose, children, titleId }) {
 
   const dialogReference = useRef(null);
   const previousFocusElement = useRef(null);
@@ -77,7 +77,7 @@ useEffect(() => {
         tabIndex={-1}
         role="dialog"
         aria-modal="true"
-     aria-labelledby="logout-title"
+     aria-labelledby={titleId}
         className="relative bg-surface rounded-3xl shadow-xl w-[90%] max-w-md p-8"
       >
         {children}
