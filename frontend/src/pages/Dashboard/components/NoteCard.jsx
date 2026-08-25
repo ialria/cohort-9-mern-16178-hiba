@@ -21,7 +21,7 @@ function getPreview(content) {
 }
 
   return (
-    <article onMouseLeave={()=>setShowMenu(false)} className={`group flex w-full flex-col border ${compact ? "": "h-40 md:h-52"} border-border rounded-3xl px-6 py-4 md:py-8 bg-surface hover:border-primary-light hover:shadow-lg hover:translate-y-1 duration-150 relative`}>
+    <article onMouseLeave={()=>setShowMenu(false)} className={`group flex w-full flex-col border ${compact ? "": "h-40 md:h-52"}  ${showMenu ? "z-50" : "z-0"} border-border rounded-3xl px-6 py-4 md:py-8 bg-surface hover:border-primary-light hover:shadow-lg hover:translate-y-1 duration-150 relative`}>
 
     <Link to={`/notes/${note.id}`} className="block h-full">
   <div className="flex h-full flex-col ">
@@ -38,11 +38,11 @@ function getPreview(content) {
 
    <div className="mt-1 md:mt-4 flex justify-between items-center  gap-3 md:gap-8">
      <p className={` text-text-muted text-sm ${previewLines===1? "line-clamp-1": "line-clamp-3"}`}>{getPreview(note.content)}</p>
-{/* {showPin && note.isPinned && ( <Pin size={18} strokeWidth={2} className="shrink-0 text-pin fill-pin cursor-pointer"/>)} */}
+{showPin && note.isPinned && ( <Pin size={18} strokeWidth={2} className="shrink-0 text-pin fill-pin cursor-pointer"/>)}
    </div>
   </div>
  
-  {!showPin && 
+ 
     <div className="mt-auto flex items-center justify-between text-text-disabled">
       {showDate && (
   <p className="text-xs "> {note.editedAt
@@ -50,10 +50,11 @@ function getPreview(content) {
     : `Created ${formatDate(note.createdAt)}`}</p>
 
       )}
-   
-   {note.isPinned && (<button type="button"> <Pin size={18} strokeWidth={1.5} className="text-pin fill-pin cursor-pointer"/></button>)}
+
+   {!showPin && note.isPinned && (<button type="button"> <Pin size={18} strokeWidth={1.5} className="text-pin fill-pin cursor-pointer"/></button>)}
+
     </div>
-    }
+    
     </div>
     </Link>
  <button type="button" onClick={(e)=>{
@@ -61,7 +62,7 @@ function getPreview(content) {
   e.stopPropagation();
   setShowMenu((prev)=>!prev)}} className="p-1 hidden group-hover:block transition-opacity duration-150 bg-primary-lighter rounded-lg hover:bg-text-muted/14 absolute right-5"><Ellipsis className="text-text-muted " size={18} strokeWidth={2}/></button>
  {showMenu && <MenuComponent onPin={onPin} onDelete={onDelete} isPinned={note.isPinned} onExport={onExport}/>}
-      
+ 
    
 
       </article> 

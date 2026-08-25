@@ -317,10 +317,51 @@ if (
     }
 };
 
+
+const getCurrentUser = async (req, res) => {
+  try {
+    const user = await prisma.user.findUnique({
+      where: {
+        id: req.userId,
+      },
+      select: {
+        id: true,
+        username: true,
+        email: true,
+      },
+    });
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
+
+    return res.status(200).json({
+      user,
+    });
+  } catch (error) {
+    logger.error(
+      {
+        error: {
+          name: error.name,
+          message: error.message,
+        },
+      },
+      "Failed to fetch current user"
+    );
+
+    return res.status(500).json({
+      message: "Something went wrong",
+    });
+  }
+};
+
 module.exports = {
   signup,
   login,
   logout,
   forgotPassword,
-  resetPassword
+  resetPassword,
+  getCurrentUser
 };

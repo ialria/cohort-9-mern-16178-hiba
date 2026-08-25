@@ -4,9 +4,10 @@ import Button from "../Button";
 import { LogOut } from "../../icons/icons";
 import { useModal } from "../../context/ModalContext";
 import { apiFetch } from "../../config/api";
+import { useAuth } from "../../context/AuthContext";
 function LogoutModal() {
   const navigate = useNavigate();
-
+const { logout } = useAuth();
   const {
     showLogoutModal,
     closeLogoutModal,
@@ -22,8 +23,9 @@ if(!response.ok){
 
   );
 }
+logout();
 closeLogoutModal();
-navigate("/login")
+navigate("/login",{replace:true});
     }catch(error){
 
  console.error("Logout error:", error);

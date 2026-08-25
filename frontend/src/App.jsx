@@ -13,6 +13,7 @@ import TrashView from "./pages/Dashboard/views/main_content/TrashView.jsx";
 import RecentView from "./pages/Dashboard/views/main_content/RecentView.jsx";
 import EditProfile from "./pages/Dashboard/views/EditProfile.jsx";
 import ResetPassword from "./pages/Auth/ResetPassword.jsx";
+import ProtectedRoute from "./components/ProtectedRoute.jsx";
 function App() {
   return (
     <Routes>
@@ -36,8 +37,7 @@ function App() {
       />
       <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/forgot_password" element={<ForgotPassword />} />
-      {/* <Route path="/termsOfService" element={<TermsOfService />} />
-      <Route path="/privacyPolicy" element={<PrivacyPolicy />} /> */}
+  <Route element={<ProtectedRoute />}> 
       <Route element={<AppLayout />}>
         <Route path="/dashboard" element={<Dashboard />}>
           <Route index element={<AllNotesView />} />
@@ -48,6 +48,7 @@ function App() {
         <Route path="/profile" element={<ProfileView />} />
         <Route path="/notes/:noteId" element={<NoteView />} />
         <Route path="/edit_profile" element={<EditProfile />} />
+      </Route>
       </Route>
     </Routes>
   );

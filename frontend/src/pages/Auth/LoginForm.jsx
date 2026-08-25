@@ -2,7 +2,9 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {Eye, EyeOff} from "../../icons/icons.jsx";
 import {apiFetch} from "../../config/api.js";
+import { useAuth } from "../../context/AuthContext.jsx";
 function LoginForm() {
+  const { setUser } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -51,11 +53,10 @@ if (!response.ok) {
   setLoginError(data.message || "Invalid email or password.");
   return;
 }
-
+setUser(data.user);
   navigate("/dashboard");
 
   }catch (error){
-    // console.log(error);
         setLoginError(
       "Something went wrong. Please try again."
     );
@@ -63,8 +64,6 @@ if (!response.ok) {
    setIsSubmitting(false);
   }
 
-
-    
   }
 
   return (

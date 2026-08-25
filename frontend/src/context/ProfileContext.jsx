@@ -5,11 +5,14 @@ const ProfileContext = createContext();
 export function ProfileProvider({ children }) {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [profileError, setProfileError] = useState(null);
   useEffect(() => {
-    getProfile();
+    getProfile().catch(()=>{});
   }, []);
 
   const getProfile = async () => {
+    setLoading(true);
+  setProfileError(null);
     try {
       const response = await apiFetch("/api/profile");
 
@@ -21,6 +24,10 @@ export function ProfileProvider({ children }) {
       setProfile(data);
     } catch (error) {
       console.error("Failed to fetch profile:", error);
+       setProfile(null);
+    setProfileError(
+      error.message || "Oops! Something went wrong. Please try again."
+    );
     } finally {
       setLoading(false);
     }
@@ -34,7 +41,7 @@ export function ProfileProvider({ children }) {
 
     const data = await response.json();
     if (!response.ok) {
-      throw new Error(data.message || "Failed to update profile");
+      throw new Error(data.message || "Error! Failed to update profile");
     }
 
     setProfile(data);
@@ -62,7 +69,8 @@ const getInitials = (username = "") => {
         loading,
         getProfile,
         updateProfile,
-        getInitials
+        getInitials,
+        profileError
       }}
     >
       {children}

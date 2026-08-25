@@ -24,6 +24,9 @@ import { useModal } from "../../../context/ModalContext.jsx";
 import { useProfile } from "../../../context/ProfileContext.jsx";
 import formatDate from "../../../utils/formateDate.js";
 import { useTheme } from "../../../context/ThemeContext.jsx";
+import Loading from "../../../components/Loading.jsx";
+import ErrorPage from "../../ErrorPage.jsx";
+
 function Card({ children, className = "" }) {
   return (
     <div
@@ -62,7 +65,7 @@ function ProfileView() {
   const { openLogoutModal } = useModal();
   const { collapsed } = useSidebar();
   const { notes , exportAllNotes, exportStatus, exportProgress} = useNotes();
-  const { profile, loading,getInitials } = useProfile();
+  const { profile, loading,getInitials,getProfile, profileError } = useProfile();
 
   const { theme, toggleTheme , accentColor, setAccentColor} = useTheme();
   const notesNum = notes.filter((note) => !note.isDeleted).length;
@@ -80,6 +83,21 @@ const recentNotes = [...activeNotes]
       new Date(a.updatedAt || a.createdAt),
   )
   .slice(0, 3);
+
+if (loading) {
+  return <Loading />;
+}
+
+if (profileError) {
+  return (
+    <ErrorPage
+      message={profileError}
+      onRetry={getProfile}
+    />
+  );
+}
+
+
   return (
     <DashboardLayout>
       <main className="px-5 md:px-8 flex flex-col gap-4 pb-8">
