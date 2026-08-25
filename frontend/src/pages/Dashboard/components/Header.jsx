@@ -1,16 +1,15 @@
 import { Search, Menu } from "./../../../icons/icons.jsx";
 import { useState } from "react";
+import { useNotes } from "../../../context/NotesContext.jsx";
 import UserMenu from "./UserMenu.jsx";
 import { sidebarItems } from "../data/sidebarItems.js";
 import { useLocation } from "react-router-dom";
 import { useSidebar } from "../../../context/SidebarContext.jsx";
+import NotesSearchResults from "./NotesSearchResults.jsx";
 function Header() {
   const location=useLocation();
-  // console.log(location);
-  // console.log(location.pathname)
   const [isOpen, setIsOpen] = useState(false);
-  // const currentItem = sidebarItems.find((item) => item.path === location.pathname);
-
+const { searchTerm, setSearchTerm } = useNotes();
   const currentItem =
   sidebarItems.find((item) => item.path === location.pathname) ??
   (location.pathname.startsWith("/notes/")
@@ -48,6 +47,9 @@ focus-visible:ring-primary hover:bg-primary-light p-3 transition-all duration-15
         <div className="flex gap-4 items-center">
           <div className={`relative ${showSearch ? "block" : "hidden"}`}>
             <input
+             type="text"
+            value={searchTerm}
+   onChange={(event) => setSearchTerm(event.target.value)}
               placeholder="Search notes"
               aria-label="Search notes"
               className="w-full md:w-96 border border-border h-10 md:h-11 pl-4 pr-10 bg-surface rounded-full"
@@ -59,6 +61,8 @@ focus-visible:ring-primary hover:bg-primary-light p-3 transition-all duration-15
             >
               <Search />
             </button>
+  <NotesSearchResults />
+
           </div>
           <div className="relative">
             <button

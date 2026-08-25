@@ -6,8 +6,10 @@ import Toast from "../../components/Toast.jsx";
 import zxcvbn from "../../utils/passwordStrength.js";
 import PasswordStrength from "../../components/PasswordStrength.jsx";
 import { apiFetch } from "../../config/api.js";
+
 function SignupForm() {
   const redirectTimer = useRef(null);
+
   useEffect(() => {
     return () => {
       if (redirectTimer.current) {
@@ -26,8 +28,10 @@ function SignupForm() {
   const [password, setPassword] = useState("");
   const [passwordStrength, setPasswordStrength] = useState(null);
   const [confirmPassword, setConfirmPassword] = useState("");
+
   const navigate = useNavigate();
-  // const [acceptedTerms,setAcceptedTerms]=useState(false); done maybe after backend
+
+  // const [acceptedTerms, setAcceptedTerms] = useState(false);
 
   function validateForm() {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -38,6 +42,7 @@ function SignupForm() {
     } else if (!emailRegex.test(email)) {
       newErrors.email = "Please enter a valid email";
     }
+
     if (password.trim() === "") {
       newErrors.password = "Please enter your password.";
     } else if (password.length < 8) {
@@ -45,33 +50,41 @@ function SignupForm() {
     } else if (password.length > 64) {
       newErrors.password = "Password must be 64 characters or less.";
     }
+
     if (confirmPassword.trim() === "") {
       newErrors.confirmPassword = "Please confirm your password";
     } else if (password !== confirmPassword) {
       newErrors.confirmPassword = "Passwords do not match.";
     }
+
     if (username.trim() === "") {
       newErrors.username = "Please enter your username.";
     }
-    // if(!acceptedTerms)
-    // {
-    //     newErrors.terms="Please accept the Terms of Service.";
+
+    // if (!acceptedTerms) {
+    //   newErrors.terms = "Please accept the Terms of Service.";
     // }
+
     return newErrors;
   }
 
   async function handleSubmit(e) {
     e.preventDefault();
+
     if (isSubmitting) {
       return;
     }
+
     const foundErrors = validateForm();
+
     if (Object.keys(foundErrors).length > 0) {
       setErrors(foundErrors);
       return;
     }
+
     setErrors({});
     setIsSubmitting(true);
+
     try {
       const response = await apiFetch("/api/auth/signup", {
         method: "POST",
@@ -83,8 +96,10 @@ function SignupForm() {
       });
 
       const data = await response.json();
+
       if (response.ok) {
         setShowToast(true);
+
         confetti({
           particleCount: 35,
           spread: 45,
@@ -97,40 +112,44 @@ function SignupForm() {
           },
           scalar: 0.6,
         });
+          setIsSubmitting(false);
 
         redirectTimer.current = setTimeout(() => {
           navigate("/login");
         }, 1500);
-      }
-      if (!response.ok) {
-        if (response.status === 409) {
-          setErrors({
-            email: data.message,
-          });
-        } else {
-          setErrors({
-            form: data.message || "Something went wrong. Please try again.",
-          });
-        }
+
         return;
       }
+
+      if (response.status === 409) {
+        setErrors({
+          email: data.message,
+        });
+      } else {
+        setErrors({
+          form: data.message || "Something went wrong. Please try again.",
+        });
+      }
+        
     } catch (error) {
       setErrors({
         form: "Something went wrong. Please try again.",
       });
-    } finally {
       setIsSubmitting(false);
-    }
+    
   }
+}
 
   return (
-    <div className=" w-full md:w-1/2 bg-background min-h-screen py-10 px-6 md:px-10 lg:py-24 lg:px-24 xl:px-36">
+    <div className="w-full md:w-1/2 bg-background min-h-screen py-10 px-6 md:px-10 lg:py-24 lg:px-24 xl:px-36">
       <div className="mb-4">
         <p className="text-2xl font-bold text-text">Create your account</p>
+
         <p className="text-text-muted text-sm">
           Start organizing your thoughts today.
         </p>
       </div>
+
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
           <label htmlFor="username" className="text-text-muted text-xs">
@@ -153,7 +172,9 @@ function SignupForm() {
             type="text"
             placeholder="Your username"
             aria-invalid={!!errors.username}
-            aria-describedby={errors.username ? "username-error" : undefined}
+            aria-describedby={
+              errors.username ? "username-error" : undefined
+            }
             className={`w-full border rounded-lg px-3 py-2 bg-surface placeholder:text-text-muted ${
               errors.username ? "border-red-400" : "border-border"
             }`}
@@ -165,14 +186,17 @@ function SignupForm() {
             </p>
           )}
         </div>
+
         <div className="mb-4">
           <label htmlFor="email" className="text-text-muted text-xs">
             Email
           </label>
+
           <input
             value={email}
             onChange={(e) => {
               setEmail(e.target.value);
+
               if (errors.email) {
                 setErrors((prev) => ({
                   ...prev,
@@ -189,35 +213,46 @@ function SignupForm() {
               errors.email ? "border-red-400" : "border-border"
             }`}
           />
+
           {errors.email && (
             <p id="email-error" className="text-red-500 text-xs">
               {errors.email}
             </p>
           )}
         </div>
-        <div className="mb-4 ">
+
+        <div className="mb-4">
           <label htmlFor="password" className="text-text-muted text-xs">
             Password
           </label>
+
           <div className="relative">
             <input
               value={password}
               onChange={async (e) => {
                 const value = e.target.value;
+
                 setPassword(value);
+
                 if (errors.password) {
                   setErrors((prev) => ({
                     ...prev,
                     password: "",
                   }));
                 }
+
                 if (value.length > 0) {
                   try {
                     const checker = await zxcvbn();
                     const result = checker.check(value);
+
                     setPasswordStrength(result);
                   } catch (error) {
-                    console.error("Password strength checker error:", error);
+                    console.error(
+                      "Password strength checker error:",
+                      error
+                    );
+
                     setPasswordStrength(null);
                   }
                 } else {
@@ -228,11 +263,14 @@ function SignupForm() {
               type={showPassword ? "text" : "password"}
               placeholder="......."
               aria-invalid={!!errors.password}
-              aria-describedby={errors.password ? "password-error" : undefined}
+              aria-describedby={
+                errors.password ? "password-error" : undefined
+              }
               className={`w-full border rounded-lg px-3 py-2 pr-10 bg-surface placeholder:text-text-muted placeholder:text-3xl ${
                 errors.password ? "border-red-400" : "border-border"
               }`}
             />
+
             <button
               type="button"
               onClick={() => {
@@ -241,26 +279,33 @@ function SignupForm() {
               aria-label={showPassword ? "Hide password" : "Show password"}
               className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted cursor-pointer"
             >
-              {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}{" "}
+              {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
             </button>
           </div>
 
           <PasswordStrength passwordStrength={passwordStrength} />
+
           {errors.password && (
             <p id="password-error" className="text-red-500 text-xs">
               {errors.password}
             </p>
           )}
         </div>
+
         <div className="mb-2">
-          <label htmlFor="confirmPassword" className="text-text-muted text-xs">
+          <label
+            htmlFor="confirmPassword"
+            className="text-text-muted text-xs"
+          >
             Confirm Password
           </label>
+
           <div className="relative">
             <input
               value={confirmPassword}
               onChange={(e) => {
                 setConfirmPassword(e.target.value);
+
                 if (errors.confirmPassword) {
                   setErrors((prev) => ({
                     ...prev,
@@ -273,12 +318,17 @@ function SignupForm() {
               placeholder="......."
               aria-invalid={!!errors.confirmPassword}
               aria-describedby={
-                errors.confirmPassword ? "confirm-password-error" : undefined
+                errors.confirmPassword
+                  ? "confirm-password-error"
+                  : undefined
               }
-              className={`w-full border rounded-lg px-3 py-2 pr-10 bg-surface placeholder:text-text-muted placeholder:text-3xl  ${
-                errors.confirmPassword ? "border-red-400" : "border-border"
+              className={`w-full border rounded-lg px-3 py-2 pr-10 bg-surface placeholder:text-text-muted placeholder:text-3xl ${
+                errors.confirmPassword
+                  ? "border-red-400"
+                  : "border-border"
               }`}
             />
+
             <button
               type="button"
               onClick={() => {
@@ -295,54 +345,26 @@ function SignupForm() {
                 <EyeOff size={20} />
               ) : (
                 <Eye size={20} />
-              )}{" "}
+              )}
             </button>
           </div>
+
           {errors.confirmPassword && (
-            <p id="confirm-password-error" className="text-red-500 text-xs">
+            <p
+              id="confirm-password-error"
+              className="text-red-500 text-xs"
+            >
               {errors.confirmPassword}
             </p>
           )}
         </div>
-        {/* <div className="mb-4 flex items-center">
-          <input
-            type="checkbox"
-            checked={acceptedTerms}
-            onChange={(e)=>setAcceptedTerms(e.target.checked)}
-            id="terms"
-            className="mr-2  accent-[#2B2733] cursor-pointer"
-          />
-          <label htmlFor="terms" className="text-xs text-[#2B2733]">
-            I agree to the{" "}
-            <Link to="/termsOfService"
-           
-              className={`underline hover:no-underline ${
-    errors.terms ? "text-red-500" : "text-[#2B2733]"
-  }`}
-            >
-              {" "}
-              Terms of Service
-            </Link>{" "}
-            and{" "}
-            <Link
-              to="/privacyPolicy"
-              className={`text-[#362B4A] underline hover:no-underline ${
-    errors.terms ? "text-red-500" : "text-[#2B2733]"
-  }`}
-            >
-              Privacy Policy
-            </Link>
-            .
-          </label>
-          
-        </div>
-              {errors.terms && (
-  <p className="text-red-500 text-xs mb-4">
-    {errors.terms}
-  </p>
-)} */}
+
+        {/* Terms and Privacy Policy can be enabled later */}
+
         {errors.form && (
-          <p className="text-red-500 text-xs mb-2">{errors.form}</p>
+          <p className="text-red-500 text-xs mb-2">
+            {errors.form}
+          </p>
         )}
 
         <button
@@ -354,26 +376,15 @@ function SignupForm() {
         </button>
       </form>
 
-      {/* <div className="flex items-center gap-4 mb-3">
-        <div className="flex-1 h-px bg-gray-300"></div>
-        <span className="text-sm text-gray-500">OR</span>
-        <div className="flex-1 h-px bg-gray-300"></div>
-      </div>
-      <button className="w-full rounded-lg bg-primary-light py-3 px-3 text-[#7b7389] mb-2 text-sm cursor-pointer">
-        Continue with Google
-      </button>
-      <button className="w-full rounded-lg bg-primary-light py-3 px-3 text-[#7b7389] mb-4 text-sm cursor-pointer">
-        Continue with Github
-      </button> */}
-
       <p className="text-text-muted text-sm text-center">
         Already have an account?{" "}
         <Link to="/login" className="text-text hover:underline">
           Log in
         </Link>
       </p>
+
       {showToast && (
-        <Toast message={"Account has been created successfully!"} />
+        <Toast message="Account has been created successfully!" />
       )}
     </div>
   );

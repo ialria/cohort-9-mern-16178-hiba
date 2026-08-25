@@ -9,11 +9,19 @@ const { sendPasswordResetEmail } = require("../services/emailService");
 const signup = async (req, res) => {
   try {
     const { username, email, password } = req.body;
-    if (!username || !email || !password) {
-      return res.status(400).json({
-        message: "Username, email and password required",
-      });
-    }
+   if (
+  typeof username !== "string" ||
+  typeof email !== "string" ||
+  typeof password !== "string" ||
+  !username.trim() ||
+  !email.trim() ||
+  !password.trim()
+) {
+  return res.status(400).json({
+    message: "Username, email and password required",
+  });
+}
+
     if (password.length < 8) {
   return res.status(400).json({
     message: "Password must be at least 8 characters long",
@@ -111,6 +119,7 @@ const login = async (req, res) => {
 
     const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, {
       expiresIn: "1d",
+        algorithm: "HS256",
     });
     res.cookie("token", token, {
   httpOnly: true,
@@ -189,7 +198,19 @@ try{
 
    
 const resetLink =  `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}`;
- await sendPasswordResetEmail(user.email, resetLink);
+
+try {
+  await sendPasswordResetEmail(user.email, resetLink);
+} catch (error) {
+  await prisma.passwordresettoken.deleteMany({
+    where: {
+      userId: user.id,
+    },
+  });
+
+  throw error;
+}
+
  return res.status(200).json({
       message: "If an account exists with this email, a reset link has been sent.",
     });
@@ -212,12 +233,15 @@ const resetLink =  `${process.env.FRONTEND_URL}/reset-password?token=${resetToke
 const resetPassword=async (req, res)=>{
     try{
 const {token, password}=req.body;
-if(!token || !password){
-     return res.status(400).json({
-        message: "Token and password are required",
-      });
-
-
+if (
+  typeof token !== "string" ||
+  typeof password !== "string" ||
+  !token.trim() ||
+  !password.trim()
+) {
+  return res.status(400).json({
+    message: "Token and password are required",
+  });
 }
   if (password.length < 8) {
       return res.status(400).json({

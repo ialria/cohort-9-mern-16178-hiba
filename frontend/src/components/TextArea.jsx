@@ -1,10 +1,12 @@
 function TextArea({
-    placeholder,className="",rows=1,
+    placeholder,className="",rows=1,value, onChange,
 })
 {
 
     return (
 <textarea
+value={value}
+onChange={onChange}
             placeholder={placeholder}
             rows={rows}
             onInput={(e) => {
@@ -16,8 +18,6 @@ function TextArea({
     resize-none
     overflow-hidden
     bg-transparent
-    focus-visible:ring-2
-focus-visible:ring-primary
 focus-visible:outline-none
     align-tight
   ${className}
