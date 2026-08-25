@@ -1,5 +1,6 @@
 const express = require("express");
 const logger = require("./utilities/logger");
+const pinoHttp=require("pino-http");
 const cors=require("cors");
 const cookieParser = require("cookie-parser");
 const helmet = require("helmet");
@@ -7,6 +8,8 @@ const authRoutes = require("./routes/authRoute");
 const noteRoutes=require("./routes/noteRoute");
 const profileRoute = require("./routes/profileRoute");
 const app = express();
+
+app.use(pinoHttp({logger}));
 const trustedProxies = Number(process.env.TRUST_PROXY_HOPS || 0);
 
 if (!Number.isInteger(trustedProxies) || trustedProxies < 0) {

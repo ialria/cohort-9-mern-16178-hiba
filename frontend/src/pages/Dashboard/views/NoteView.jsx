@@ -5,6 +5,7 @@ import ReactQuill from "react-quill-new";
 import "quill/dist/quill.snow.css";
 import { useState, useEffect, useRef } from "react";
 import { useNotes } from "../../../context/NotesContext.jsx";
+import ErrorPage from "../../ErrorPage.jsx";
 
 function NoteView() {
   const { noteId } = useParams();
@@ -20,6 +21,7 @@ function NoteView() {
 }, []);
   const {notes,createNote, updateNote, getNoteById}=useNotes();
   const note = notes.find((note) => String(note.id) === noteId);
+  const isNewNote = noteId === "new";
  const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [saveStatus, setSaveStatus] = useState("idle");
@@ -49,7 +51,7 @@ useEffect(() => {
     setErrorMessage("");
     editRevisionRef.current = 0;
   }
-}, [note?.id]);
+}, [note?.id, isNewNote]);
 
 const handleSave = async () => {
    if (saveStatus !== "unsaved" && saveStatus !== "error") {
@@ -69,9 +71,11 @@ const handleSave = async () => {
 let savedNote;
 if(note){
   savedNote=await updateNote(note.id, title, content,note.updatedAt);
-}else{
-  savedNote=await createNote(title, content);
-   navigate(`/notes/${savedNote.id}`);
+}else if (isNewNote) {
+  savedNote = await createNote(title, content);
+  navigate(`/notes/${savedNote.id}`);
+} else {
+  return;
 }
     if (editRevisionRef.current === saveRevision) {
   setSaveStatus("saved");
@@ -117,6 +121,16 @@ const handleContentChange = (value) => {
 const handleCancel = () => {
   navigate(-1);
 };
+
+if (!note && !isNewNote) {
+  return (
+    <ErrorPage
+      title="Oops! Note not found"
+      message="We couldn't find it. It may have been deleted, or it's not one of your notes."
+      onRetry={() => navigate("/dashboard")}
+    />
+  );
+}
   return (
     <main className="h-screen bg-background flex flex-col">
       <NoteToolBar onSave={handleSave} onCancel={handleCancel} saveStatus={saveStatus}/>
