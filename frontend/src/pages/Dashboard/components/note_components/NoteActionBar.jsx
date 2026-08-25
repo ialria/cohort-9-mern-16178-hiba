@@ -1,6 +1,5 @@
 import { useRef, useState } from "react";
 import {
-  Download,
   Upload,
   ArrowDownUp,
   Check,

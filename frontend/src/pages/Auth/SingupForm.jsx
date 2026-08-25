@@ -8,7 +8,6 @@ import PasswordStrength from "../../components/PasswordStrength.jsx";
 import { apiFetch } from "../../config/api.js";
 function SignupForm() {
   const redirectTimer = useRef(null);
-
 const passwordCheckId = useRef(0);
   useEffect(() => {
     return () => {

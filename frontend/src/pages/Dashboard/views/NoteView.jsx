@@ -52,7 +52,7 @@ useEffect(() => {
     setErrorMessage("");
     editRevisionRef.current = 0;
   }
-}, [note?.id, isNewNote]);
+}, [note?.id]);
 
 // save the note when changes are made only
 const handleSave = async () => {
@@ -62,7 +62,7 @@ const handleSave = async () => {
 
   const plainTextContent = content.replace(/<[^>]*>/g, "").trim();
   if (!plainTextContent) {
-      setSaveStatus("validation-error");
+      setSaveStatus("error");
     return;
   }
   const saveRevision = editRevisionRef.current;

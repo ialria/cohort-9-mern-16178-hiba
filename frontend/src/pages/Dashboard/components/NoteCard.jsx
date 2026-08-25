@@ -38,7 +38,7 @@ function getPreview(content) {
 
    <div className="mt-1 md:mt-4 flex justify-between items-center  gap-3 md:gap-8">
      <p className={` text-text-muted text-sm ${previewLines===1? "line-clamp-1": "line-clamp-3"}`}>{getPreview(note.content)}</p>
-{showPin && note.isPinned && ( <Pin size={18} strokeWidth={2} className="shrink-0 text-pin fill-pin cursor-pointer"/>)}
+{/* {showPin && note.isPinned && ( <Pin size={18} strokeWidth={2} className="shrink-0 text-pin fill-pin cursor-pointer"/>)} */}
    </div>
   </div>
  
