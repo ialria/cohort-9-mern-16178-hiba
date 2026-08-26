@@ -62,7 +62,7 @@ const handleSave = async () => {
 
   const plainTextContent = content.replace(/<[^>]*>/g, "").trim();
   if (!plainTextContent) {
-      setSaveStatus("error");
+      setSaveStatus("validation-error");
     return;
   }
   const saveRevision = editRevisionRef.current;
@@ -137,7 +137,7 @@ function handleCancel() {
 
   navigate(-1);
 }
-// trash note cannot be accessed as in trash view - error page
+// trash note cannot be accessed as in trash view
 if (note?.isDeleted) {
   return (
     <ErrorPage
