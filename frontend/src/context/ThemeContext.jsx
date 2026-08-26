@@ -6,7 +6,7 @@ export function ThemeProvider({ children }) {
   });
   
   const [accentColor, setAccentColor] = useState(() => {
-    return localStorage.getItem("accentColor") || "purple";
+    return localStorage.getItem("accentColor") || "purple"; //store theme and then accentcolor too across all views 
   });
 
     useEffect(() => {

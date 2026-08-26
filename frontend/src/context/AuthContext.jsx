@@ -50,6 +50,7 @@ export function AuthProvider({ children }) {
 
   const updateUser = (userData) => {
   sessionRevision.current += 1;
+  setLoading(false);
   setUser(userData);
   setAuthError(null);
 };
@@ -60,6 +61,7 @@ export function AuthProvider({ children }) {
 
   const logout = () => {
       sessionRevision.current += 1;
+      setLoading(false);
     setUser(null);
       setAuthError(null);
   };

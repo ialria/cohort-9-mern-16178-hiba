@@ -25,7 +25,7 @@ function NoteView() {
  const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [saveStatus, setSaveStatus] = useState("idle");
-  const [errorMessage, setErrorMessage] = useState("");
+  // editor config - for rich text
   const modules = {
     toolbar: [
         ["bold", "italic", "underline", "strike"],
@@ -43,9 +43,8 @@ useEffect(() => {
     setTitle(note.title || "");
     setContent(note.content || "");
     setSaveStatus("saved");
-    setErrorMessage("");
-    editRevisionRef.current = 0;
-  } else {
+  } else if (isNewNote) {
+    // empty note
     setTitle("");
     setContent("");
     setSaveStatus("idle");
@@ -60,6 +59,7 @@ const handleSave = async () => {
     return;
   }
 
+  //this removes html tags 
   const plainTextContent = content.replace(/<[^>]*>/g, "").trim();
   if (!plainTextContent) {
       setSaveStatus("validation-error");
@@ -137,7 +137,7 @@ function handleCancel() {
 
   navigate(-1);
 }
-// trash note cannot be accessed as in trash view
+// trash note cannot be accessed as in trash view - error page
 if (note?.isDeleted) {
   return (
     <ErrorPage
@@ -171,8 +171,9 @@ if (!note && !isNewNote) {
 
         </header>
       </article>
-{/* <EditorToolButton /> */}
- <section className="px-10 md:px-22 mb-4">
+
+      {/* Rich text with all the above configurations done  */}
+ <section className="px-10 md:px-22">
   <div ref={editorRef}>           <ReactQuill  theme="snow" value={content} modules={modules} onChange={handleContentChange} placeholder="Start typing ..." className="mt-6 text-base
     text-text
     placeholder:text-text-muted" /> 
