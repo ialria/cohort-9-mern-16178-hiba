@@ -79,4 +79,5 @@ try {
 }
 module.exports = {
   sendPasswordResetEmail,
+  resend
 };

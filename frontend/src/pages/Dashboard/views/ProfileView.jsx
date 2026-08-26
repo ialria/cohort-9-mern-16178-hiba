@@ -365,7 +365,7 @@ if (profileError) {
   type="button"
   onClick={exportAllNotes}
   disabled={exportStatus === "exporting" || notesNum === 0}
-  className="w-full text-left disabled:opacity-50 disabled:cursor-not-allowed"
+  className="w-full text-left disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
 >
   <InnerElement
     icon={Download}
@@ -421,7 +421,7 @@ if (profileError) {
               type="button"
               aria-label="Sign out"
               onClick={openLogoutModal}
-              className="w-full text-left"
+              className="w-full text-left cursor-pointer"
             >
               <InnerElement
                 icon={LogOut}

@@ -4,7 +4,7 @@ const jwt = require("jsonwebtoken");
 const logger=require("../utilities/logger");
 const crypto = require("crypto");
 
-const { sendPasswordResetEmail } = require("../services/emailService");
+const emailService = require("../services/emailService");
 
 const signup = async (req, res) => {
   try {
@@ -217,7 +217,8 @@ try{
 const resetLink =  `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}`;
 
 try {
-  await sendPasswordResetEmail(user.email, resetLink);
+  await emailService.sendPasswordResetEmail(user.email, resetLink);
+
 } catch (error) {
   await prisma.passwordresettoken.deleteMany({
     where: {
