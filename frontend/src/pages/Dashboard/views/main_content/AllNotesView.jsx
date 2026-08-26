@@ -13,6 +13,7 @@ function AllNotesView() {
   const [sortBy, setSortBy] = useState("date");
   const [sortOrder, setSortOrder] = useState("descending");
 
+  // using this memo -avoid filtering unless we achange the notes list 
   const allNotes = useMemo(
     () => (notes || []).filter((note) => !note.isDeleted),
     [notes],
@@ -23,8 +24,9 @@ function AllNotesView() {
     setSortBy(newSortBy);
     setSortOrder(newSortOrder);
   }
+
   const sortedNotes = useMemo(() => {
-    const notesCopy = [...allNotes];
+    const notesCopy = [...allNotes];//copy -to avoid changing original notes
 
     notesCopy.sort((firstNote, secondNote) => {
       if(sortBy !=="pinned"){

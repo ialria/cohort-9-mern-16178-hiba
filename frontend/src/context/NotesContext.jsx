@@ -18,6 +18,7 @@ useEffect(() => {
 }, []);
 
 useEffect(() => {
+//prevents after cleanup then
   return () => {
     if (exportStatusTimer.current) {
       clearTimeout(exportStatusTimer.current);
@@ -82,6 +83,7 @@ async function updateNote(id, title, noteContent, updatedAt) {
   throw error;
 }
 
+    // other than updated ones everythign is unchanged
     setNotes((prev) =>
       prev.map((note) => (note.id === id ? data.note : note))
     );
@@ -234,6 +236,7 @@ function exportNote(note) {
     const title = note.title || "Untitled";
     const content = note.content || "";
 
+    // from the editor convert everythgni into plain text when exporting 
     const plainTextContent = content
       .replace(/<br\s*\/?>/gi, "\n")
       .replace(/<\/p>/gi, "\n")
@@ -250,7 +253,7 @@ function exportNote(note) {
     const file = new Blob([fileContent], {
       type: "text/plain",
     });
-
+//temp url - to download file then
     const fileUrl = URL.createObjectURL(file);
 
     const link = document.createElement("a");
@@ -261,6 +264,7 @@ function exportNote(note) {
     link.click();
     document.body.removeChild(link);
 
+    //revoke url after we have downloaded the file
     URL.revokeObjectURL(fileUrl);
   } catch (error) {
     console.error("Failed to export note:", error);

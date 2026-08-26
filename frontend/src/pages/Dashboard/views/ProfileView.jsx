@@ -70,12 +70,15 @@ function ProfileView() {
   const { theme, toggleTheme , accentColor, setAccentColor} = useTheme();
   const notesNum = notes.filter((note) => !note.isDeleted).length;
   const exportPercentage =
-  notesNum > 0 ? Math.round((exportProgress / notesNum) * 100) : 0;
+  notesNum > 0 ? Math.round((exportProgress / notesNum) * 100) : 0; //if notes are zero then avoiding division -might be undefined then
+
   const pinnedNum = notes.filter(
     (note) => note.isPinned && !note.isDeleted,
   ).length;
   const deletedNum = notes.filter((note) => note.isDeleted).length;
   const activeNotes = notes.filter((note) => !note.isDeleted);
+
+  // sorting on latest update including create and then updated 
 const recentNotes = [...activeNotes]
   .sort(
     (a, b) =>

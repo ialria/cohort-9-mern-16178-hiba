@@ -22,7 +22,7 @@ function TrashView() {
       return;
     }
     try{
-await deleteForever(noteToDelete.id);
+await deleteForever(noteToDelete.id); //removes from database
     }finally{
   closeDeleteModal();
     }

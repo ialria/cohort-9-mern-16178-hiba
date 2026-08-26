@@ -6,7 +6,7 @@ const user=await prisma.user.findUnique({
     where:{
         id:req.userId,
     },
-     select: {
+     select: { //exclude password and other sensitive data
         id: true,
         username: true,
         email: true,
@@ -41,12 +41,14 @@ if (typeof username !== "string" || !username.trim()) {
   });
 }
 
+//bio optional -but if exists then must be text
 if (bio !== undefined && bio !== null && typeof bio !== "string") {
   return res.status(400).json({
     message: "Bio must be a string.",
   });
 }
  if (avatarUrl !== undefined && avatarUrl !== null) {
+  //frontned sends image as base64
       if (
         typeof avatarUrl !== "string" ||
         !/^data:image\/(jpeg|png);base64,/.test(avatarUrl)
@@ -56,14 +58,14 @@ if (bio !== undefined && bio !== null && typeof bio !== "string") {
         });
       }
 
-      const base64Data = avatarUrl.split(",")[1];
+      const base64Data = avatarUrl.split(",")[1]; //removing prefix -only base64 present
 
       if (!base64Data) {
         return res.status(400).json({
           message: "Invalid image data.",
         });
       }
-
+// base64 -> bytes (2mb image)
       const imageSize = Buffer.from(base64Data, "base64").length;
 
       if (imageSize > 2 * 1024 * 1024) {

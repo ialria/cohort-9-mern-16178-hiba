@@ -21,7 +21,7 @@ function NoteView() {
 }, []);
   const {notes,createNote, updateNote, getNoteById}=useNotes();
   const note = notes.find((note) => String(note.id) === noteId);
-  const isNewNote = noteId === "new";
+  const isNewNote = noteId === "new";  
  const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [saveStatus, setSaveStatus] = useState("idle");
@@ -39,6 +39,7 @@ function NoteView() {
 };
 useEffect(() => {
   if (note) {
+// if the note already exists - show its data then
     setTitle(note.title || "");
     setContent(note.content || "");
     setSaveStatus("saved");
@@ -70,10 +71,12 @@ const handleSave = async () => {
     setSaveStatus("saving");
 
 let savedNote;
+
 if(note){
-  savedNote=await updateNote(note.id, title, content,note.updatedAt);
+  savedNote=await updateNote(note.id, title, content,note.updatedAt); //
 }else if (isNewNote) {
   savedNote = await createNote(title, content);
+  // saved chnges -then open that note - shows note id on url then
   navigate(`/notes/${savedNote.id}`);
 } else {
   return;
@@ -122,7 +125,8 @@ const handleContentChange = (value) => {
 };
 // if cancel stay on the note but changes made are discarded
 function handleCancel() {
-  if (saveStatus === "unsaved" || saveStatus === "error") {
+  if (saveStatus === "unsaved" || saveStatus === "error" || saveStatus === "validation-error") {
+    // showing window  with this message
     const confirmed = window.confirm(
       "You have unsaved changes. Are you sure you want to leave?"
     );
@@ -133,7 +137,7 @@ function handleCancel() {
 
   navigate(-1);
 }
-// trash note cannot be accessed as in trash view
+// trash note cannot be accessed as in trash view - error page
 if (note?.isDeleted) {
   return (
     <ErrorPage

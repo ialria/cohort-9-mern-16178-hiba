@@ -1,5 +1,6 @@
 require("dotenv").config();
 const logger = require("./utilities/logger");
+// check var in .env
 const requiredVariables = ["JWT_SECRET", "FRONTEND_URL", "DATABASE_URL"];
 
 for (const variable of requiredVariables) {
@@ -10,8 +11,9 @@ for (const variable of requiredVariables) {
 
 const app = require("./app");
 const prisma = require("./config/prisma.js");
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5000;  //if no port is configured user 5000
 
+// this starts the server-express server
 const server = app.listen(PORT, () => {
    logger.info(`Server running on port ${PORT}`);
 });
@@ -31,7 +33,10 @@ server.on("error", (error) => {
     );
   }
 });
+
+// in case of error when we are starting or runnign the server 
 server.on("error", async (error) => {
+
   if (error.code === "EADDRINUSE") {
     logger.error(`Port ${PORT} is already in use`);
   } else {
@@ -46,6 +51,7 @@ server.on("error", async (error) => {
       "Server failed to start",
     );
   }
+  // closing database
   try{
   await prisma.$disconnect();
   }catch (disconnectError){
@@ -60,6 +66,7 @@ server.on("error", async (error) => {
 });
 let isShuttingDown = false;
 
+// incase of terminatin signal
 const gracefulShutdown = async (signal) => {
   if (isShuttingDown) {
     return;
@@ -90,5 +97,6 @@ const gracefulShutdown = async (signal) => {
   });
 };
 
+// common terminatin signals
 process.on("SIGTERM", () => gracefulShutdown("SIGTERM"));
 process.on("SIGINT", () => gracefulShutdown("SIGINT"));

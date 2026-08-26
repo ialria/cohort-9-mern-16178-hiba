@@ -2,7 +2,8 @@ function formatDate(date) {
   if (!date) return "";
   const noteDate = new Date(date);
   const now = new Date();
-  const diffInSeconds = Math.floor((now - noteDate) / 1000);
+
+  const diffInSeconds = Math.floor((now - noteDate) / 1000);//converts to seconds
   if (diffInSeconds < 60) {
     return "Just now";
   }
@@ -21,6 +22,8 @@ function formatDate(date) {
   if (diffInDays < 7) {
     return `${diffInDays} days ago`;
   }
+
+  // if older than a week - show date not like 3 days ago
   return noteDate.toLocaleDateString("en-US", {
     month: "short",
     day: "numeric",

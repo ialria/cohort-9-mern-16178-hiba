@@ -7,7 +7,7 @@ export function ProfileProvider({ children }) {
   const [loading, setLoading] = useState(true);
   const [profileError, setProfileError] = useState(null);
   useEffect(() => {
-    getProfile().catch(()=>{});
+    getProfile().catch(()=>{}); //when first mounted then run this
   }, []);
 
   const getProfile = async () => {
@@ -20,6 +20,10 @@ export function ProfileProvider({ children }) {
       if (!response.ok) {
         throw new Error(data?.message || "Error! Failed to fetch profile");
       }
+      // if successful response but if invalid or error data
+if (!data) {
+  throw new Error("Error! Failed to fetch profile");
+}
 
       setProfile(data);
     } catch (error) {
@@ -43,7 +47,9 @@ export function ProfileProvider({ children }) {
     if (!response.ok) {
       throw new Error(data?.message || "Error! Failed to update profile");
     }
-
+if (!data) {
+  throw new Error("Error! Failed to update profile");
+}
     setProfile(data);
     return data;
   }catch (error){
@@ -52,6 +58,7 @@ export function ProfileProvider({ children }) {
   };
 
 const getInitials = (username = "") => {
+  // if no space then one letter if space then two
   return username
     .trim()
     .split(/\s+/)

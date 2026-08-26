@@ -1,10 +1,14 @@
 import { useNavigate } from "react-router-dom";
 import { useNotes } from "../../../context/NotesContext.jsx";
 import formatDate from "../../../utils/formateDate.js";
+
+
 function removeHtml(content) {
   if (!content) return "";
   const element = document.createElement("div");
   element.innerHTML = content;
+
+  //to separate line/para 
   element.querySelectorAll("br, p, div").forEach((item) => {
     item.replaceWith(" " + item.textContent + " ");
   });
@@ -31,6 +35,8 @@ function createPreview(title, content, searchText) {
       ? contentText.slice(0, 100) + "..."
       : contentText;
   }
+
+  // show some content before and after matched word below that search bar then
   const start = Math.max(0, matchPosition - 40);
   const end = Math.min(
     contentText.length,
@@ -45,11 +51,13 @@ function createPreview(title, content, searchText) {
   }
   return preview;
 }
+
 function highlightSearchText(text, searchText) {
   if (!searchText.trim()) {
     return text;
   }
 
+  // avoiding regex here 
   const escapedSearch = searchText.replace(
     /[.*+?^${}()|[\]\\]/g,
     "\\$&"
