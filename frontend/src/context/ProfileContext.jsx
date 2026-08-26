@@ -16,9 +16,9 @@ export function ProfileProvider({ children }) {
     try {
       const response = await apiFetch("/api/profile");
 
-      const data = await response.json();
+      const data = await response.json().catch(()=>null);
       if (!response.ok) {
-        throw new Error(data.message || "Error! Failed to fetch profile");
+        throw new Error(data?.message || "Error! Failed to fetch profile");
       }
 
       setProfile(data);
@@ -39,9 +39,9 @@ export function ProfileProvider({ children }) {
       body: JSON.stringify(profileData),
     });
 
-    const data = await response.json();
+    const data = await response.json().catch(()=>null);
     if (!response.ok) {
-      throw new Error(data.message || "Error! Failed to update profile");
+      throw new Error(data?.message || "Error! Failed to update profile");
     }
 
     setProfile(data);

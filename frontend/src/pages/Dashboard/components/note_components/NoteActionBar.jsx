@@ -13,10 +13,13 @@ function handleSortBy(newSortBy) {
   onSort(newSortBy, sortOrder);
 }
 
+// sort on two things note-properties / order (asc or desc)
 function handleSortOrder(newSortOrder) {
   onSort(sortBy, newSortOrder);
+   setShowSortMenu(false);
 }
 
+// can import json (to reserve the format) adn then txt files can also improt multiple ones
  function handleImport(event) {
   const files = Array.from(event.target.files);
 
@@ -31,6 +34,9 @@ function handleSortOrder(newSortOrder) {
     filesRead++;
 
     if (filesRead === files.length) {
+           if (importedNotes.length === 0) {
+        return;
+     }
       onImport(importedNotes).catch((error) => {
         console.error("Failed to import notes:", error);
         alert("Failed to import notes. Please try again.");
@@ -92,12 +98,12 @@ function handleSortOrder(newSortOrder) {
      
 
   return (
-    <div className="flex items-center justify-end gap-2 px-5 md:px-8 mb-5">
+    <div role="menu" className="flex items-center justify-end gap-2 px-5 md:px-8 mb-5">
 
       <div className="relative">
         <button
-          type="button"
-          onClick={() => setShowSortMenu((prev) => !prev)}
+          type="button"   aria-haspopup="menu"
+  aria-expanded={showSortMenu} onClick={() => setShowSortMenu((prev) => !prev)}
           className="flex items-center gap-2 rounded-xl border border-border bg-surface px-4 py-2 text-sm text-text transition hover:bg-primary-light"
         >
           <ArrowDownUp size={17} strokeWidth={1.8} />
@@ -113,6 +119,7 @@ function handleSortOrder(newSortOrder) {
 
             <button
               type="button"
+               role="menuitem"
               onClick={() => handleSortBy("date")}
               className="flex w-full items-center justify-between rounded-lg px-2 py-2 text-sm text-text hover:bg-primary-light"
             >
@@ -125,6 +132,7 @@ function handleSortOrder(newSortOrder) {
 
             <button
               type="button"
+               role="menuitem"
               onClick={() => handleSortBy("title")}
               className="flex w-full items-center justify-between rounded-lg px-2 py-2 text-sm text-text hover:bg-primary-light"
             >
@@ -137,6 +145,7 @@ function handleSortOrder(newSortOrder) {
 
             <button
               type="button"
+               role="menuitem"
               onClick={() => handleSortBy("pinned")}
               className="flex w-full items-center justify-between rounded-lg px-2 py-2 text-sm text-text hover:bg-primary-light"
             >
@@ -155,6 +164,7 @@ function handleSortOrder(newSortOrder) {
 
             <button
               type="button"
+               role="menuitem"
               onClick={() => handleSortOrder("ascending")}
               className="flex w-full items-center justify-between rounded-lg px-2 py-2 text-sm text-text hover:bg-primary-light"
             >
@@ -167,6 +177,7 @@ function handleSortOrder(newSortOrder) {
 
             <button
               type="button"
+               role="menuitem"
               onClick={() => handleSortOrder("descending")}
               className="flex w-full items-center justify-between rounded-lg px-2 py-2 text-sm text-text hover:bg-primary-light"
             >
@@ -181,7 +192,7 @@ function handleSortOrder(newSortOrder) {
       </div>
 
       <button
-        type="button"
+        type="button"  role="menuitem"
         onClick={() => fileInput.current?.click()}
         className="flex items-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm text-surface transition hover:opacity-90"
       >

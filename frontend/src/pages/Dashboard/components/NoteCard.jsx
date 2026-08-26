@@ -51,16 +51,16 @@ function getPreview(content) {
 
       )}
 
-   {!showPin && note.isPinned && (<button type="button"> <Pin size={18} strokeWidth={1.5} className="text-pin fill-pin cursor-pointer"/></button>)}
+   {!showPin && note.isPinned && ( <Pin size={18} strokeWidth={1.5} className="text-pin fill-pin"/>)}
 
     </div>
     
     </div>
     </Link>
- <button type="button" onClick={(e)=>{
+ <button type="button"  aria-label="Open note actions" onClick={(e)=>{
   e.preventDefault();
   e.stopPropagation();
-  setShowMenu((prev)=>!prev)}} className="p-1 hidden group-hover:block transition-opacity duration-150 bg-primary-lighter rounded-lg hover:bg-text-muted/14 absolute right-5"><Ellipsis className="text-text-muted " size={18} strokeWidth={2}/></button>
+  setShowMenu((prev)=>!prev)}} className="p-1 hidden group-hover:block focus-visible:block transition-opacity duration-150 bg-primary-lighter rounded-lg hover:bg-text-muted/14 absolute right-5"><Ellipsis className="text-text-muted " size={18} strokeWidth={2}/></button>
  {showMenu && <MenuComponent onPin={onPin} onDelete={onDelete} isPinned={note.isPinned} onExport={onExport}/>}
  
    

@@ -244,7 +244,7 @@ if (profileError) {
 
  <div className="flex items-center gap-2">
   <button
-    type="button"
+    type="button" aria-pressed={accentColor === "purple"}
     aria-label="Purple"
     onClick={() => setAccentColor("purple")}
     className={`w-7 h-7 rounded-full bg-[#362b4a] ${
@@ -255,7 +255,7 @@ if (profileError) {
   />
 
   <button
-    type="button"
+    type="button" aria-pressed={accentColor === "teal"}
     aria-label="Deep Teal"
     onClick={() => setAccentColor("teal")}
     className={`w-7 h-7 rounded-full bg-[#2C4A47] ${
@@ -266,7 +266,7 @@ if (profileError) {
   />
 
   <button
-    type="button"
+    type="button" aria-pressed={accentColor === "forest"}
     aria-label="Muted Forest"
     onClick={() => setAccentColor("forest")}
     className={`w-7 h-7 rounded-full bg-[#3D5240] ${
@@ -399,13 +399,8 @@ if (profileError) {
     </div>
   </InnerElement>
 </button>
-{/* <span className="text-xs text-text-muted">
-  {exportStatus === "exporting"
-    ? `Exporting ${exportProgress} of ${notesNum} notes...`
-    : exportStatus === "completed"
-      ? "All notes exported successfully"
-      : "Download all your notes as a ZIP file"}
-</span> */}
+
+
 {exportStatus === "exporting" && (
   <div className="w-full px-2">
     <div className="h-1.5 w-full rounded-full bg-primary-lighter overflow-hidden">

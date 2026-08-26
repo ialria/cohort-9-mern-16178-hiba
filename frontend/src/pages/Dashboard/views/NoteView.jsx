@@ -53,14 +53,15 @@ useEffect(() => {
   }
 }, [note?.id, isNewNote]);
 
+// save the note when changes are made only
 const handleSave = async () => {
-   if (saveStatus !== "unsaved" && saveStatus !== "error") {
+   if (saveStatus !== "unsaved" && saveStatus !== "error" && saveStatus !== "validation-error") {
     return;
   }
 
   const plainTextContent = content.replace(/<[^>]*>/g, "").trim();
   if (!plainTextContent) {
-      setSaveStatus("error");
+      setSaveStatus("validation-error");
     return;
   }
   const saveRevision = editRevisionRef.current;
@@ -100,6 +101,7 @@ if(note){
 }
 };
 
+// handle title if - if none then tile is set as Untitled Note
 const handleTitleChange = (e) => {
  const noteTitle = e.target.value;
   setTitle(noteTitle);
@@ -109,6 +111,7 @@ editRevisionRef.current += 1;
   }
 };
 
+// to save edited content
 const handleContentChange = (value) => {
   setContent(value);
    editRevisionRef.current += 1;
@@ -117,11 +120,30 @@ const handleContentChange = (value) => {
     setSaveStatus("unsaved");
   }
 };
+// if cancel stay on the note but changes made are discarded
+function handleCancel() {
+  if (saveStatus === "unsaved" || saveStatus === "error") {
+    const confirmed = window.confirm(
+      "You have unsaved changes. Are you sure you want to leave?"
+    );
+    if (!confirmed) {
+      return;
+    }
+  }
 
-const handleCancel = () => {
   navigate(-1);
-};
-
+}
+// trash note cannot be accessed as in trash view
+if (note?.isDeleted) {
+  return (
+    <ErrorPage
+      title="Note is in trash"
+      message="This note is currently in the trash and cannot be edited."
+      onRetry={() => navigate("/dashboard")}
+    />
+  );
+}
+// other user notes access- error page
 if (!note && !isNewNote) {
   return (
     <ErrorPage

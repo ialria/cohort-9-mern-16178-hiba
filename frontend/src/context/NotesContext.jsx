@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState, useEffect, useRef } from "react";
 import { apiFetch } from "../config/api";
 import JSZip from "jszip";
 const NotesContext = createContext();
@@ -9,11 +9,20 @@ export function NotesProvider({ children }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [exportStatus, setExportStatus] = useState("idle");
 const [exportProgress, setExportProgress] = useState(0);
-
+const exportStatusTimer = useRef(null);
+// to get all notes after authentication
 useEffect(() => {
   getAllNotes().catch((error) => {
     console.error("Failed to fetch notes:", error);
   });
+}, []);
+
+useEffect(() => {
+  return () => {
+    if (exportStatusTimer.current) {
+      clearTimeout(exportStatusTimer.current);
+    }
+  };
 }, []);
 
   async function createNote(title, noteContent) {
@@ -127,6 +136,7 @@ async function getNoteById(id) {
   }
 }
  async function restoreNote(id) {
+  // note is not deleted from database a then can restore id of note
    try {
     const response = await apiFetch(`/api/notes/${id}/restore`, {
       method: "PATCH",
@@ -158,6 +168,7 @@ async function getNoteById(id) {
     console.error("Failed to permanently delete note:", error);
        setNotesError(error.message || "Failed to delete note");
   }}
+
   async function moveToTrash(id) {
     try {
       setNotesError(null);
@@ -176,6 +187,8 @@ async function getNoteById(id) {
          setNotesError(error.message || "Failed to move note to trash");
     }
   }
+
+
   async function handlePin(id) {
     try {
       const response = await apiFetch(`/api/notes/${id}/pin`, {
@@ -196,6 +209,8 @@ async function getNoteById(id) {
          setNotesError(error.message || "Failed to update note to pin");
     }
   }
+
+  // import only txt files - no type of formatting is preserved as simple .txt files
   async function importNotes(importedNotes) {
   try {
     const newNotes = [];
@@ -212,6 +227,8 @@ async function getNoteById(id) {
     throw error;
   }
 }
+
+// export note on each note -as .txt file
 function exportNote(note) {
   try {
     const title = note.title || "Untitled";
@@ -249,7 +266,7 @@ function exportNote(note) {
     console.error("Failed to export note:", error);
   }
 }
-
+// export all of the notes as zip file and in that files all notes as .txt
 async function exportAllNotes() {
   const activeNotes = notes.filter((note) => !note.isDeleted);
 
@@ -270,6 +287,7 @@ const usedNames = new Set();
       const title = note.title || "Untitled";
       const content = note.content || "";
 
+      // getting just content - rich ext editor formatting not preserved
       const plainTextContent = content
         .replace(/<br\s*\/?>/gi, "\n")
         .replace(/<\/p>/gi, "\n")
@@ -295,7 +313,7 @@ while (usedNames.has(fileName)) {
 
 usedNames.add(fileName);
 
-zip.file(fileName, fileContent);
+zip.file(fileName,`${title}\n\n${plainTextContent}` );
 
       setExportProgress(i + 1);
     }
@@ -318,19 +336,18 @@ zip.file(fileName, fileContent);
 
     setExportStatus("completed");
 
-    setTimeout(() => {
-      setExportStatus("idle");
-      setExportProgress(0);
-    }, 3000);
+exportStatusTimer.current = setTimeout(() => {
+  setExportStatus("idle");
+  setExportProgress(0);
+}, 3000);
   } catch (error) {
     console.error("Failed to export all notes:", error);
 
     setExportStatus("error");
-
-    setTimeout(() => {
-      setExportStatus("idle");
-      setExportProgress(0);
-    }, 3000);
+exportStatusTimer.current = setTimeout(() => {
+  setExportStatus("idle");
+  setExportProgress(0);
+}, 3000);
   }
 }
   return (

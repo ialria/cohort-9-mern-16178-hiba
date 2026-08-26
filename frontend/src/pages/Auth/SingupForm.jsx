@@ -224,6 +224,7 @@ const passwordCheckId = useRef(0);
               onChange={async (e) => {
                 const value = e.target.value;
  const currentCheckId = ++passwordCheckId.current;
+ setPasswordStrength(null);  //to make sure that old strength of password is not being checked
                 setPassword(value);
 
                 if (errors.password) {

@@ -10,9 +10,9 @@ function NoteToolBar({ onSave, saveStatus,onCancel }) {
             ? "All changes saved"
             : saveStatus === "unsaved"
               ? "Unsaved changes"
-              : saveStatus === "error"
-          ? "Save failed"
-          : ""}
+              : saveStatus === "validation-error"
+      ? "Note content cannot be empty"
+      : ""}
       </p>
 
       <div className="flex gap-2">
@@ -24,7 +24,7 @@ function NoteToolBar({ onSave, saveStatus,onCancel }) {
         </Button>
         <Button
           onClick={onSave}
-          disabled={saveStatus !== "unsaved" && saveStatus !== "error"}
+          disabled={saveStatus !== "unsaved" && saveStatus !== "error"  && saveStatus !== "validation-error"}
           className="bg-primary text-surface disabled:cursor-not-allowed disabled:opacity-50"
         >
           {saveStatus === "saved"

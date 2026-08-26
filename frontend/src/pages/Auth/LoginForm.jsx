@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate , useLocation} from "react-router-dom";
 import {Eye, EyeOff} from "../../icons/icons.jsx";
 import {apiFetch} from "../../config/api.js";
 import { useAuth } from "../../context/AuthContext.jsx";
@@ -11,6 +11,7 @@ function LoginForm() {
   const [loginError, setLoginError] = useState("");
   const [errors, setErrors] = useState({});
   const navigate=useNavigate();
+  const location = useLocation();
 const [isSubmitting, setIsSubmitting] = useState(false);
   function validateForm() {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -54,7 +55,7 @@ if (!response.ok) {
   return;
 }
 setUser(data.user);
-  navigate("/dashboard");
+  navigate(location.state?.from || "/dashboard");
 
   }catch (error){
         setLoginError(
