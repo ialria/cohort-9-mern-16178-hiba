@@ -148,7 +148,7 @@ const passwordCheckId = useRef(0);
         </p>
       </div>
 
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} noValidate>
         <div className="mb-4">
           <label htmlFor="username" className="text-text-muted text-xs">
             Username

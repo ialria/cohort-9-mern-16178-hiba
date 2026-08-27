@@ -75,7 +75,7 @@ setUser(data.user);
           Log in to continue to your notes
         </p>
       </div>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} noValidate>
         <div className="mb-8">
           <label htmlFor="email" className="text-text-muted text-xs">
             Email
