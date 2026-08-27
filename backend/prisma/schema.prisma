@@ -38,10 +38,10 @@ model user {
   username           String
   email              String               @unique(map: "User_email_key")
   password           String
-  avatarUrl          String?
+  avatarUrl          String?              @db.LongText
   bio                String?
   createdAt          DateTime             @default(now())
-  updatedAt          DateTime             @default(now()) @updatedAt
+  updatedAt          DateTime             @updatedAt
   role               user_role            @default(USER)
   note               note[]
   passwordresettoken passwordresettoken[]

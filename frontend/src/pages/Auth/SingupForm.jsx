@@ -6,7 +6,6 @@ import Toast from "../../components/Toast.jsx";
 import zxcvbn from "../../utils/passwordStrength.js";
 import PasswordStrength from "../../components/PasswordStrength.jsx";
 import { apiFetch } from "../../config/api.js";
-
 function SignupForm() {
   const redirectTimer = useRef(null);
 
@@ -19,6 +18,7 @@ function SignupForm() {
   }, []);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [registrationComplete, setRegistrationComplete] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -30,9 +30,6 @@ function SignupForm() {
   const [confirmPassword, setConfirmPassword] = useState("");
 
   const navigate = useNavigate();
-
-  // const [acceptedTerms, setAcceptedTerms] = useState(false);
-
   function validateForm() {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const newErrors = {};
@@ -61,20 +58,14 @@ function SignupForm() {
       newErrors.username = "Please enter your username.";
     }
 
-    // if (!acceptedTerms) {
-    //   newErrors.terms = "Please accept the Terms of Service.";
-    // }
-
     return newErrors;
   }
 
   async function handleSubmit(e) {
     e.preventDefault();
-
     if (isSubmitting) {
       return;
     }
-
     const foundErrors = validateForm();
 
     if (Object.keys(foundErrors).length > 0) {
@@ -98,6 +89,7 @@ function SignupForm() {
       const data = await response.json();
 
       if (response.ok) {
+        setRegistrationComplete(true);
         setShowToast(true);
 
         confetti({
@@ -112,33 +104,33 @@ function SignupForm() {
           },
           scalar: 0.6,
         });
-          setIsSubmitting(false);
 
         redirectTimer.current = setTimeout(() => {
           navigate("/login");
         }, 1500);
-
         return;
       }
-
-      if (response.status === 409) {
-        setErrors({
-          email: data.message,
-        });
-      } else {
-        setErrors({
-          form: data.message || "Something went wrong. Please try again.",
-        });
+      if (!response.ok) {
+        if (response.status === 409) {
+          setErrors({
+            email: data.message,
+          });
+        } else {
+          setErrors({
+            form: data.message || "Something went wrong. Please try again.",
+          });
+        }
+        return;
       }
-        
     } catch (error) {
       setErrors({
         form: "Something went wrong. Please try again.",
       });
+    } finally {
+      setRegistrationComplete(true);
       setIsSubmitting(false);
-    
+    }
   }
-}
 
   return (
     <div className="w-full md:w-1/2 bg-background min-h-screen py-10 px-6 md:px-10 lg:py-24 lg:px-24 xl:px-36">
@@ -172,9 +164,7 @@ function SignupForm() {
             type="text"
             placeholder="Your username"
             aria-invalid={!!errors.username}
-            aria-describedby={
-              errors.username ? "username-error" : undefined
-            }
+            aria-describedby={errors.username ? "username-error" : undefined}
             className={`w-full border rounded-lg px-3 py-2 bg-surface placeholder:text-text-muted ${
               errors.username ? "border-red-400" : "border-border"
             }`}
@@ -248,10 +238,7 @@ function SignupForm() {
 
                     setPasswordStrength(result);
                   } catch (error) {
-                    console.error(
-                      "Password strength checker error:",
-                      error
-                    );
+                    console.error("Password strength checker error:", error);
 
                     setPasswordStrength(null);
                   }
@@ -263,9 +250,7 @@ function SignupForm() {
               type={showPassword ? "text" : "password"}
               placeholder="......."
               aria-invalid={!!errors.password}
-              aria-describedby={
-                errors.password ? "password-error" : undefined
-              }
+              aria-describedby={errors.password ? "password-error" : undefined}
               className={`w-full border rounded-lg px-3 py-2 pr-10 bg-surface placeholder:text-text-muted placeholder:text-3xl ${
                 errors.password ? "border-red-400" : "border-border"
               }`}
@@ -293,10 +278,7 @@ function SignupForm() {
         </div>
 
         <div className="mb-2">
-          <label
-            htmlFor="confirmPassword"
-            className="text-text-muted text-xs"
-          >
+          <label htmlFor="confirmPassword" className="text-text-muted text-xs">
             Confirm Password
           </label>
 
@@ -318,14 +300,10 @@ function SignupForm() {
               placeholder="......."
               aria-invalid={!!errors.confirmPassword}
               aria-describedby={
-                errors.confirmPassword
-                  ? "confirm-password-error"
-                  : undefined
+                errors.confirmPassword ? "confirm-password-error" : undefined
               }
               className={`w-full border rounded-lg px-3 py-2 pr-10 bg-surface placeholder:text-text-muted placeholder:text-3xl ${
-                errors.confirmPassword
-                  ? "border-red-400"
-                  : "border-border"
+                errors.confirmPassword ? "border-red-400" : "border-border"
               }`}
             />
 
@@ -341,38 +319,31 @@ function SignupForm() {
               }
               className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted cursor-pointer"
             >
-              {showConfirmPassword ? (
-                <EyeOff size={20} />
-              ) : (
-                <Eye size={20} />
-              )}
+              {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
             </button>
           </div>
 
           {errors.confirmPassword && (
-            <p
-              id="confirm-password-error"
-              className="text-red-500 text-xs"
-            >
+            <p id="confirm-password-error" className="text-red-500 text-xs">
               {errors.confirmPassword}
             </p>
           )}
         </div>
 
-        {/* Terms and Privacy Policy can be enabled later */}
-
         {errors.form && (
-          <p className="text-red-500 text-xs mb-2">
-            {errors.form}
-          </p>
+          <p className="text-red-500 text-xs mb-2">{errors.form}</p>
         )}
 
         <button
           type="submit"
-          disabled={isSubmitting}
+          disabled={isSubmitting || registrationComplete}
           className="w-full rounded-lg bg-primary py-3 px-3 text-background my-3 cursor-pointer"
         >
-          {isSubmitting ? "Creating Account..." : "Create Account"}
+          {registrationComplete
+            ? "Account created"
+            : isSubmitting
+              ? "Creating Account..."
+              : "Create Account"}
         </button>
       </form>
 
@@ -383,9 +354,7 @@ function SignupForm() {
         </Link>
       </p>
 
-      {showToast && (
-        <Toast message="Account has been created successfully!" />
-      )}
+      {showToast && <Toast message="Account has been created successfully!" />}
     </div>
   );
 }

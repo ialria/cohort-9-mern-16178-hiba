@@ -9,7 +9,7 @@ const favouriteNotes=notes.filter(note=>note.isFavorite && !note.isDeleted);
     return (
      <section className={`grid grid-cols-1 gap-4 md:grid-cols-2  ${collapsed ? "md:gap-4" : "md:gap-6"} px-5 md:px-8`}>
             {favouriteNotes.length === 0 ? (
-                <p>No favourite notes yet.</p>
+                <p className="text-text-muted">No favourite notes yet.</p>
             ) : (
                       favouriteNotes.map(note => (
             <NoteCard

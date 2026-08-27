@@ -29,5 +29,5 @@ Moon,
 Calendar,
 Lock,
 Camera,
-Check
+Check, Palette
 } from "lucide-react";

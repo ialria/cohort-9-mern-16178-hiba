@@ -4,19 +4,26 @@ import {useSidebar} from "../../../../context/SidebarContext.jsx";
 import {useNotes} from "../../../../context/NotesContext.jsx";
 import {Plus} from "../../../../icons/icons.jsx";
 import NoteMenu from "../../components/note_components/NoteMenu.jsx";
-import { useEffect } from "react";
 function AllNotesView(){
-    const {notes, handleFavourite,moveToTrash, getAllNotes}=useNotes();
+    const {notes, handleFavourite,moveToTrash, notesError}=useNotes();
     const navigate=useNavigate();
     const {collapsed}=useSidebar();
 
 const allNotes=(notes || []).filter(note=>!note.isDeleted);
     return (
+      <>
+  {notesError && (
+        <p className="px-5 md:px-8 mb-4 text-sm text-delete-primary">
+          {notesError}
+        </p>
+      )}
+
   <section
     className={`grid grid-cols-1 lg:grid-cols-3 ${
       collapsed ? "gap-4" : "gap-6"
     } md:grid-cols-2 px-5 md:px-8`}
   >
+
     {allNotes.length === 0 ? (
       <div className="col-span-full flex flex-col items-center justify-center py-20 text-center">
         <h2 className="text-xl font-semibold text-text">
@@ -58,6 +65,7 @@ const allNotes=(notes || []).filter(note=>!note.isDeleted);
       </>
     )}
   </section>
+  </>
 );
 }
 

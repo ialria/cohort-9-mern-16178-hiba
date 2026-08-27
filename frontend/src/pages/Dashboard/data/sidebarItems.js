@@ -16,11 +16,6 @@ export const sidebarItems=[
      path:"/dashboard/favorites",
     title: "Favourites",
     icon: Star
-},{
-    id:"trash",
-path:"/dashboard/trash",
-    title: "Trash",
-    icon: Trash2
 },
 {
     id:"recent",
@@ -33,6 +28,12 @@ path:"/dashboard/trash",
       path:"/profile",
     title: "Profile",
     icon: User
+},
+{
+    id:"trash",
+path:"/dashboard/trash",
+    title: "Trash",
+    icon: Trash2
 },
 // {
 //     id: "settings",

@@ -46,9 +46,11 @@ async function updateNote(id, title, noteContent, updatedAt) {
 
     const data = await response.json();
 
-    if (!response.ok) {
-      throw new Error(data.message || "Error! Failed to update note");
-    }
+   if (!response.ok) {
+  const error = new Error(data.message || "Error! Failed to update note");
+  error.status = response.status;
+  throw error;
+}
 
     setNotes((prev) =>
       prev.map((note) => (note.id === id ? data.note : note))
@@ -80,6 +82,29 @@ async function getAllNotes() {
     throw error;
   }
 }
+
+async function getNoteById(id) {
+  try {
+    const response = await apiFetch(`/api/notes/${id}`);
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || "Failed to fetch note");
+    }
+
+    setNotes((prev) =>
+      prev.map((note) => (note.id === id ? data.note : note))
+    );
+
+    setNotesError(null);
+
+    return data.note;
+  } catch (error) {
+    setNotesError(error.message || "Failed to fetch note");
+    throw error;
+  }
+}
  async function restoreNote(id) {
    try {
     const response = await apiFetch(`/api/notes/${id}/restore`, {
@@ -93,7 +118,8 @@ async function getAllNotes() {
       prev.map((note) => (note.id === id ? data.note : note)),
     );
   } catch (error) {
-    console.error("Failed to restore note:", error);
+    setNotesError(error.message || "Failed to restore note");
+  throw error;
   }
   }
 
@@ -108,10 +134,12 @@ async function getAllNotes() {
     }
     setNotes((prev) => prev.filter((note) => note.id !== id));
   } catch (error) {
-    console.error("Failed to permanently delete note:", error);
+      setNotesError(error.message || "Failed to permanently delete note");
+  throw error;
   }}
   async function moveToTrash(id) {
     try {
+      setNotesError(null);
       const response = await apiFetch(`/api/notes/${id}/trash`, {
         method: "PATCH",
       });
@@ -123,7 +151,8 @@ async function getAllNotes() {
         prev.map((note) => (note.id === id ? data.note : note)),
       );
     } catch (error) {
-      console.error("Failed to move note to trash:", error);
+      setNotesError(error.message || "Failed to move note to trash");
+  throw error;
     }
   }
   async function handleFavourite(id) {
@@ -142,7 +171,8 @@ async function getAllNotes() {
         prev.map((note) => (note.id === id ? data.note : note)),
       );
     } catch (error) {
-      console.error("Failed to update favourite:", error);
+      setNotesError(error.message || "Failed to update favourite");
+  throw error;
     }
   }
   const [notes, setNotes] = useState([]);
@@ -162,7 +192,8 @@ async function getAllNotes() {
         createNote,
         getAllNotes,
         updateNote,
-        notesError
+        notesError,
+        getNoteById
       }}
     >
       {children}

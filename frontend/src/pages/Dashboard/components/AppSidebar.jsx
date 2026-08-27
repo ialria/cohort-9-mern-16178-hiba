@@ -21,7 +21,7 @@ function AppSidebar() {
           <LeafletLogo className="w-8 h-8 text-surface" />
         </button>
         <span
-          className={`text-muted font-medium ${collapsed ? "block" : "hidden"}`}
+          className={`text-primary font-medium ${collapsed ? "block" : "hidden"}`}
         >
           leaflet
         </span>

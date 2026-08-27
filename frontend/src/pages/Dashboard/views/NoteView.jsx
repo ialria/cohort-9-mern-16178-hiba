@@ -5,12 +5,12 @@ import ReactQuill from "react-quill-new";
 import "quill/dist/quill.snow.css";
 import { useState, useEffect, useRef } from "react";
 import { useNotes } from "../../../context/NotesContext.jsx";
-import Button from "../../../components/Button";
 
 function NoteView() {
   const { noteId } = useParams();
    const navigate = useNavigate();
   const editorRef = useRef(null);
+  const editRevisionRef = useRef(0);
   useEffect(() => {
   const editor = editorRef.current?.querySelector(".ql-editor");
 
@@ -18,11 +18,12 @@ function NoteView() {
     editor.setAttribute("aria-label", "Note content editor");
   }
 }, []);
-  const {notes,createNote, updateNote}=useNotes();
+  const {notes,createNote, updateNote, getNoteById}=useNotes();
   const note = notes.find((note) => String(note.id) === noteId);
  const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [saveStatus, setSaveStatus] = useState("idle");
+  const [errorMessage, setErrorMessage] = useState("");
   const modules = {
     toolbar: [
         ["bold", "italic", "underline", "strike"],
@@ -39,22 +40,31 @@ useEffect(() => {
     setTitle(note.title || "");
     setContent(note.content || "");
     setSaveStatus("saved");
+    setErrorMessage("");
+    editRevisionRef.current = 0;
   } else {
     setTitle("");
     setContent("");
     setSaveStatus("idle");
+    setErrorMessage("");
+    editRevisionRef.current = 0;
   }
-}, [note]);
+}, [noteId]);
 
 const handleSave = async () => {
-   if (saveStatus !== "unsaved") {
+   if (saveStatus !== "unsaved" && saveStatus !== "error") {
     return;
   }
+
   const plainTextContent = content.replace(/<[^>]*>/g, "").trim();
   if (!plainTextContent) {
+      setErrorMessage("Note content cannot be empty.");
+      setSaveStatus("error");
     return;
   }
+  const saveRevision = editRevisionRef.current;
   try {
+    setErrorMessage("");
     setSaveStatus("saving");
 
 let savedNote;
@@ -64,17 +74,33 @@ if(note){
   savedNote=await createNote(title, content);
    navigate(`/notes/${savedNote.id}`);
 }
-     setSaveStatus("saved");
+    if (editRevisionRef.current === saveRevision) {
+  setSaveStatus("saved");
+}
   } catch (error) {
-    console.error("Failed to create note:", error);
-      setSaveStatus("error");
+  console.error("Failed to save note:", error);
+
+  if (note && error.status === 409) {
+    try {
+      await getNoteById(note.id);
+      setErrorMessage("The note was updated elsewhere. Please click Retry to save your changes.");
+    } catch (refreshError) {
+      setErrorMessage(
+        refreshError.message || "Failed to refresh the latest note."
+      );
+    }
+  } else {
+    setErrorMessage(error.message || "Failed to save note.");
   }
+
+  setSaveStatus("error");
+}
 };
 
 const handleTitleChange = (e) => {
  const noteTitle = e.target.value;
   setTitle(noteTitle);
-
+editRevisionRef.current += 1;
   if (noteTitle.trim() || content.replace(/<[^>]*>/g, "").trim()) {
     setSaveStatus("unsaved");
   }
@@ -82,6 +108,7 @@ const handleTitleChange = (e) => {
 
 const handleContentChange = (value) => {
   setContent(value);
+   editRevisionRef.current += 1;
   const noteContent = value.replace(/<[^>]*>/g, "").trim();
   if (noteContent || title.trim()) {
     setSaveStatus("unsaved");
@@ -90,6 +117,11 @@ const handleContentChange = (value) => {
   return (
     <main className="h-screen bg-background flex flex-col">
       <NoteToolBar onSave={handleSave} saveStatus={saveStatus}/>
+      {errorMessage && (
+  <p className="px-6 py-2 text-sm text-error">
+    {errorMessage}
+  </p>
+)}
       <section className="flex-1 overflow-y-auto">
       <article className=" py-8 px-6 md:px-16">
         <header>
@@ -101,7 +133,6 @@ const handleContentChange = (value) => {
 
         </header>
       </article>
-{/* <EditorToolButton /> */}
  <section className="px-10 md:px-22">
   <div ref={editorRef}>           <ReactQuill  theme="snow" value={content} modules={modules} onChange={handleContentChange} placeholder="Start typing ..." className="mt-6 text-base
     text-text
@@ -109,20 +140,7 @@ const handleContentChange = (value) => {
     </div>
 
 </section>
-    {/* category chips */}
       </section>
-
-  {/* <section className="border-t px-8 md:px-12 border-text/20 sticky py-2 flex gap-2">
-    <h2 className="text-text-muted hidden md:block font-semibold my-1">Category</h2>
-
-    <Button className="bg-surface border border-text/20 hover:bg-primary transition-all duration-200 hover:text-surface text-text text-xs">Ideas</Button>
-    <Button className="bg-surface border border-text/20 hover:bg-primary transition-all duration-200 hover:text-surface text-text text-xs">Work</Button>
-    <Button className="bg-surface border border-text/20 hover:bg-primary transition-all duration-200 hover:text-surface text-text text-xs">Personal</Button>
-
-  </section> */}
-
-
-    
     </main>
   );
 }

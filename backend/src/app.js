@@ -5,6 +5,7 @@ const cookieParser = require("cookie-parser");
 const helmet = require("helmet");
 const authRoutes = require("./routes/authRoute");
 const noteRoutes=require("./routes/noteRoute");
+const profileRoute = require("./routes/profileRoute");
 const app = express();
 const trustedProxies = Number(process.env.TRUST_PROXY_HOPS || 0);
 
@@ -15,7 +16,7 @@ if (!Number.isInteger(trustedProxies) || trustedProxies < 0) {
 app.set("trust proxy", trustedProxies);
 app.use(helmet());
 app.use(cookieParser());
-app.use(express.json({ limit: "100kb" }));
+app.use(express.json({ limit: "4mb" }));
 
 app.use(
   cors({
@@ -30,6 +31,7 @@ app.get("/", (req, res) => {
 });
 app.use("/api/auth", authRoutes);
 app.use("/api/notes", noteRoutes);
+app.use("/api/profile", profileRoute);
 app.use((req, res) => {
   return res.status(404).json({
     message: "Route not found",

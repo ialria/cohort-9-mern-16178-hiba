@@ -24,7 +24,7 @@ return (
             <LeafletLogo className="w-8 h-8 text-surface" />
           </div>
           <span
-            className="text-muted font-medium "
+            className="text-primary font-medium "
           >
             leaflet
           </span>

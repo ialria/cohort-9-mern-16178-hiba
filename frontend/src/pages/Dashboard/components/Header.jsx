@@ -1,12 +1,15 @@
 import { Search, Menu } from "./../../../icons/icons.jsx";
-import { useState } from "react";
+import { useState , useRef, useEffect} from "react";
 import { useNotes } from "../../../context/NotesContext.jsx";
 import UserMenu from "./UserMenu.jsx";
 import { sidebarItems } from "../data/sidebarItems.js";
 import { useLocation } from "react-router-dom";
 import { useSidebar } from "../../../context/SidebarContext.jsx";
+import { useProfile } from "../../../context/ProfileContext.jsx";
 import NotesSearchResults from "./NotesSearchResults.jsx";
 function Header() {
+  const { profile , getInitials} = useProfile();
+  const userMenuRef = useRef(null);
   const location=useLocation();
   const [isOpen, setIsOpen] = useState(false);
 const { searchTerm, setSearchTerm } = useNotes();
@@ -17,6 +20,22 @@ const { searchTerm, setSearchTerm } = useNotes();
     : undefined) ??  sidebarItems.find((item) => item.id === "notes");
   const { drawerOpen,setDrawerOpen } = useSidebar();
   const showSearch = currentItem.id === "notes";
+  useEffect(() => {
+  const handleClickOutside = (event) => {
+    if (
+      userMenuRef.current &&
+      !userMenuRef.current.contains(event.target)
+    ) {
+      setIsOpen(false);
+    }
+  };
+
+  document.addEventListener("mousedown", handleClickOutside);
+
+  return () => {
+    document.removeEventListener("mousedown", handleClickOutside);
+  };
+}, []);
   return (
     <header className="sticky top-0 z-20  ">
       <div
@@ -33,7 +52,7 @@ const { searchTerm, setSearchTerm } = useNotes();
 focus-visible:ring-2
 focus-visible:ring-primary hover:bg-primary-light p-3 transition-all duration-150 rounded-full block md:hidden"
         >
-          <Menu size={22} />
+          <Menu size={22} className="text-text"/>
         </button>
             {!showSearch && (
           <h1 className="text-text text-2xl font-semibold md:hidden">
@@ -52,7 +71,7 @@ focus-visible:ring-primary hover:bg-primary-light p-3 transition-all duration-15
    onChange={(event) => setSearchTerm(event.target.value)}
               placeholder="Search notes"
               aria-label="Search notes"
-              className="w-full md:w-96 border border-border h-10 md:h-11 pl-4 pr-10 bg-surface rounded-full"
+              className="text-text w-full md:w-96 border border-border h-10 md:h-11 pl-4 pr-10 bg-surface rounded-full"
             />
             <button
               type="button"
@@ -64,18 +83,29 @@ focus-visible:ring-primary hover:bg-primary-light p-3 transition-all duration-15
   <NotesSearchResults />
 
           </div>
-          <div className="relative">
-            <button
-              aria-label="User menu"
-                aria-expanded={isOpen}
-              className="shrink-0 w-10 h-10 rounded-full bg-primary flex justify-center items-center text-surface  text-md md:text-xl font-semibold "
-              type="button"
-              onClick={() => setIsOpen((prev) => !prev)}
-            >
-              H
-            </button>
-            {isOpen && <UserMenu />}
-          </div>
+          
+  <div ref={userMenuRef} className="relative">
+    <button
+      aria-label="User menu"
+      aria-expanded={isOpen}
+      className="shrink-0 w-14 h-14 rounded-full bg-primary flex justify-center items-center text-surface text-md md:text-xl font-semibold overflow-hidden cursor-pointer"
+      type="button"
+      onClick={() => setIsOpen((prev) => !prev)}
+    >
+      {profile?.avatarUrl ? (
+        <img
+          src={profile.avatarUrl}
+          alt="Profile"
+          className="w-full h-full object-cover"
+        />
+      ) : (
+        getInitials(profile?.username || "U")
+      )}
+    </button>
+
+    {isOpen && <UserMenu />}
+  </div>
+
         </div>
       </div>
       {showSearch && (

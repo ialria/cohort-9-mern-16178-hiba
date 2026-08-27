@@ -63,7 +63,6 @@ function ResetPassword() {
           password,
         }),
       });
-
       const data = await response.json();
 
       if (!response.ok) {
@@ -74,6 +73,9 @@ function ResetPassword() {
       }
 
       setResetSuccessful(true);
+
+      setErrors({});
+      setIsSubmitting(true);
     } catch (error) {
       console.error("Reset password error:", error);
 
