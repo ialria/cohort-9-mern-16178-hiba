@@ -161,7 +161,7 @@ setImageLoading(false);
             <div className=" border rounded-xl border-text-muted/30 flex flex-col items-center justify-start py-4 px-4">
               <h3 className="text-text font-semibold">Profile Picture</h3>
            <div className="relative w-20 h-20 my-5">
-  <div className="w-20 h-20 rounded-full overflow-hidden bg-primary flex items-center justify-center ">
+  <div className="w-22 h-22 rounded-full overflow-hidden bg-primary flex items-center justify-center ">
     {imagePreview || (profile?.avatarUrl && !removeImage) ? (
       <img
         src={imagePreview || profile.avatarUrl}
@@ -179,7 +179,7 @@ setImageLoading(false);
     aria-label="Change profile picture"
     type="button"
     onClick={() => fileInputRef.current?.click()}
-    className="w-10 h-10 flex items-center justify-center rounded-full bg-surface border border-text-muted/30 absolute -bottom-4 -right-9"
+    className="w-10 h-10 flex items-center justify-center rounded-full bg-surface border border-text-muted/30 absolute -bottom-3 -right-8"
   >
     <Camera
       size={20}
