@@ -13,7 +13,23 @@ const prisma = require("./config/prisma.js");
 const PORT = process.env.PORT || 5000;
 
 const server = app.listen(PORT, () => {
-  logger.info(`Server running on port ${PORT}`);
+   logger.info(`Server running on port ${PORT}`);
+});
+server.on("error", (error) => {
+  if (error.code === "EADDRINUSE") {
+    logger.error(`Port ${PORT} is already in use`);
+  } else {
+    logger.error(
+      {
+        error: {
+          name: error.name,
+          message: error.message,
+          code: error.code,
+        },
+      },
+      "Server failed to start",
+    );
+  }
 });
 server.on("error", async (error) => {
   if (error.code === "EADDRINUSE") {

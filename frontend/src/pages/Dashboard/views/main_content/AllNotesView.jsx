@@ -3,22 +3,71 @@ import { useNavigate } from "react-router-dom";
 import {useSidebar} from "../../../../context/SidebarContext.jsx";
 import {useNotes} from "../../../../context/NotesContext.jsx";
 import {Plus} from "../../../../icons/icons.jsx";
+import { useMemo, useState } from "react";
+import NoteActionBar from "../../components/note_components/NoteActionBar.jsx";
 import NoteMenu from "../../components/note_components/NoteMenu.jsx";
 function AllNotesView(){
-    const {notes, handleFavourite,moveToTrash, notesError}=useNotes();
+    const {notes, handlePin,moveToTrash, importNotes, exportNote}=useNotes();
     const navigate=useNavigate();
     const {collapsed}=useSidebar();
+ const [sortBy, setSortBy] = useState("date");
+  const [sortOrder, setSortOrder] = useState("descending");
 
-const allNotes=(notes || []).filter(note=>!note.isDeleted);
+const allNotes = useMemo(
+  () => (notes || []).filter((note) => !note.isDeleted),
+  [notes]
+);
+
+ function handleSort(newSortBy, newSortOrder) {
+    setSortBy(newSortBy);
+    setSortOrder(newSortOrder);
+  }
+  const sortedNotes = useMemo(() => {
+    const notesCopy = [...allNotes];
+
+    notesCopy.sort((firstNote, secondNote) => {
+      const pinDifference =
+    Number(secondNote.isPinned) - Number(firstNote.isPinned);
+
+  if (pinDifference !== 0) {
+    return pinDifference;
+  }
+      let comparison = 0;
+
+      if (sortBy === "date") {
+        comparison =
+          new Date(firstNote.createdAt) -
+          new Date(secondNote.createdAt);
+      }
+      if (sortBy === "title") {
+        comparison = (firstNote.title || "").localeCompare(
+         secondNote.title || ""
+        );
+      }
+      if (sortBy === "pinned") {
+        comparison =
+          Number(firstNote.isPinned) -
+          Number(secondNote.isPinned);
+      }
+      if (sortOrder === "descending") {
+        comparison = -comparison;
+      }
+      return comparison;
+    });
+
+    return notesCopy;
+  }, [allNotes, sortBy, sortOrder]);
+
     return (
       <>
-  {notesError && (
-        <p className="px-5 md:px-8 mb-4 text-sm text-delete-primary">
-          {notesError}
-        </p>
-      )}
-
-  <section
+        <NoteActionBar
+        sortBy={sortBy}
+        sortOrder={sortOrder}
+        onSort={handleSort}
+        onImport={importNotes}
+      />
+  
+        <section
     className={`grid grid-cols-1 lg:grid-cols-3 ${
       collapsed ? "gap-4" : "gap-6"
     } md:grid-cols-2 px-5 md:px-8`}
@@ -44,26 +93,30 @@ const allNotes=(notes || []).filter(note=>!note.isDeleted);
       </div>
     ) : (
       <>
-        {allNotes.map((note) => (
-          <NoteCard
-            key={note.id}
-            note={note}
-            MenuComponent={NoteMenu}
-            onFavourite={() => handleFavourite(note.id)}
-            onDelete={() => moveToTrash(note.id)}
-          />
-        ))}
+            {sortedNotes.map((note) => (
+              <NoteCard
+                key={note.id}
+                note={note}
+                MenuComponent={NoteMenu}
+                onPin={() => handlePin(note.id)}
+                onDelete={() => moveToTrash(note.id)}
+                onExport={()=>exportNote(note)}
+              />
+            ))}
 
-        {/* Only shown when notes exist */}
-        <button
-          type="button"
-          onClick={() => navigate("/notes/new")}
-          className="absolute bottom-5 right-8 p-4 bg-primary rounded-full cursor-pointer"
-        >
-          <Plus size={20} strokeWidth={2} className="text-surface" />
-        </button>
-      </>
-    )}
+            <button
+              type="button"
+              onClick={() => navigate("/notes/new")}
+              className="absolute bottom-5 right-8 p-4 bg-primary rounded-full cursor-pointer"
+            >
+              <Plus
+                size={20}
+                strokeWidth={2}
+                className="text-surface"
+              />
+            </button>
+          </>
+        )}
   </section>
   </>
 );

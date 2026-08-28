@@ -49,7 +49,7 @@ useEffect(() => {
     setErrorMessage("");
     editRevisionRef.current = 0;
   }
-}, [noteId]);
+}, [note?.id]);
 
 const handleSave = async () => {
    if (saveStatus !== "unsaved" && saveStatus !== "error") {
@@ -58,7 +58,6 @@ const handleSave = async () => {
 
   const plainTextContent = content.replace(/<[^>]*>/g, "").trim();
   if (!plainTextContent) {
-      setErrorMessage("Note content cannot be empty.");
       setSaveStatus("error");
     return;
   }
@@ -114,14 +113,13 @@ const handleContentChange = (value) => {
     setSaveStatus("unsaved");
   }
 };
+
+const handleCancel = () => {
+  navigate(-1);
+};
   return (
     <main className="h-screen bg-background flex flex-col">
-      <NoteToolBar onSave={handleSave} saveStatus={saveStatus}/>
-      {errorMessage && (
-  <p className="px-6 py-2 text-sm text-error">
-    {errorMessage}
-  </p>
-)}
+      <NoteToolBar onSave={handleSave} onCancel={handleCancel} saveStatus={saveStatus}/>
       <section className="flex-1 overflow-y-auto">
       <article className=" py-8 px-6 md:px-16">
         <header>
@@ -133,7 +131,8 @@ const handleContentChange = (value) => {
 
         </header>
       </article>
- <section className="px-10 md:px-22">
+{/* <EditorToolButton /> */}
+ <section className="px-10 md:px-22 mb-4">
   <div ref={editorRef}>           <ReactQuill  theme="snow" value={content} modules={modules} onChange={handleContentChange} placeholder="Start typing ..." className="mt-6 text-base
     text-text
     placeholder:text-text-muted" /> 

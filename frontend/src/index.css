@@ -15,8 +15,8 @@
   --color-notes: var(--notes);
   --color-notes-bg: var(--notes-bg);
 
-  --color-fav: var(--fav);
-  --color-fav-bg: var(--fav-bg);
+  --color-pin: var(--pin);
+  --color-pin-bg: var(--pin-bg);
 
   --color-recent: var(--recent);
   --color-recent-bg: var(--recent-bg);
@@ -50,8 +50,8 @@
   --notes: #7c5cfc;
   --notes-bg: #f3f0ff;
 
-  --fav: #ffb800;
-  --fav-bg: #fff8e8;
+  --pin: #c47f9a;
+  --pin-bg: #f8edf2;
 
   --recent: #5b9bff;
   --recent-bg: #f1f8ff;
@@ -85,8 +85,8 @@
   --notes: #a78bfa;
   --notes-bg: #302844;
 
-  --fav: #ffc94d;
-  --fav-bg: #3a321f;
+--pin: #d69ab0;
+--pin-bg: #3a2931;
 
   --recent: #7dafff;
   --recent-bg: #253246;

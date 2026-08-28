@@ -8,7 +8,7 @@ import ProfileView from "./pages/Dashboard/views/ProfileView.jsx";
 import NoteView from "./pages/Dashboard/views/NoteView.jsx";
 import AppLayout from "./layouts/AppLayout.jsx";
 import AllNotesView from "./pages/Dashboard/views/main_content/AllNotesView.jsx";
-import FavouriteView from "./pages/Dashboard/views/main_content/FavouriteView.jsx";
+import PinnedView from "./pages/Dashboard/views/main_content/PinnedView.jsx";
 import TrashView from "./pages/Dashboard/views/main_content/TrashView.jsx";
 import RecentView from "./pages/Dashboard/views/main_content/RecentView.jsx";
 import EditProfile from "./pages/Dashboard/views/EditProfile.jsx";
@@ -41,7 +41,7 @@ function App() {
       <Route element={<AppLayout />}>
         <Route path="/dashboard" element={<Dashboard />}>
           <Route index element={<AllNotesView />} />
-          <Route path="favorites" element={<FavouriteView />} />
+          <Route path="pin" element={<PinnedView />} />
           <Route path="recent" element={<RecentView />} />
           <Route path="trash" element={<TrashView />} />
         </Route>

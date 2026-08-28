@@ -38,6 +38,7 @@ navigate("/login")
     <Modal
       isOpen={showLogoutModal}
       onClose={closeLogoutModal}
+      titleId="logout-title"
     >
       <div className="flex flex-col items-center ">
 
