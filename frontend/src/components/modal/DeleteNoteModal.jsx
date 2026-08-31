@@ -20,7 +20,7 @@ function DeleteNoteModal({
       <p className="mt-3 text-sm text-text-muted">
         Are you sure you want to permanently delete{" "}
         <span className="font-medium text-text">
-          "{note.title}"
+          "{note?.title}"
         </span>
         ? This action cannot be undone.
       </p>

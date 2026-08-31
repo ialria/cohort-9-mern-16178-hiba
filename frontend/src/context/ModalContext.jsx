@@ -4,7 +4,6 @@ const ModalContext = createContext();
 
 export function ModalProvider({ children }) {
   const [showLogoutModal, setShowLogoutModal] = useState(false);
-  const [noteToDelete, setNoteToDelete] = useState(null);
 
   function openLogoutModal() {
     setShowLogoutModal(true);
@@ -13,13 +12,6 @@ export function ModalProvider({ children }) {
   function closeLogoutModal() {
     setShowLogoutModal(false);
   }
-   function openDeleteModal(note) {
-    setNoteToDelete(note);
-  }
-
-  function closeDeleteModal() {
-    setNoteToDelete(false);
-  }
 
   return (
     <ModalContext.Provider
@@ -27,9 +19,6 @@ export function ModalProvider({ children }) {
         showLogoutModal,
         openLogoutModal,
         closeLogoutModal,
-        noteToDelete,
-        openDeleteModal,
-        closeDeleteModal
       }}
     >
       {children}

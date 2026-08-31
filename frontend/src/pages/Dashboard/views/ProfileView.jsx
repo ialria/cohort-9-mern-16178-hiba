@@ -24,6 +24,9 @@ import { useModal } from "../../../context/ModalContext.jsx";
 import { useProfile } from "../../../context/ProfileContext.jsx";
 import formatDate from "../../../utils/formateDate.js";
 import { useTheme } from "../../../context/ThemeContext.jsx";
+import Loading from "../../../components/Loading.jsx";
+import ErrorPage from "../../ErrorPage.jsx";
+
 function Card({ children, className = "" }) {
   return (
     <div
@@ -62,17 +65,20 @@ function ProfileView() {
   const { openLogoutModal } = useModal();
   const { collapsed } = useSidebar();
   const { notes , exportAllNotes, exportStatus, exportProgress} = useNotes();
-  const { profile, loading,getInitials } = useProfile();
+  const { profile, loading,getInitials,getProfile, profileError } = useProfile();
 
   const { theme, toggleTheme , accentColor, setAccentColor} = useTheme();
   const notesNum = notes.filter((note) => !note.isDeleted).length;
   const exportPercentage =
-  notesNum > 0 ? Math.round((exportProgress / notesNum) * 100) : 0;
+  notesNum > 0 ? Math.round((exportProgress / notesNum) * 100) : 0; //if notes are zero then avoiding division -might be undefined then
+
   const pinnedNum = notes.filter(
     (note) => note.isPinned && !note.isDeleted,
   ).length;
   const deletedNum = notes.filter((note) => note.isDeleted).length;
   const activeNotes = notes.filter((note) => !note.isDeleted);
+
+  // sorting on latest update including create and then updated 
 const recentNotes = [...activeNotes]
   .sort(
     (a, b) =>
@@ -80,6 +86,21 @@ const recentNotes = [...activeNotes]
       new Date(a.updatedAt || a.createdAt),
   )
   .slice(0, 3);
+
+if (loading) {
+  return <Loading />;
+}
+
+if (profileError) {
+  return (
+    <ErrorPage
+      message={profileError}
+      onRetry={getProfile}
+    />
+  );
+}
+
+
   return (
     <DashboardLayout>
       <main className="px-5 md:px-8 flex flex-col gap-4 pb-8">
@@ -226,7 +247,7 @@ const recentNotes = [...activeNotes]
 
  <div className="flex items-center gap-2">
   <button
-    type="button"
+    type="button" aria-pressed={accentColor === "purple"}
     aria-label="Purple"
     onClick={() => setAccentColor("purple")}
     className={`w-7 h-7 rounded-full bg-[#362b4a] ${
@@ -237,7 +258,7 @@ const recentNotes = [...activeNotes]
   />
 
   <button
-    type="button"
+    type="button" aria-pressed={accentColor === "teal"}
     aria-label="Deep Teal"
     onClick={() => setAccentColor("teal")}
     className={`w-7 h-7 rounded-full bg-[#2C4A47] ${
@@ -248,7 +269,7 @@ const recentNotes = [...activeNotes]
   />
 
   <button
-    type="button"
+    type="button" aria-pressed={accentColor === "forest"}
     aria-label="Muted Forest"
     onClick={() => setAccentColor("forest")}
     className={`w-7 h-7 rounded-full bg-[#3D5240] ${
@@ -381,13 +402,8 @@ const recentNotes = [...activeNotes]
     </div>
   </InnerElement>
 </button>
-{/* <span className="text-xs text-text-muted">
-  {exportStatus === "exporting"
-    ? `Exporting ${exportProgress} of ${notesNum} notes...`
-    : exportStatus === "completed"
-      ? "All notes exported successfully"
-      : "Download all your notes as a ZIP file"}
-</span> */}
+
+
 {exportStatus === "exporting" && (
   <div className="w-full px-2">
     <div className="h-1.5 w-full rounded-full bg-primary-lighter overflow-hidden">

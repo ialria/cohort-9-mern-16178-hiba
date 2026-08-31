@@ -4,7 +4,7 @@ import NoteMenu from "../../components/note_components/NoteMenu.jsx";
 import {useSidebar} from "../../../../context/SidebarContext.jsx";
 function PinnedView(){
     const {collapsed}=useSidebar();
-    const {notes, handlePin, moveToTrash} = useNotes();
+    const {notes, handlePin, moveToTrash, exportNote} = useNotes();
 const pinnedNotes=notes.filter(note=>note.isPinned && !note.isDeleted);
     return (
      <section className={`grid grid-cols-1 gap-4 md:grid-cols-2  ${collapsed ? "md:gap-4" : "md:gap-6"} px-5 md:px-8`}>
@@ -22,6 +22,7 @@ const pinnedNotes=notes.filter(note=>note.isPinned && !note.isDeleted);
                 compact={true}
                 onPin={() => handlePin(note.id)}
                  onDelete={() => moveToTrash(note.id)}
+                 onExport={()=>exportNote(note)}
             />
         ))
         

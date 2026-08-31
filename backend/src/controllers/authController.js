@@ -40,6 +40,8 @@ if (!emailRegex.test(email.trim())) {
     message: "Please enter a valid email",
   });
 }
+
+//different casing or spaces donot create new/duplicated accounts
 const normalizedEmail = email.trim().toLowerCase(); 
     const existingUser = await prisma.user.findUnique({
       where: {
@@ -53,6 +55,8 @@ const normalizedEmail = email.trim().toLowerCase();
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
+
+
     const user = await prisma.user.create({
       data: {
         username: username,
@@ -110,6 +114,7 @@ const login = async (req, res) => {
       });
     }
 
+    //hash the entered password and then we compare the hash
     const userPassword = await bcrypt.compare(password, user.password);
     if (!userPassword) {
       return res.status(401).json({
@@ -117,10 +122,13 @@ const login = async (req, res) => {
       });
     }
 
+    //jwt- contains id
     const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, {
       expiresIn: "1d",
         algorithm: "HS256",
     });
+
+    // store in http only cookie -cannot access the token
     res.cookie("token", token, {
   httpOnly: true,
   secure: process.env.NODE_ENV === "production",
@@ -152,6 +160,7 @@ const login = async (req, res) => {
 };
 
 const logout= (req, res)=>{
+  //removing the cookie
    res.clearCookie("token", {
   httpOnly: true,
   secure: process.env.NODE_ENV === "production",
@@ -175,11 +184,16 @@ try{
     const user=await prisma.user.findUnique({
         where:{email:normalizedEmail}
     });
+
+
     if(!user){
         return res.status(200).json({message:"If an account exists with this email, a reset link has been sent."});
     }
+
     const resetToken=crypto.randomBytes(32).toString("hex");
-    const hashedToken=crypto.createHash("sha256").update(resetToken).digest("hex");
+    const hashedToken=crypto.createHash("sha256").update(resetToken).digest("hex"); //token exists onl in reset link then 
+
+    // valid for 15 minutes
     const tokenExpiresAt=new Date(Date.now()+ 15 * 60 * 1000);
     await prisma.$transaction([
   prisma.passwordresettoken.deleteMany({
@@ -197,6 +211,7 @@ try{
     ]);
 
    
+    // placing unhashed token in link
 const resetLink =  `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}`;
 
 try {
@@ -269,6 +284,8 @@ if (
         message: "Invalid or expired reset link",
       });
     }
+
+    // making sure that expired token cannot be used again
   if (resetToken.tokenExpiresAt < new Date()) {
       await prisma.passwordresettoken.delete({
         where: {
@@ -317,10 +334,51 @@ if (
     }
 };
 
+
+const getCurrentUser = async (req, res) => {
+  try {
+    const user = await prisma.user.findUnique({
+      where: {
+        id: req.userId,
+      },
+      select: {
+        id: true,
+        username: true,
+        email: true,
+      },
+    });
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
+
+    return res.status(200).json({
+      user,
+    });
+  } catch (error) {
+    logger.error(
+      {
+        error: {
+          name: error.name,
+          message: error.message,
+        },
+      },
+      "Failed to fetch current user"
+    );
+
+    return res.status(500).json({
+      message: "Something went wrong",
+    });
+  }
+};
+
 module.exports = {
   signup,
   login,
   logout,
   forgotPassword,
-  resetPassword
+  resetPassword,
+  getCurrentUser
 };

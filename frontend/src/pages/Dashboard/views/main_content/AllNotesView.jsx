@@ -1,54 +1,60 @@
 import NoteCard from "../../components/NoteCard.jsx";
 import { useNavigate } from "react-router-dom";
-import {useSidebar} from "../../../../context/SidebarContext.jsx";
-import {useNotes} from "../../../../context/NotesContext.jsx";
-import {Plus} from "../../../../icons/icons.jsx";
+import { useSidebar } from "../../../../context/SidebarContext.jsx";
+import { useNotes } from "../../../../context/NotesContext.jsx";
+import { Plus } from "../../../../icons/icons.jsx";
 import { useMemo, useState } from "react";
 import NoteActionBar from "../../components/note_components/NoteActionBar.jsx";
 import NoteMenu from "../../components/note_components/NoteMenu.jsx";
-function AllNotesView(){
-    const {notes, handlePin,moveToTrash, importNotes, exportNote}=useNotes();
-    const navigate=useNavigate();
-    const {collapsed}=useSidebar();
- const [sortBy, setSortBy] = useState("date");
+function AllNotesView() {
+  const { notes, handlePin, moveToTrash, importNotes, exportNote } = useNotes();
+  const navigate = useNavigate();
+  const { collapsed } = useSidebar();
+  const [sortBy, setSortBy] = useState("date");
   const [sortOrder, setSortOrder] = useState("descending");
 
-const allNotes = useMemo(
-  () => (notes || []).filter((note) => !note.isDeleted),
-  [notes]
-);
+  // using this memo -avoid filtering unless we achange the notes list 
+  const allNotes = useMemo(
+    () => (notes || []).filter((note) => !note.isDeleted),
+    [notes],
+  );
 
- function handleSort(newSortBy, newSortOrder) {
+  // actual sorting handler
+  function handleSort(newSortBy, newSortOrder) {
     setSortBy(newSortBy);
     setSortOrder(newSortOrder);
   }
+
   const sortedNotes = useMemo(() => {
-    const notesCopy = [...allNotes];
+    const notesCopy = [...allNotes];//copy -to avoid changing original notes
 
     notesCopy.sort((firstNote, secondNote) => {
+      if(sortBy !=="pinned"){
       const pinDifference =
-    Number(secondNote.isPinned) - Number(firstNote.isPinned);
+        Number(secondNote.isPinned) - Number(firstNote.isPinned);
 
-  if (pinDifference !== 0) {
-    return pinDifference;
-  }
+      if (pinDifference !== 0) {
+        return pinDifference;
+      }
+    }
       let comparison = 0;
 
+      // depending on edited and created at fields
       if (sortBy === "date") {
         comparison =
-          new Date(firstNote.createdAt) -
-          new Date(secondNote.createdAt);
+          new Date(firstNote.editedAt || firstNote.createdAt) -
+          new Date(secondNote.editedAt || secondNote.createdAt);
       }
       if (sortBy === "title") {
         comparison = (firstNote.title || "").localeCompare(
-         secondNote.title || ""
+          secondNote.title || "",
         );
       }
       if (sortBy === "pinned") {
-        comparison =
-          Number(firstNote.isPinned) -
-          Number(secondNote.isPinned);
+        comparison = Number(firstNote.isPinned) - Number(secondNote.isPinned);
       }
+
+      // old ones at top and then recent ones at bottom
       if (sortOrder === "descending") {
         comparison = -comparison;
       }
@@ -58,9 +64,9 @@ const allNotes = useMemo(
     return notesCopy;
   }, [allNotes, sortBy, sortOrder]);
 
-    return (
-      <>
-        <NoteActionBar
+  return (
+    <>
+      <NoteActionBar
         sortBy={sortBy}
         sortOrder={sortOrder}
         onSort={handleSort}
@@ -79,20 +85,20 @@ const allNotes = useMemo(
           No notes yet
         </h2>
 
-        <p className="mt-2 text-sm text-text-muted">
-          Create your first note to get started.
-        </p>
+            <p className="mt-2 text-sm text-text-muted">
+              Create your first note to get started.
+            </p>
 
-        <button
-          type="button"
-          onClick={() => navigate("/notes/new")}
-          className="mt-5 rounded-md bg-primary px-5 py-2 text-sm font-semibold text-surface"
-        >
-          Create note
-        </button>
-      </div>
-    ) : (
-      <>
+            <button
+              type="button"
+              onClick={() => navigate("/notes/new")}
+              className="mt-5 rounded-md bg-primary px-5 py-2 text-sm font-semibold text-surface"
+            >
+              Create note
+            </button>
+          </div>
+        ) : (
+          <>
             {sortedNotes.map((note) => (
               <NoteCard
                 key={note.id}
@@ -100,7 +106,7 @@ const allNotes = useMemo(
                 MenuComponent={NoteMenu}
                 onPin={() => handlePin(note.id)}
                 onDelete={() => moveToTrash(note.id)}
-                onExport={()=>exportNote(note)}
+                onExport={() => exportNote(note)}
               />
             ))}
 
@@ -109,11 +115,7 @@ const allNotes = useMemo(
               onClick={() => navigate("/notes/new")}
               className="absolute bottom-5 right-8 p-4 bg-primary rounded-full cursor-pointer"
             >
-              <Plus
-                size={20}
-                strokeWidth={2}
-                className="text-surface"
-              />
+              <Plus size={20} strokeWidth={2} className="text-surface" />
             </button>
           </>
         )}
@@ -122,5 +124,4 @@ const allNotes = useMemo(
 );
 }
 
-
-export default AllNotesView
+export default AllNotesView;

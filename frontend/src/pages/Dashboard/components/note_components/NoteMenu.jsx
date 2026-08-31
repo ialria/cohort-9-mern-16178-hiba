@@ -2,7 +2,7 @@ import {Trash2,Pin,Download} from "../../../../icons/icons.jsx";
 import MenuButton from "../../../../components/MenuButton.jsx";
 function NoteMenu({onPin, onDelete, isPinned, onExport}) {
   return (
-    <div className="absolute right-12 top-6 py-4 px-4 mt-1 w-52 bg-surface border rounded-xl border-border/70 z-50 backdrop-blur-xl ring-1 ring-black/5 shadow-lg">
+    <div className="absolute right-12 top-5 py-4 px-4 mt-1 w-52 bg-surface border rounded-xl border-border/70 z-50 backdrop-blur-xl ring-1 ring-black/5 shadow-lg">
     <MenuButton onClick={(e=>{
       e.preventDefault();
       e.stopPropagation();

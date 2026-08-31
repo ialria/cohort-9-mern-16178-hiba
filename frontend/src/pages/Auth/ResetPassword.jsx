@@ -20,6 +20,8 @@ function ResetPassword() {
   const [resetSuccessful, setResetSuccessful] = useState(false);
   const token = searchParams.get("token");
   const navigate = useNavigate();
+
+  // handling form (email+password+username) to check whether all rules are followed
   function validateForm() {
     const newErrors = {};
 
@@ -43,6 +45,7 @@ function ResetPassword() {
     return newErrors;
   }
 
+  //
   async function handleSubmit(e) {
     e.preventDefault();
     const foundErrors = validateForm();
@@ -153,7 +156,7 @@ function ResetPassword() {
                   onChange={async (e) => {
                     const value = e.target.value;
          const currentCheckId = ++passwordCheckId.current;
-           
+           setPasswordStrength(null);
                     setPassword(value);
                     if (errors.password) {
                       setErrors((prev) => ({

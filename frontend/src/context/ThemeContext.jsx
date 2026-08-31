@@ -6,22 +6,15 @@ export function ThemeProvider({ children }) {
   });
   
   const [accentColor, setAccentColor] = useState(() => {
-    return localStorage.getItem("accentColor") || "purple";
+    return localStorage.getItem("accentColor") || "purple"; //store theme and then accentcolor too across all views 
   });
-  useEffect(() => {
-    const root = document.documentElement;
 
-    if (theme === "dark") {
-      root.classList.add("dark");
-    } else {
-      root.classList.remove("dark");
-    }
-    localStorage.setItem("theme", theme);
-  }, [theme]);
     useEffect(() => {
     const root = document.documentElement;
  root.classList.toggle("dark", theme === "dark");
     root.setAttribute("data-accent", accentColor);
+
+    // save preferences after refreshing or reopeneing 
 localStorage.setItem("theme", theme);
     localStorage.setItem("accentColor", accentColor);
   }, [theme,accentColor]);

@@ -4,7 +4,7 @@ const logger = require("../utilities/logger");
 const createNote = async (req, res) => {
   try {
     const { title, noteContent } = req.body;
-    if (!noteContent) {
+    if (!noteContent) { //save only note content -not empty one
       return res
         .status(400)
         .json({ message: "Note content is required" });
@@ -13,7 +13,7 @@ const createNote = async (req, res) => {
       data: {
         title:title?.trim() || "Untitled Note",
         content: noteContent,
-        userId: req.userId,
+        userId: req.userId,   
       },
     });
     return res.status(201).json({
@@ -79,6 +79,7 @@ if (!Number.isInteger(parsedNoteId) || parsedNoteId <= 0) {
 }
     const { title, noteContent,updatedAt } = req.body;
 
+    //note alredy exists and then belong to the user too
     const note = await prisma.note.findFirst({
       where: {
         id: parsedNoteId,
@@ -91,6 +92,8 @@ if (!Number.isInteger(parsedNoteId) || parsedNoteId <= 0) {
         message: "Couldn't find note",
       });
     }
+
+    //doesnt overwrite a new change
     const result = await prisma.note.updateMany({
   where: {
     id: parsedNoteId,
@@ -313,6 +316,8 @@ const deleteForever = async (req, res) => {
         message: "Error! Invalid note ID",
       });
     }
+
+    // delete permanently onlt id note is already in trash
     const note = await prisma.note.findFirst({
       where: {
         id: parsedNoteId,

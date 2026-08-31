@@ -5,22 +5,33 @@ const ProfileContext = createContext();
 export function ProfileProvider({ children }) {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [profileError, setProfileError] = useState(null);
   useEffect(() => {
-    getProfile();
+    getProfile().catch(()=>{}); //when first mounted then run this
   }, []);
 
   const getProfile = async () => {
+    setLoading(true);
+  setProfileError(null);
     try {
       const response = await apiFetch("/api/profile");
 
-      const data = await response.json();
+      const data = await response.json().catch(()=>null);
       if (!response.ok) {
-        throw new Error(data.message || "Error! Failed to fetch profile");
+        throw new Error(data?.message || "Error! Failed to fetch profile");
       }
+      // if successful response but if invalid or error data
+if (!data) {
+  throw new Error("Error! Failed to fetch profile");
+}
 
       setProfile(data);
     } catch (error) {
       console.error("Failed to fetch profile:", error);
+       setProfile(null);
+    setProfileError(
+      error.message || "Oops! Something went wrong. Please try again."
+    );
     } finally {
       setLoading(false);
     }
@@ -32,11 +43,13 @@ export function ProfileProvider({ children }) {
       body: JSON.stringify(profileData),
     });
 
-    const data = await response.json();
+    const data = await response.json().catch(()=>null);
     if (!response.ok) {
-      throw new Error(data.message || "Failed to update profile");
+      throw new Error(data?.message || "Error! Failed to update profile");
     }
-
+if (!data) {
+  throw new Error("Error! Failed to update profile");
+}
     setProfile(data);
     return data;
   }catch (error){
@@ -45,6 +58,7 @@ export function ProfileProvider({ children }) {
   };
 
 const getInitials = (username = "") => {
+  // if no space then one letter if space then two
   return username
     .trim()
     .split(/\s+/)
@@ -62,7 +76,8 @@ const getInitials = (username = "") => {
         loading,
         getProfile,
         updateProfile,
-        getInitials
+        getInitials,
+        profileError
       }}
     >
       {children}
