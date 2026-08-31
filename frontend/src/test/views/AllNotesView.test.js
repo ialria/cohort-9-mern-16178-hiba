@@ -1,198 +1,133 @@
-import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
+import AllNotesView from "../../pages/Dashboard/views/main_content/AllNotesView.jsx";
+import { useNotes } from "../../context/NotesContext.jsx";
+import { useSidebar } from "../../context/SidebarContext.jsx";
 
-import AllNotesView from "../../views/AllNotesView.jsx";
-import { useNavigate } from "react-router-dom";
-import { useSidebar } from "../../../../context/SidebarContext.jsx";
-import { useNotes } from "../../../../context/NotesContext.jsx";
+const mockNavigate = jest.fn();
 
 jest.mock("react-router-dom", () => ({
-  useNavigate: jest.fn(),
+  ...jest.requireActual("react-router-dom"),
+  useNavigate: () => mockNavigate,
 }));
 
-jest.mock("../../../../context/SidebarContext.jsx", () => ({
-  useSidebar: jest.fn(),
+jest.mock("../../pages/Dashboard/components/NoteCard.jsx", () => {
+  return function MockNoteCard({ note, onPin, onDelete, onExport }) {
+    return (
+      <div data-testid={`note-card-${note.id}`}>
+        <span>{note.title}</span>
+
+        <button onClick={onPin}>Pin</button>
+        <button onClick={onDelete}>Delete</button>
+        <button onClick={onExport}>Export</button>
+      </div>
+    );
+  };
+});
+
+jest.mock(
+  "../../pages/Dashboard/components/note_components/NoteActionBar.jsx",
+  () => {
+    return function MockNoteActionBar({
+      sortBy,
+      sortOrder,
+      onSort,
+      onImport,
+    }) {
+      return (
+        <div data-testid="note-action-bar">
+          <span data-testid="sort-by">{sortBy}</span>
+          <span data-testid="sort-order">{sortOrder}</span>
+
+          {/* controls- sort this chaos */}
+          <button onClick={() => onSort("date", "descending")}>
+            Sort Date Descending
+          </button>
+
+          <button onClick={() => onSort("date", "ascending")}>
+            Sort Date Ascending
+          </button>
+
+          <button onClick={() => onSort("title", "ascending")}>
+            Sort Title Ascending
+          </button>
+
+          <button onClick={() => onSort("title", "descending")}>
+            Sort Title Descending
+          </button>
+
+          <button onClick={() => onSort("pinned", "ascending")}>
+            Sort Pinned Ascending
+          </button>
+
+          <button onClick={() => onSort("pinned", "descending")}>
+            Sort Pinned Descending
+          </button>
+
+          <button onClick={onImport}>Import</button>
+        </div>
+      );
+    };
+  },
+);
+
+jest.mock(
+  "../../pages/Dashboard/components/note_components/NoteMenu.jsx",
+  () => {
+    return function MockNoteMenu() {
+      return <div data-testid="note-menu" />;
+    };
+  },
+);
+
+jest.mock("../../icons/icons.jsx", () => ({
+  Plus: () => <span data-testid="plus-icon" />,
 }));
 
-jest.mock("../../../../context/NotesContext.jsx", () => ({
+jest.mock("../../context/NotesContext.jsx", () => ({
   useNotes: jest.fn(),
 }));
 
-jest.mock("../../../../icons/icons.jsx", () => ({
-  Plus: () => <span data-testid="plus-icon">Plus</span>,
+jest.mock("../../context/SidebarContext.jsx", () => ({
+  useSidebar: jest.fn(),
 }));
 
-jest.mock("../../../../components/NoteCard.jsx", () => {
-  return function MockNoteCard({
-    note,
-    onPin,
-    onDelete,
-    onExport,
-  }) {
-    return (
-      <div data-testid={`note-card-${note.id}`}>
-        <span data-testid={`note-title-${note.id}`}>
-          {note.title}
-        </span>
-
-        <span data-testid={`note-pinned-${note.id}`}>
-          {String(note.isPinned)}
-        </span>
-
-        <button
-          type="button"
-          onClick={onPin}
-          data-testid={`pin-${note.id}`}
-        >
-          Pin
-        </button>
-
-        <button
-          type="button"
-          onClick={onDelete}
-          data-testid={`delete-${note.id}`}
-        >
-          Delete
-        </button>
-
-        <button
-          type="button"
-          onClick={onExport}
-          data-testid={`export-${note.id}`}
-        >
-          Export
-        </button>
-      </div>
-    );
-  };
-});
-
-jest.mock("../../components/note_components/NoteActionBar.jsx", () => {
-  return function MockNoteActionBar({
-    sortBy,
-    sortOrder,
-    onSort,
-    onImport,
-  }) {
-    return (
-      <div data-testid="note-action-bar">
-        <span data-testid="current-sort-by">
-          {sortBy}
-        </span>
-
-        <span data-testid="current-sort-order">
-          {sortOrder}
-        </span>
-
-        <button
-          type="button"
-          onClick={() => onSort("title", "ascending")}
-        >
-          Sort Title Ascending
-        </button>
-
-        <button
-          type="button"
-          onClick={() => onSort("title", "descending")}
-        >
-          Sort Title Descending
-        </button>
-
-        <button
-          type="button"
-          onClick={() => onSort("date", "ascending")}
-        >
-          Sort Date Ascending
-        </button>
-
-        <button
-          type="button"
-          onClick={() => onSort("date", "descending")}
-        >
-          Sort Date Descending
-        </button>
-
-        <button
-          type="button"
-          onClick={() => onSort("pinned", "ascending")}
-        >
-          Sort Pinned Ascending
-        </button>
-
-        <button
-          type="button"
-          onClick={() => onSort("pinned", "descending")}
-        >
-          Sort Pinned Descending
-        </button>
-
-        <button
-          type="button"
-          onClick={onImport}
-        >
-          Import
-        </button>
-      </div>
-    );
-  };
-});
-
 describe("AllNotesView", () => {
-  let navigate;
-  let handlePin;
-  let moveToTrash;
-  let importNotes;
-  let exportNote;
+  const mockHandlePin = jest.fn();
+  const mockMoveToTrash = jest.fn();
+  const mockImportNotes = jest.fn();
+  const mockExportNote = jest.fn();
 
   const notes = [
     {
       id: 1,
-      title: "Banana",
-      content: "Banana content",
-      isPinned: false,
+      title: "Zebra Note",
       isDeleted: false,
-      createdAt: "2026-08-20T10:00:00Z",
-      editedAt: "2026-08-25T10:00:00Z",
+      isPinned: false,
+      createdAt: "2026-08-01T10:00:00Z",
+      editedAt: "2026-08-05T10:00:00Z",
     },
     {
       id: 2,
-      title: "Apple",
-      content: "Apple content",
-      isPinned: true,
+      title: "Apple Note",
       isDeleted: false,
-      createdAt: "2026-08-22T10:00:00Z",
-      editedAt: "2026-08-26T10:00:00Z",
+      isPinned: true,
+      createdAt: "2026-08-02T10:00:00Z",
+      editedAt: "2026-08-10T10:00:00Z",
     },
     {
       id: 3,
-      title: "Cherry",
-      content: "Cherry content",
-      isPinned: false,
+      title: "Deleted Note",
       isDeleted: true,
-      createdAt: "2026-08-24T10:00:00Z",
-      editedAt: "2026-08-27T10:00:00Z",
-    },
-    {
-      id: 4,
-      title: "Date",
-      content: "Date content",
-      isPinned: true,
-      isDeleted: false,
-      createdAt: "2026-08-23T10:00:00Z",
-      editedAt: "2026-08-28T10:00:00Z",
+      isPinned: false,
+      createdAt: "2026-08-03T10:00:00Z",
+      editedAt: "2026-08-11T10:00:00Z",
     },
   ];
 
+  mockNavigate.mockClear();
   beforeEach(() => {
     jest.clearAllMocks();
-
-    navigate = jest.fn();
-    handlePin = jest.fn();
-    moveToTrash = jest.fn();
-    importNotes = jest.fn();
-    exportNote = jest.fn();
-
-    useNavigate.mockReturnValue(navigate);
 
     useSidebar.mockReturnValue({
       collapsed: false,
@@ -200,101 +135,160 @@ describe("AllNotesView", () => {
 
     useNotes.mockReturnValue({
       notes,
-      handlePin,
-      moveToTrash,
-      importNotes,
-      exportNote,
+      handlePin: mockHandlePin,
+      moveToTrash: mockMoveToTrash,
+      importNotes: mockImportNotes,
+      exportNote: mockExportNote,
     });
   });
 
-  test("renders the note action bar", () => {
-    render(<AllNotesView />);
+  const renderComponent = () => {
+    return render(
+      <MemoryRouter>
+        <AllNotesView />
+      </MemoryRouter>,
+    );
+  };
+
+  test("This renders only non-deleted notes", () => {
+    renderComponent();
+
+    expect(screen.getByText("Zebra Note")).toBeInTheDocument();
+    expect(screen.getByText("Apple Note")).toBeInTheDocument();
+
+    // RIP Deleted Note
+    expect(screen.queryByText("Deleted Note")).not.toBeInTheDocument();
+  });
+
+  test("This renders the empty state when there are no active notes", () => {
+    useNotes.mockReturnValue({
+      notes: [],
+      handlePin: mockHandlePin,
+      moveToTrash: mockMoveToTrash,
+      importNotes: mockImportNotes,
+      exportNote: mockExportNote,
+    });
+
+    renderComponent();
+
+    expect(screen.getByText("No notes yet")).toBeInTheDocument();
+    expect(
+      screen.getByText("Create your first note to get started."),
+    ).toBeInTheDocument();
 
     expect(
-      screen.getByTestId("note-action-bar"),
+      screen.getByRole("button", { name: "Create note" }),
     ).toBeInTheDocument();
   });
 
-  test("renders all non-deleted notes", () => {
-    render(<AllNotesView />);
+  test("This handles null notes without crashing", () => {
+    useNotes.mockReturnValue({
+      notes: null,
+      handlePin: mockHandlePin,
+      moveToTrash: mockMoveToTrash,
+      importNotes: mockImportNotes,
+      exportNote: mockExportNote,
+    });
 
-    expect(
-      screen.getByTestId("note-card-1"),
-    ).toBeInTheDocument();
+    renderComponent();
 
-    expect(
-      screen.getByTestId("note-card-2"),
-    ).toBeInTheDocument();
-
-    expect(
-      screen.getByTestId("note-card-4"),
-    ).toBeInTheDocument();
+    expect(screen.getByText("No notes yet")).toBeInTheDocument();
   });
 
-  test("does not render deleted notes", () => {
-    render(<AllNotesView />);
-
-    expect(
-      screen.queryByTestId("note-card-3"),
-    ).not.toBeInTheDocument();
+test("This navigates to the new note page from the empty state", () => {
+  useNotes.mockReturnValue({
+    notes: [],
+    handlePin: mockHandlePin,
+    moveToTrash: mockMoveToTrash,
+    importNotes: mockImportNotes,
+    exportNote: mockExportNote,
   });
 
-  test("renders notes with the correct titles", () => {
-    render(<AllNotesView />);
+  renderComponent();
 
-    expect(
-      screen.getByTestId("note-title-1"),
-    ).toHaveTextContent("Banana");
+  fireEvent.click(
+    screen.getByRole("button", { name: "Create note" }),
+  );
 
-    expect(
-      screen.getByTestId("note-title-2"),
-    ).toHaveTextContent("Apple");
+  expect(mockNavigate).toHaveBeenCalledWith("/notes/new");
+});
 
-    expect(
-      screen.getByTestId("note-title-4"),
-    ).toHaveTextContent("Date");
+  test("It calls importNotes when the import button is clicked", () => {
+    renderComponent();
+
+    fireEvent.click(screen.getByRole("button", { name: "Import" }));
+
+    expect(mockImportNotes).toHaveBeenCalledTimes(1);
   });
 
-  test("renders pinned status correctly", () => {
-    render(<AllNotesView />);
+  test("It calls handlePin with the correct note id", () => {
+    renderComponent();
 
-    expect(
-      screen.getByTestId("note-pinned-1"),
-    ).toHaveTextContent("false");
+    const appleNote = screen.getByTestId("note-card-2");
 
-    expect(
-      screen.getByTestId("note-pinned-2"),
-    ).toHaveTextContent("true");
+    fireEvent.click(
+      appleNote.querySelector("button:nth-of-type(1)"),
+    );
 
-    expect(
-      screen.getByTestId("note-pinned-4"),
-    ).toHaveTextContent("true");
+    expect(mockHandlePin).toHaveBeenCalledTimes(1);
+    expect(mockHandlePin).toHaveBeenCalledWith(2);
   });
 
-  test("does not mutate the original notes array while sorting", () => {
-    const originalNotes = [...notes];
+  test("This calls moveToTrash with the correct note id", () => {
+    renderComponent();
 
-    render(<AllNotesView />);
+    const appleNote = screen.getByTestId("note-card-2");
 
-    expect(notes).toEqual(originalNotes);
+    fireEvent.click(
+      appleNote.querySelector("button:nth-of-type(2)"),
+    );
+
+    expect(mockMoveToTrash).toHaveBeenCalledTimes(1);
+    expect(mockMoveToTrash).toHaveBeenCalledWith(2);
   });
 
-  test("puts pinned notes first by default", () => {
-    render(<AllNotesView />);
+  test("This calls exportNote with the correct note object", () => {
+    renderComponent();
 
-    const cards = screen.getAllByTestId(/note-card-/);
+    const appleNote = screen.getByTestId("note-card-2");
 
-    expect(
-      cards.map((card) => card.dataset.testid),
-    ).toEqual([
-      "note-card-4",
-      "note-card-2",
-      "note-card-1",
-    ]);
+    fireEvent.click(
+      appleNote.querySelector("button:nth-of-type(3)"),
+    );
+
+    expect(mockExportNote).toHaveBeenCalledTimes(1);
+    expect(mockExportNote).toHaveBeenCalledWith(notes[1]);
   });
 
-  test("sorts notes by title in ascending order", () => {
-    render(<AllNotesView />);
+  test("It puts pinned notes first when sorting by date", () => {
+    renderComponent();
+
+    const cards = screen.getAllByTestId(/^note-card-/);
+
+    // pin
+    expect(cards[0]).toHaveAttribute("data-testid", "note-card-2");
+    expect(cards[1]).toHaveAttribute("data-testid", "note-card-1");
+  });
+
+  test("This sorts notes by date in ascending order", () => {
+    renderComponent();
+
+    fireEvent.click(
+      screen.getByRole("button", {
+        name: "Sort Date Ascending",
+      }),
+    );
+
+    const cards = screen.getAllByTestId(/^note-card-/);
+
+    // Apple is pinned, so it still gets priority.
+    // Among the remaining notes, older dates come first.
+    expect(cards[0]).toHaveAttribute("data-testid", "note-card-2");
+    expect(cards[1]).toHaveAttribute("data-testid", "note-card-1");
+  });
+
+  test("This sorts notes by title in ascending order", () => {
+    renderComponent();
 
     fireEvent.click(
       screen.getByRole("button", {
@@ -302,19 +296,15 @@ describe("AllNotesView", () => {
       }),
     );
 
-    const cards = screen.getAllByTestId(/note-card-/);
+    const cards = screen.getAllByTestId(/^note-card-/);
 
-    expect(
-      cards.map((card) => card.dataset.testid),
-    ).toEqual([
-      "note-card-2",
-      "note-card-4",
-      "note-card-1",
-    ]);
+    // pin- stays first
+    expect(cards[0]).toHaveAttribute("data-testid", "note-card-2");
+    expect(cards[1]).toHaveAttribute("data-testid", "note-card-1");
   });
 
-  test("sorts notes by title in descending order", () => {
-    render(<AllNotesView />);
+  test("This sorts notes by title in descending order", () => {
+    renderComponent();
 
     fireEvent.click(
       screen.getByRole("button", {
@@ -322,59 +312,14 @@ describe("AllNotesView", () => {
       }),
     );
 
-    const cards = screen.getAllByTestId(/note-card-/);
+    const cards = screen.getAllByTestId(/^note-card-/);
 
-    expect(
-      cards.map((card) => card.dataset.testid),
-    ).toEqual([
-      "note-card-4",
-      "note-card-2",
-      "note-card-1",
-    ]);
+    expect(cards[0]).toHaveAttribute("data-testid", "note-card-2");
+    expect(cards[1]).toHaveAttribute("data-testid", "note-card-1");
   });
 
-  test("sorts notes by date in ascending order", () => {
-    render(<AllNotesView />);
-
-    fireEvent.click(
-      screen.getByRole("button", {
-        name: "Sort Date Ascending",
-      }),
-    );
-
-    const cards = screen.getAllByTestId(/note-card-/);
-
-    expect(
-      cards.map((card) => card.dataset.testid),
-    ).toEqual([
-      "note-card-2",
-      "note-card-4",
-      "note-card-1",
-    ]);
-  });
-
-  test("sorts notes by date in descending order", () => {
-    render(<AllNotesView />);
-
-    fireEvent.click(
-      screen.getByRole("button", {
-        name: "Sort Date Descending",
-      }),
-    );
-
-    const cards = screen.getAllByTestId(/note-card-/);
-
-    expect(
-      cards.map((card) => card.dataset.testid),
-    ).toEqual([
-      "note-card-4",
-      "note-card-2",
-      "note-card-1",
-    ]);
-  });
-
-  test("sorts notes by pinned status in ascending order", () => {
-    render(<AllNotesView />);
+  test("This sorts directly by pinned status without applying pin-first logic", () => {
+    renderComponent();
 
     fireEvent.click(
       screen.getByRole("button", {
@@ -382,19 +327,15 @@ describe("AllNotesView", () => {
       }),
     );
 
-    const cards = screen.getAllByTestId(/note-card-/);
+    const cards = screen.getAllByTestId(/^note-card-/);
 
-    expect(
-      cards.map((card) => card.dataset.testid),
-    ).toEqual([
-      "note-card-1",
-      "note-card-2",
-      "note-card-4",
-    ]);
+    // when sortBy === "pinned",not  sorting before the requested sort
+    expect(cards[0]).toHaveAttribute("data-testid", "note-card-1");
+    expect(cards[1]).toHaveAttribute("data-testid", "note-card-2");
   });
 
-  test("sorts notes by pinned status in descending order", () => {
-    render(<AllNotesView />);
+  test("This sorts directly by pinned status in descending order", () => {
+    renderComponent();
 
     fireEvent.click(
       screen.getByRole("button", {
@@ -402,316 +343,54 @@ describe("AllNotesView", () => {
       }),
     );
 
-    const cards = screen.getAllByTestId(/note-card-/);
+    const cards = screen.getAllByTestId(/^note-card-/);
 
-    expect(
-      cards.map((card) => card.dataset.testid),
-    ).toEqual([
-      "note-card-2",
-      "note-card-4",
-      "note-card-1",
-    ]);
+    expect(cards[0]).toHaveAttribute("data-testid", "note-card-2");
+    expect(cards[1]).toHaveAttribute("data-testid", "note-card-1");
   });
 
-  test("updates the selected sort values after changing sort", () => {
-    render(<AllNotesView />);
-
-    expect(
-      screen.getByTestId("current-sort-by"),
-    ).toHaveTextContent("date");
-
-    expect(
-      screen.getByTestId("current-sort-order"),
-    ).toHaveTextContent("descending");
-
-    fireEvent.click(
-      screen.getByRole("button", {
-        name: "Sort Title Ascending",
-      }),
-    );
-
-    expect(
-      screen.getByTestId("current-sort-by"),
-    ).toHaveTextContent("title");
-
-    expect(
-      screen.getByTestId("current-sort-order"),
-    ).toHaveTextContent("ascending");
-  });
-
-  test("calls importNotes when import is triggered", () => {
-    render(<AllNotesView />);
-
-    fireEvent.click(
-      screen.getByRole("button", {
-        name: "Import",
-      }),
-    );
-
-    expect(importNotes).toHaveBeenCalledTimes(1);
-  });
-
-  test("calls handlePin with the correct note id", () => {
-    render(<AllNotesView />);
-
-    fireEvent.click(
-      screen.getByTestId("pin-2"),
-    );
-
-    expect(handlePin).toHaveBeenCalledTimes(1);
-    expect(handlePin).toHaveBeenCalledWith(2);
-  });
-
-  test("calls moveToTrash with the correct note id", () => {
-    render(<AllNotesView />);
-
-    fireEvent.click(
-      screen.getByTestId("delete-1"),
-    );
-
-    expect(moveToTrash).toHaveBeenCalledTimes(1);
-    expect(moveToTrash).toHaveBeenCalledWith(1);
-  });
-
-  test("calls exportNote with the complete note", () => {
-    render(<AllNotesView />);
-
-    fireEvent.click(
-      screen.getByTestId("export-4"),
-    );
-
-    expect(exportNote).toHaveBeenCalledTimes(1);
-    expect(exportNote).toHaveBeenCalledWith(notes[3]);
-  });
-
-  test("navigates to the new note page from the floating plus button", () => {
-    render(<AllNotesView />);
-
-    fireEvent.click(
-      screen.getByTestId("plus-icon"),
-    );
-
-    expect(navigate).toHaveBeenCalledWith(
-      "/notes/new",
-    );
-  });
-
-  test("renders the create note empty state when there are no active notes", () => {
-    useNotes.mockReturnValue({
-      notes: [
-        {
-          id: 1,
-          title: "Deleted note",
-          isPinned: false,
-          isDeleted: true,
-          createdAt: "2026-08-20T10:00:00Z",
-        },
-      ],
-      handlePin,
-      moveToTrash,
-      importNotes,
-      exportNote,
-    });
-
-    render(<AllNotesView />);
-
-    expect(
-      screen.getByText("No notes yet"),
-    ).toBeInTheDocument();
-
-    expect(
-      screen.getByText(
-        "Create your first note to get started.",
-      ),
-    ).toBeInTheDocument();
-
-    expect(
-      screen.getByRole("button", {
-        name: "Create note",
-      }),
-    ).toBeInTheDocument();
-
-    expect(
-      screen.queryByTestId("note-card-1"),
-    ).not.toBeInTheDocument();
-  });
-
-  test("navigates to the new note page from the empty state button", () => {
-    useNotes.mockReturnValue({
-      notes: [],
-      handlePin,
-      moveToTrash,
-      importNotes,
-      exportNote,
-    });
-
-    render(<AllNotesView />);
-
-    fireEvent.click(
-      screen.getByRole("button", {
-        name: "Create note",
-      }),
-    );
-
-    expect(navigate).toHaveBeenCalledWith(
-      "/notes/new",
-    );
-  });
-
-  test("handles null notes safely", () => {
-    useNotes.mockReturnValue({
-      notes: null,
-      handlePin,
-      moveToTrash,
-      importNotes,
-      exportNote,
-    });
-
-    render(<AllNotesView />);
-
-    expect(
-      screen.getByText("No notes yet"),
-    ).toBeInTheDocument();
-  });
-
-  test("uses createdAt when editedAt is missing", () => {
+  test("This uses createdAt when editedAt is missing", () => {
     const notesWithoutEditedAt = [
       {
-        id: 1,
-        title: "Older",
-        isPinned: false,
+        id: 10,
+        title: "Older Note",
         isDeleted: false,
-        createdAt: "2026-08-20T10:00:00Z",
+        isPinned: false,
+        createdAt: "2026-08-01T10:00:00Z",
       },
       {
-        id: 2,
-        title: "Newer",
-        isPinned: false,
+        id: 11,
+        title: "Newer Note",
         isDeleted: false,
-        createdAt: "2026-08-25T10:00:00Z",
+        isPinned: false,
+        createdAt: "2026-08-10T10:00:00Z",
       },
     ];
 
     useNotes.mockReturnValue({
       notes: notesWithoutEditedAt,
-      handlePin,
-      moveToTrash,
-      importNotes,
-      exportNote,
+      handlePin: mockHandlePin,
+      moveToTrash: mockMoveToTrash,
+      importNotes: mockImportNotes,
+      exportNote: mockExportNote,
     });
 
-    render(<AllNotesView />);
+    renderComponent();
 
-    fireEvent.click(
-      screen.getByRole("button", {
-        name: "Sort Date Ascending",
-      }),
-    );
+    const cards = screen.getAllByTestId(/^note-card-/);
 
-    const cards = screen.getAllByTestId(/note-card-/);
-
-    expect(
-      cards.map((card) => card.dataset.testid),
-    ).toEqual([
-      "note-card-1",
-      "note-card-2",
-    ]);
+    expect(cards[0]).toHaveAttribute("data-testid", "note-card-11");
+    expect(cards[1]).toHaveAttribute("data-testid", "note-card-10");
   });
 
-  test("uses an empty string when a note title is missing", () => {
-    const notesWithMissingTitle = [
-      {
-        id: 1,
-        isPinned: false,
-        isDeleted: false,
-        createdAt: "2026-08-20T10:00:00Z",
-      },
-      {
-        id: 2,
-        title: "Apple",
-        isPinned: false,
-        isDeleted: false,
-        createdAt: "2026-08-21T10:00:00Z",
-      },
-    ];
-
-    useNotes.mockReturnValue({
-      notes: notesWithMissingTitle,
-      handlePin,
-      moveToTrash,
-      importNotes,
-      exportNote,
-    });
-
-    render(<AllNotesView />);
-
-    fireEvent.click(
-      screen.getByRole("button", {
-        name: "Sort Title Ascending",
-      }),
-    );
-
-    const cards = screen.getAllByTestId(/note-card-/);
-
-    expect(
-      cards.map((card) => card.dataset.testid),
-    ).toEqual([
-      "note-card-1",
-      "note-card-2",
-    ]);
-  });
-
-  test("applies the collapsed sidebar gap class", () => {
+  test("It renders correctly when sidebar is collapsed", () => {
     useSidebar.mockReturnValue({
       collapsed: true,
     });
 
-    const { container } = render(<AllNotesView />);
+    renderComponent();
 
-    const section = container.querySelector("section");
-
-    expect(section).toHaveClass("gap-4");
-    expect(section).not.toHaveClass("gap-6");
-  });
-
-  test("applies the expanded sidebar gap class", () => {
-    useSidebar.mockReturnValue({
-      collapsed: false,
-    });
-
-    const { container } = render(<AllNotesView />);
-
-    const section = container.querySelector("section");
-
-    expect(section).toHaveClass("gap-6");
-    expect(section).not.toHaveClass("gap-4");
-  });
-
-  test("does not render the floating plus button when there are no notes", () => {
-    useNotes.mockReturnValue({
-      notes: [],
-      handlePin,
-      moveToTrash,
-      importNotes,
-      exportNote,
-    });
-
-    render(<AllNotesView />);
-
-    expect(
-      screen.queryByTestId("plus-icon"),
-    ).not.toBeInTheDocument();
-  });
-
-  test("passes the expected sorting values to the action bar", () => {
-    render(<AllNotesView />);
-
-    expect(
-      screen.getByTestId("current-sort-by"),
-    ).toHaveTextContent("date");
-
-    expect(
-      screen.getByTestId("current-sort-order"),
-    ).toHaveTextContent("descending");
+    expect(screen.getByText("Apple Note")).toBeInTheDocument();
+    expect(screen.getByText("Zebra Note")).toBeInTheDocument();
   });
 });

@@ -56,7 +56,7 @@ describe("ForgotPassword", () => {
     expect(apiFetch).not.toHaveBeenCalled(); 
   }); 
  
- ```javascript
+
 it("should show an error when resending the email fails", async () => {
   jest.useFakeTimers();
 
@@ -160,7 +160,6 @@ it("This should show a general error when resending fails due to a request error
     ),
   ).toBeInTheDocument();
 });
-```
 
  
   it("This should clear the email error when the user starts typing again", async () => { 
@@ -183,7 +182,7 @@ it("This should show a general error when resending fails due to a request error
   }); 
  
   // valid data and then we mock the API call 
-  it("should call the forgot password API with valid form data", async () => { 
+  it("This should call the forgot password API with valid form data", async () => { 
     apiFetch.mockResolvedValue({ 
       ok: true, 
       status: 200, 
@@ -280,7 +279,7 @@ it("This should show a general error when resending fails due to a request error
     ).toBeDisabled(); 
   }); 
  
-  it("should show an error when the email is rejected by the server", async () => { 
+  it("This should show an error when the email is rejected by the server", async () => { 
     apiFetch.mockResolvedValue({ 
       ok: false, 
       status: 409, 
@@ -378,7 +377,7 @@ it("This should show a general error when resending fails due to a request error
     }); 
   }); 
  
-  it("should resend the reset email after the cooldown expires", async () => { 
+  it("This should resend the reset email after the cooldown expires", async () => { 
     jest.useFakeTimers(); 
     apiFetch.mockResolvedValue({ 
       ok: true, 
@@ -459,7 +458,7 @@ it("This should show a general error when resending fails due to a request error
     expect(apiFetch).toHaveBeenCalledTimes(1); 
   }); 
  
-  it("should show an error when resending the email fails", async () => { 
+  it("This should show an error when resending the email fails", async () => { 
     jest.useFakeTimers(); 
  
     apiFetch 
