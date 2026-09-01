@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node src/server.js",
     "dev": "node --watch src/server.js",
-    "test": "mocha \"test/**/*.test.js\""
+    "test": "c8 --reporter=text --reporter=lcov mocha \"test/**/*.test.js\""
   },
   "keywords": [],
   "author": "",
@@ -32,6 +32,7 @@
   },
   "devDependencies": {
     "@types/node": "^26.2.0",
+    "c8": "^12.0.0",
     "chai": "^6.2.2",
     "mocha": "^11.8.0",
     "prisma": "^7.9.1",

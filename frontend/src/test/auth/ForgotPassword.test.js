@@ -100,18 +100,16 @@ it("should show an error when resending the email fails", async () => {
     screen.getByRole("button", { name: "Resend email" }),
   ).toBeEnabled();
 
-  await act(async () => {
-    fireEvent.click(
-      screen.getByRole("button", { name: "Resend email" }),
-    );
-  });
+fireEvent.click(
+  screen.getByRole("button", { name: "Resend email" }),
+);
 
   expect(
     await screen.findByText("Unable to resend email"),
   ).toBeInTheDocument();
 });
 
-it("This should show a general error when resending fails due to a request error", async () => {
+it("This should show a general error when resend request is rejected", async () => {
   jest.useFakeTimers();
 
   apiFetch

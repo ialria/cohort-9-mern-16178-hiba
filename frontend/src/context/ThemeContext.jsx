@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState, useMemo , useCallback} from "react";
 const ThemeContext = createContext();
 export function ThemeProvider({ children }) {
   const [theme, setTheme] = useState(() => {
@@ -12,21 +12,32 @@ export function ThemeProvider({ children }) {
     useEffect(() => {
     const root = document.documentElement;
  root.classList.toggle("dark", theme === "dark");
-    root.setAttribute("data-accent", accentColor);
+    root.dataset.accent = accentColor;
 
     // save preferences after refreshing or reopeneing 
 localStorage.setItem("theme", theme);
     localStorage.setItem("accentColor", accentColor);
   }, [theme,accentColor]);
 
-  const toggleTheme = () => {
+  const toggleTheme = useCallback(() => {
     setTheme((currentTheme) =>
       currentTheme === "light" ? "dark" : "light",
     );
-  };
+  },[]);
+
+const themeContextValue = useMemo(
+  () => ({
+    theme,
+    setTheme,
+    toggleTheme,
+    accentColor,
+    setAccentColor,
+  }),
+  [theme, toggleTheme, accentColor]
+);
+
  return (
-    <ThemeContext.Provider value={{ theme, setTheme, toggleTheme ,  accentColor,
-        setAccentColor,}}>
+  <ThemeContext.Provider value={themeContextValue}>
       {children}
     </ThemeContext.Provider>
   );

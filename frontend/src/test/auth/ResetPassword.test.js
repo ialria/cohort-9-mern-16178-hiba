@@ -50,10 +50,8 @@ const renderResetPassword = (token = "valid-reset-token") => {
 const typePassword = async (password) => {
   const passwordInput = screen.getByLabelText("Password");
 
-  await act(async () => {
-    fireEvent.change(passwordInput, {
-      target: { value: password },
-    });
+  fireEvent.change(passwordInput, {
+    target: { value: password },
   });
 
   return passwordInput;
@@ -62,11 +60,10 @@ const typePassword = async (password) => {
 const typeConfirmPassword = async (password) => {
   const confirmPasswordInput = screen.getByLabelText("Confirm Password");
 
-  await act(async () => {
-    fireEvent.change(confirmPasswordInput, {
-      target: { value: password },
-    });
+  fireEvent.change(confirmPasswordInput, {
+    target: { value: password },
   });
+
 
   return confirmPasswordInput;
 };
@@ -408,13 +405,11 @@ describe("ResetPassword", () => {
       expect(zxcvbn).toHaveBeenCalled();
     });
 
-    await act(async () => {
-      fireEvent.submit(
-        screen.getByRole("button", {
-          name: "Reset Password",
-        }),
-      );
-    });
+fireEvent.submit(
+  screen.getByRole("button", {
+    name: "Reset Password",
+  }),
+);
 
     expect(
       await screen.findByText("Invalid or expired reset token."),
@@ -690,22 +685,17 @@ describe("ResetPassword", () => {
 
     const passwordInput = screen.getByLabelText("Password");
 
-    await act(async () => {
-      fireEvent.change(passwordInput, {
-        target: {
-          value: "FirstPassword123!",
-        },
-      });
-    });
+fireEvent.change(passwordInput, {
+  target: {
+    value: "FirstPassword123!",
+  },
+});
 
-    await act(async () => {
-      fireEvent.change(passwordInput, {
-        target: {
-          value: "SecondPassword123!",
-        },
-      });
-    });
-
+fireEvent.change(passwordInput, {
+  target: {
+    value: "SecondPassword123!",
+  },
+});
     await waitFor(() => {
       expect(zxcvbn).toHaveBeenCalledTimes(2);
     });

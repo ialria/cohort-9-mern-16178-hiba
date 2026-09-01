@@ -45,7 +45,7 @@ const { searchTerm, setSearchTerm } = useNotes();
         <h1 className="text-text md:block hidden text-3xl font-semibold">
           {currentItem.title}
         </h1>
-        <button  aria-label="Toggle sidebar"
+        <button type="button" aria-label="Toggle sidebar"
           aria-expanded={drawerOpen}
           onClick={() => setDrawerOpen(true)}
           className="focus-visible:outline-none

@@ -58,28 +58,33 @@ function highlightSearchText(text, searchText) {
   }
 
   // avoiding regex here 
-  const escapedSearch = searchText.replace(
-    /[.*+?^${}()|[\]\\]/g,
-    "\\$&"
-  );
+ const escapedSearch = searchText.replace(
+  /[.*+?^${}()|[\]\\]/g,
+  String.raw`\$&`
+);
 
   const parts = text.split(
     new RegExp(`(${escapedSearch})`, "gi")
   );
-   return parts.map((part, index) => {
-    if (part.toLowerCase() === searchText.toLowerCase()) {
-      return (
-        <mark
-          key={index}
-          className="bg-primary-light text-primary rounded px-1"
-        >
-          {part}
-        </mark>
-      );
-    }
 
-    return part;
-  });
+ let highlightKey = 0;
+
+return parts.map((part) => {
+  if (part.toLowerCase() === searchText.toLowerCase()) {
+    highlightKey += 1;
+
+    return (
+      <mark
+        key={`highlight-${highlightKey}`}
+        className="bg-primary-light text-primary rounded px-1"
+      >
+        {part}
+      </mark>
+    );
+  }
+
+  return part;
+});
 }
 
 function NotesSearchResults() {

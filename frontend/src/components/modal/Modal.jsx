@@ -67,22 +67,20 @@ useEffect(() => {
   
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div
-        onClick={onClose}
+      <button type="button"
+        onClick={onClose} 
+  aria-label="Close dialog"
         className="absolute inset-0 bg-black/40 backdrop-blur-sm"
       />
 
-      <div
+      <dialog
         ref={dialogReference}
-        tabIndex={-1}
-        role="dialog"
-        aria-modal="true"
      aria-labelledby={titleId}
         className="relative bg-surface rounded-3xl shadow-xl w-[90%] max-w-md p-8"
       >
         {children}
         
-      </div>
+      </dialog>
     </div>
   );
 }

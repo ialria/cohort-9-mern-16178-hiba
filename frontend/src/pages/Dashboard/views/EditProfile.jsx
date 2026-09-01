@@ -43,8 +43,11 @@ const [removeImage, setRemoveImage] = useState(false);
 const handleImageChange = (event) => {
   const file = event.target.files?.[0];
 
-  if (!file) return;
-    const selectionId = ++imageSelectionRef.current;
+if (!file) {
+  return;
+}
+
+const selectionId = ++imageSelectionRef.current;
 
   if (!["image/jpeg", "image/png"].includes(file.type)) {
     setError("Please select a JPG or PNG image.");
@@ -106,15 +109,19 @@ setImageLoading(false);
     setError("");
     setSaving(true);
 
+let imageData = {};
+
+if (selectedImage && imagePreview) {
+  imageData = { avatarUrl: imagePreview };
+} else if (removeImage) {
+  imageData = { avatarUrl: null };
+}
+
     try {
       await updateProfile({
         ...formData,
         username,
-         ...(selectedImage && imagePreview
-    ? { avatarUrl: imagePreview }
-    : removeImage
-      ? { avatarUrl: null }
-      : {}),
+        imageData
       });
 
       navigate("/profile");
@@ -131,7 +138,7 @@ setImageLoading(false);
         <header className="sticky top-0 z-20  ">
           <div className="relative bg-background md:pt-4 pt-3 pb-3 px-8 flex justify-between items-center backdrop-blur-md w-full">
             <div className="flex items-center gap-4">
-              <button
+              <button type="button"
                 onClick={() => setDrawerOpen(true)}
                 className="outline-none hover:bg-primary-light p-3 transition-all duration-150 rounded-full block md:hidden"
               >

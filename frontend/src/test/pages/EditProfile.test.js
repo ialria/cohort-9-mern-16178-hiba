@@ -184,6 +184,7 @@ describe("EditProfile", () => {
     expect(mockUpdateProfile).toHaveBeenCalledWith({
       username: "NewUsername",
       bio: "New bio",
+      imageData: {},
     });
 
     expect(mockNavigate).toHaveBeenCalledWith("/profile");

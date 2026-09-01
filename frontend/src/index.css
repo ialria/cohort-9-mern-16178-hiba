@@ -33,8 +33,6 @@
 }
 
 
-/* PURPLE - LIGHT theme */
-
 :root {
   --primary: #362b4a;
   --primary-light: #f1edf6;
@@ -68,8 +66,6 @@
 }
 
 
-/* PURPLE - DARK Theme Colors */
-
 .dark {
   --primary: #b9a5d6;
   --primary-light: #3a3047;
@@ -102,16 +98,12 @@
   --warning: #fbbf24;
 }
 
-/* TEAL - LIGHT Theme */
-
 :root[data-accent="teal"] {
   --primary: #2c4a47;
   --primary-light: #e8f0ef;
   --primary-lighter: #edf5f4;
 }
 
-
-/* TEAL - DARK Theme */
 
 :root.dark[data-accent="teal"] {
   --primary: #8fb8b2;
@@ -129,16 +121,12 @@
 }
 
 
-/* FOREST - LIGHT Theme */
-
 :root[data-accent="forest"] {
   --primary: #3d5240;
   --primary-light: #e9eee9;
   --primary-lighter: #eef3ee;
 }
 
-
-/* FOREST - DARk Theme */
 
 :root.dark[data-accent="forest"] {
   --primary: #9caf9d;
@@ -155,7 +143,6 @@
   --notes-bg: #29382c;
 }
 
-/* toolbar */
 .ql-toolbar.ql-snow {
   border: 1px solid var(--color-border);
   border-bottom: none;
@@ -164,16 +151,13 @@
   padding: 10px 12px;
 }
 
-/* editor */
 .ql-container.ql-snow {
   border: 1px solid var(--color-border);
   background: var(--color-surface);
   border-radius: 0 0 12px 12px;
-  /* font-size: 14px; */
-  /* border-top: none; */
+ 
 }
 
-/* writing area */
 .ql-editor {
   min-height: 400px;
   padding: 20px;
@@ -186,7 +170,6 @@
   font-style: normal;
 }
 
-/* icons */
 .ql-toolbar.ql-snow .ql-stroke {
   stroke: var(--color-text-muted);
 }
@@ -207,7 +190,6 @@
   fill: var(--color-text-muted);
 }
 
-/* hover */
 .ql-toolbar.ql-snow button:hover {
   background: var(--color-primary-light) !important;
   border-radius: 6px;
@@ -233,13 +215,11 @@
   fill: var(--color-primary) !important;
 }
 
-/* active */
 .ql-toolbar.ql-snow button.ql-active {
   background: var(--color-primary) !important;
   border-radius: 6px;
 }
 
-/* active icon */
 .ql-toolbar.ql-snow button.ql-active .ql-stroke {
   stroke: var(--color-surface) !important;
 }
@@ -248,7 +228,6 @@
   fill: var(--color-surface) !important;
 }
 
-/* active picker */
 .ql-toolbar.ql-snow .ql-picker.ql-expanded .ql-picker-label {
   color: var(--color-surface) !important;
   background: var(--color-primary) !important;
@@ -264,7 +243,6 @@
   fill: var(--color-surface) !important;
 }
 
-/* dropdown */
 .ql-toolbar.ql-snow .ql-picker-options {
   border: 1px solid var(--color-border);
   background: var(--color-surface);
@@ -283,7 +261,6 @@
   color: var(--color-primary);
 }
 
-/* button */
 .ql-toolbar.ql-snow button {
   width: 30px;
   height: 30px;
@@ -295,12 +272,10 @@
     color 0.2s ease;
 }
 
-/* toolbar groups */
 .ql-toolbar.ql-snow .ql-formats {
   margin-right: 10px;
 }
 
-/* focus */
 .ql-toolbar.ql-snow button:focus {
   outline: none;
   box-shadow: none;
@@ -312,7 +287,6 @@
   outline-offset: 2px;
 }
 
-/* selected text */
 .ql-editor ::selection {
   background: var(--color-primary-light);
   color: var(--color-text);

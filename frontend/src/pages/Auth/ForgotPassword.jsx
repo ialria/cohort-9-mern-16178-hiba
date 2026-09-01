@@ -43,14 +43,19 @@ function ForgotPassword() {
   }, [cooldownActive]);
 
   function validateForm() {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const isValidEmail =
+  email.includes("@") &&
+  email.indexOf("@") > 0 &&
+  email.lastIndexOf("@") === email.indexOf("@") &&
+  email.lastIndexOf(".") > email.indexOf("@") + 1 &&
+  !email.endsWith(".");
     const newErrors = {};
 
     if (email.trim() === "") {
       newErrors.email = "Please enter your email.";
-    } else if (!emailRegex.test(email)) {
-      newErrors.email = "Please enter a valid email";
-    }
+    }  else if (!isValidEmail) {
+  newErrors.email = "Please enter a valid email";
+}
 
     return newErrors;
   }
@@ -147,6 +152,16 @@ function ForgotPassword() {
     }
   }
 
+  let resendButtonText;
+
+if (resendCooldown > 0) {
+  resendButtonText = `Resend email in ${resendCooldown}s`;
+} else if (resending) {
+  resendButtonText = "Sending...";
+} else {
+  resendButtonText = "Resend email";
+}
+
   return (
     <main className="bg-background py-6 px-5 md:px-10 min-h-screen">
       <div className="flex items-center gap-2">
@@ -203,18 +218,14 @@ function ForgotPassword() {
               <button
                 type="button"
                 onClick={handleResend}
-                disabled={resendCooldown > 0 || resending}
+               disabled={cooldownActive || resending}
                 className={`mt-1 text-sm font-medium ${
-                  resendCooldown > 0 || resending
+                  cooldownActive || resending
                     ? "text-text-muted cursor-not-allowed"
                     : "text-notes hover:underline cursor-pointer"
                 }`}
               >
-                {resendCooldown > 0
-                  ? `Resend email in ${resendCooldown}s`
-                  : resending
-                    ? "Sending..."
-                    : "Resend email"}
+              {resendButtonText}
               </button>
 
               {errors.form && (

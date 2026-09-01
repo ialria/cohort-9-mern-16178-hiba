@@ -14,14 +14,23 @@ function LoginForm() {
   const location = useLocation();
 const [isSubmitting, setIsSubmitting] = useState(false);
   function validateForm() {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  
     const newErrors = {};
 
     if (email.trim() === "") {
       newErrors.email = "Please enter your email.";
-    } else if (!emailRegex.test(email)) {
+    } else {
+    const isValidEmail =
+      email.includes("@") &&
+      email.indexOf("@") > 0 &&
+      email.lastIndexOf("@") === email.indexOf("@") &&
+      email.lastIndexOf(".") > email.indexOf("@") + 1 &&
+      !email.endsWith(".");
+
+    if (!isValidEmail) {
       newErrors.email = "Please enter a valid email";
     }
+  }
     if (password.trim() === "") {
       newErrors.password = "Please enter your password.";
     } else if (password.length < 8) {
@@ -57,13 +66,12 @@ if (!response.ok) {
 setUser(data.user);
   navigate(location.state?.from || "/dashboard");
 
-  }catch (error){
-        setLoginError(
-      "Something went wrong. Please try again."
-    );
-  }finally{
-   setIsSubmitting(false);
-  }
+  }catch (error) {
+  console.error("Login failed:", error);
+  setLoginError("Something went wrong. Please try again.");
+} finally {
+  setIsSubmitting(false);
+}
 
   }
 

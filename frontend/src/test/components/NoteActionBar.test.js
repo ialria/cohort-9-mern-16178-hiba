@@ -1,4 +1,10 @@
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+} from "@testing-library/react";
+
 import NoteActionBar from "../../pages/Dashboard/components/note_components/NoteActionBar.jsx";
 
 jest.mock("../../icons/icons", () => ({
@@ -11,6 +17,17 @@ jest.mock("../../icons/icons", () => ({
 
 const mockOnSort = jest.fn();
 const mockOnImport = jest.fn();
+
+const createMockFile = (content, name, type) => {
+  const file = new File([content], name, { type });
+
+  Object.defineProperty(file, "text", {
+    configurable: true,
+    value: jest.fn().mockResolvedValue(content),
+  });
+
+  return file;
+};
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -30,9 +47,6 @@ const renderNoteActionBar = (props = {}) => {
   );
 };
 
-/* =========================
-   RENDERING
-========================= */
 
 test("It renders Sort and Import buttons", () => {
   renderNoteActionBar();
@@ -57,10 +71,6 @@ test("It renders sort and upload icons", () => {
     screen.getByTestId("upload-icon"),
   ).toBeInTheDocument();
 });
-
-/* =========================
-   SORT MENU
-========================= */
 
 test("It opens sort menu when Sort button is clicked", () => {
   renderNoteActionBar();
@@ -114,78 +124,36 @@ test("It closes sort menu when Sort button is clicked again", () => {
   ).not.toBeInTheDocument();
 });
 
-/* =========================
-   SORT BY
-========================= */
+test.each([
+  ["date", "Date", "descending"],
+  ["title", "Title", "ascending"],
+  ["pinned", "Pinned", "ascending"],
+])(
+  "It calls onSort with %s when %s is selected",
+  (sortValue, menuLabel, sortOrder) => {
+    renderNoteActionBar({
+      sortBy: "date",
+      sortOrder,
+    });
 
-test("It sorts by date when Date is selected", () => {
-  renderNoteActionBar({
-    sortBy: "title",
-    sortOrder: "descending",
-  });
+    fireEvent.click(
+      screen.getByRole("button", { name: /sort/i }),
+    );
 
-  fireEvent.click(
-    screen.getByRole("button", { name: /sort/i }),
-  );
+    fireEvent.click(
+      screen.getByRole("menuitem", { name: menuLabel }),
+    );
 
-  fireEvent.click(
-    screen.getByRole("menuitem", { name: "Date" }),
-  );
+    expect(mockOnSort).toHaveBeenCalledTimes(1);
 
-  expect(mockOnSort).toHaveBeenCalledTimes(1);
-  expect(mockOnSort).toHaveBeenCalledWith(
-    "date",
-    "descending",
-  );
-});
+    expect(mockOnSort).toHaveBeenCalledWith(
+      sortValue,
+      sortOrder,
+    );
+  },
+);
 
-test("It sorts by title when Title is selected", () => {
-  renderNoteActionBar({
-    sortBy: "date",
-    sortOrder: "ascending",
-  });
-
-  fireEvent.click(
-    screen.getByRole("button", { name: /sort/i }),
-  );
-
-  fireEvent.click(
-    screen.getByRole("menuitem", { name: "Title" }),
-  );
-
-  expect(mockOnSort).toHaveBeenCalledTimes(1);
-  expect(mockOnSort).toHaveBeenCalledWith(
-    "title",
-    "ascending",
-  );
-});
-
-test("It sorts by pinned when Pinned is selected", () => {
-  renderNoteActionBar({
-    sortBy: "date",
-    sortOrder: "ascending",
-  });
-
-  fireEvent.click(
-    screen.getByRole("button", { name: /sort/i }),
-  );
-
-  fireEvent.click(
-    screen.getByRole("menuitem", { name: "Pinned" }),
-  );
-
-  expect(mockOnSort).toHaveBeenCalledTimes(1);
-  expect(mockOnSort).toHaveBeenCalledWith(
-    "pinned",
-    "ascending",
-  );
-});
-
-/* =========================
-   SORT ORDER
-========================= */
-
-test("It sorts in ascending order when Ascending is selected", () => {
+test("It calls onSort with ascending order when Ascending is selected", () => {
   renderNoteActionBar({
     sortBy: "date",
     sortOrder: "descending",
@@ -200,13 +168,14 @@ test("It sorts in ascending order when Ascending is selected", () => {
   );
 
   expect(mockOnSort).toHaveBeenCalledTimes(1);
+
   expect(mockOnSort).toHaveBeenCalledWith(
     "date",
     "ascending",
   );
 });
 
-test("It sorts in descending order when Descending is selected", () => {
+test("It calls onSort with descending order when Descending is selected", () => {
   renderNoteActionBar({
     sortBy: "title",
     sortOrder: "ascending",
@@ -221,6 +190,7 @@ test("It sorts in descending order when Descending is selected", () => {
   );
 
   expect(mockOnSort).toHaveBeenCalledTimes(1);
+
   expect(mockOnSort).toHaveBeenCalledWith(
     "title",
     "descending",
@@ -243,11 +213,7 @@ test("It closes sort menu after selecting an order", () => {
   ).not.toBeInTheDocument();
 });
 
-/* =========================
-   CHECK ICONS
-========================= */
-
-test("It shows check icon for the active sort option", () => {
+test("It shows check icons for the active date and descending options", () => {
   renderNoteActionBar({
     sortBy: "date",
     sortOrder: "descending",
@@ -262,7 +228,7 @@ test("It shows check icon for the active sort option", () => {
   ).toHaveLength(2);
 });
 
-test("It shows check icon for the active title sort", () => {
+test("It shows check icons for the active title and ascending options", () => {
   renderNoteActionBar({
     sortBy: "title",
     sortOrder: "ascending",
@@ -277,9 +243,6 @@ test("It shows check icon for the active title sort", () => {
   ).toHaveLength(2);
 });
 
-/* =========================
-   IMPORT BUTTON / FILE INPUT
-========================= */
 
 test("It renders a hidden file input", () => {
   renderNoteActionBar();
@@ -289,29 +252,28 @@ test("It renders a hidden file input", () => {
   );
 
   expect(fileInput).toBeInTheDocument();
+
   expect(fileInput).toHaveAttribute(
     "accept",
     ".json,.txt,application/json,text/plain",
   );
+
   expect(fileInput).toHaveAttribute("multiple");
 });
+
 
 test("It imports a valid JSON file", async () => {
   renderNoteActionBar();
 
-  const file = new File(
-    [
-      JSON.stringify([
-        {
-          title: "Imported Note",
-          content: "Imported content",
-        },
-      ]),
-    ],
+  const file = createMockFile(
+    JSON.stringify([
+      {
+        title: "Imported Note",
+        content: "Imported content",
+      },
+    ]),
     "notes.json",
-    {
-      type: "application/json",
-    },
+    "application/json",
   );
 
   const fileInput = document.querySelector(
@@ -339,12 +301,10 @@ test("It imports a valid JSON file", async () => {
 test("It imports a valid TXT file", async () => {
   renderNoteActionBar();
 
-  const file = new File(
-    ["This is imported text"],
+  const file = createMockFile(
+    "This is imported text",
     "My Note.txt",
-    {
-      type: "text/plain",
-    },
+    "text/plain",
   );
 
   const fileInput = document.querySelector(
@@ -372,20 +332,16 @@ test("It imports a valid TXT file", async () => {
 test("It imports multiple TXT files", async () => {
   renderNoteActionBar();
 
-  const file1 = new File(
-    ["First note content"],
+  const file1 = createMockFile(
+    "First note content",
     "First.txt",
-    {
-      type: "text/plain",
-    },
+    "text/plain",
   );
 
-  const file2 = new File(
-    ["Second note content"],
+  const file2 = createMockFile(
+    "Second note content",
     "Second.txt",
-    {
-      type: "text/plain",
-    },
+    "text/plain",
   );
 
   const fileInput = document.querySelector(
@@ -414,9 +370,6 @@ test("It imports multiple TXT files", async () => {
   ]);
 });
 
-/* =========================
-   INVALID / UNSUPPORTED FILES
-========================= */
 
 test("It rejects invalid JSON notes", async () => {
   const alertSpy = jest
@@ -425,19 +378,15 @@ test("It rejects invalid JSON notes", async () => {
 
   renderNoteActionBar();
 
-  const file = new File(
-    [
-      JSON.stringify([
-        {
-          title: "Valid title",
-          wrongProperty: "No content",
-        },
-      ]),
-    ],
+  const file = createMockFile(
+    JSON.stringify([
+      {
+        title: "Valid title",
+        wrongProperty: "No content",
+      },
+    ]),
     "invalid.json",
-    {
-      type: "application/json",
-    },
+    "application/json",
   );
 
   const fileInput = document.querySelector(
@@ -468,12 +417,10 @@ test("It rejects unsupported file types", async () => {
 
   renderNoteActionBar();
 
-  const file = new File(
-    ["some content"],
+  const file = createMockFile(
+    "some content",
     "notes.pdf",
-    {
-      type: "application/pdf",
-    },
+    "application/pdf",
   );
 
   const fileInput = document.querySelector(
@@ -497,9 +444,6 @@ test("It rejects unsupported file types", async () => {
   alertSpy.mockRestore();
 });
 
-/* =========================
-   IMPORT FAILURE
-========================= */
 
 test("It handles import failure", async () => {
   const alertSpy = jest
@@ -516,12 +460,10 @@ test("It handles import failure", async () => {
 
   renderNoteActionBar();
 
-  const file = new File(
-    ["Some note"],
+  const file = createMockFile(
+    "Some note",
     "note.txt",
-    {
-      type: "text/plain",
-    },
+    "text/plain",
   );
 
   const fileInput = document.querySelector(
@@ -548,10 +490,6 @@ test("It handles import failure", async () => {
   consoleErrorSpy.mockRestore();
   alertSpy.mockRestore();
 });
-
-/* =========================
-   EMPTY FILE SELECTION
-========================= */
 
 test("It does nothing when no files are selected", () => {
   renderNoteActionBar();

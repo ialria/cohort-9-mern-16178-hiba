@@ -1,4 +1,5 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState,  useCallback,
+  useMemo, } from "react";
 import { apiFetch } from "../config/api";
 const ProfileContext = createContext();
 
@@ -6,11 +7,9 @@ export function ProfileProvider({ children }) {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [profileError, setProfileError] = useState(null);
-  useEffect(() => {
-    getProfile().catch(()=>{}); //when first mounted then run this
-  }, []);
 
-  const getProfile = async () => {
+
+  const getProfile = useCallback(async () => {
     setLoading(true);
   setProfileError(null);
     try {
@@ -35,8 +34,12 @@ if (!data) {
     } finally {
       setLoading(false);
     }
-  };
-    const updateProfile = async (profileData) => {
+  },[]);
+
+    useEffect(() => {
+    getProfile().catch(()=>{}); //when first mounted then run this
+  }, [getProfile]);
+    const updateProfile =useCallback( async (profileData) => {
       try{
     const response = await apiFetch("/api/profile", {
       method: "PUT",
@@ -55,9 +58,9 @@ if (!data) {
   }catch (error){
     throw new Error(error.message || "Error! Failed to update user Profile.")
   }
-  };
+  },[]);
 
-const getInitials = (username = "") => {
+const getInitials = useCallback((username = "") => {
   // if no space then one letter if space then two
   return username
     .trim()
@@ -66,21 +69,22 @@ const getInitials = (username = "") => {
     .join("")
     .slice(0, 2)
     .toUpperCase();
-};
-
+},[]);
+const profileContextValue = useMemo(
+  () => ({
+    profile,
+    loading,
+    getProfile,
+    updateProfile,
+    getInitials,
+    profileError,
+  }),
+  [profile, loading, getProfile, updateProfile, getInitials, profileError]
+);
 
   return (
-    <ProfileContext.Provider
-      value={{
-        profile,
-        loading,
-        getProfile,
-        updateProfile,
-        getInitials,
-        profileError
-      }}
-    >
-      {children}
+ <ProfileContext.Provider value={profileContextValue}>
+  {children}
     </ProfileContext.Provider>
   );
 }

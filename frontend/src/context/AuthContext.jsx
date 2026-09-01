@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState , useRef} from "react";
+import { createContext, useContext, useEffect, useState , useRef, useMemo, useCallback} from "react";
 import { apiFetch } from "../config/api";
 
 const AuthContext = createContext();
@@ -9,7 +9,7 @@ export function AuthProvider({ children }) {
   const [authError, setAuthError] = useState(null);
  const sessionRevision = useRef(0);//to make sure that old request doesnot logout newly logged in user
 
-  const getCurrentUser = async () => {
+  const getCurrentUser = useCallback(async () => {
       const revision = sessionRevision.current;
     setLoading(true);
     setAuthError(null);
@@ -46,36 +46,42 @@ export function AuthProvider({ children }) {
     setLoading(false);
   }
     }
-  };
+  },[]);
 
-  const updateUser = (userData) => {
+  const updateUser = useCallback((userData) => {
   sessionRevision.current += 1;
   setLoading(false);
   setUser(userData);
   setAuthError(null);
-};
+},[]);
 
   useEffect(() => {
     getCurrentUser();
-  }, []);
+  }, [getCurrentUser]);
 
-  const logout = () => {
+  const logout = useCallback(() => {
       sessionRevision.current += 1;
       setLoading(false);
     setUser(null);
       setAuthError(null);
-  };
+  },[]);
+
+const authContextValue = useMemo(
+  () => ({
+    user,
+    setUser: updateUser,
+    loading,
+    getCurrentUser,
+    logout,
+    authError,
+  }),
+  [user, loading, getCurrentUser, logout, authError]
+);
+
 
   return (
     <AuthContext.Provider
-      value={{
-        user,
-        setUser:updateUser,
-        loading,
-        getCurrentUser,
-        logout,
-        authError
-      }}
+    value={authContextValue}
     >
       {children}
     </AuthContext.Provider>

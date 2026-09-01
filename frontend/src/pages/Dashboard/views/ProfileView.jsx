@@ -61,6 +61,140 @@ function InnerElement({
   );
 }
 
+function AccentColorButtons({ accentColor, setAccentColor }) {
+  const colors = [
+    { value: "purple", label: "Purple", color: "bg-[#362b4a]" },
+    { value: "teal", label: "Deep Teal", color: "bg-[#2C4A47]" },
+    { value: "forest", label: "Muted Forest", color: "bg-[#3D5240]" },
+  ];
+
+  return (
+    <div className="flex items-center gap-2">
+      {colors.map((color) => (
+        <button
+          key={color.value}
+          type="button"
+          aria-pressed={accentColor === color.value}
+          aria-label={color.label}
+          onClick={() => setAccentColor(color.value)}
+          className={`w-7 h-7 rounded-full ${color.color} ${
+            accentColor === color.value
+              ? "ring-2 ring-primary/30 ring-offset-2 ring-offset-surface"
+              : ""
+          }`}
+        />
+      ))}
+    </div>
+  );
+}
+
+
+function ExportNotesButton({
+  exportAllNotes,
+  exportStatus,
+  exportPercentage,
+  notesNum,
+}) {
+  const isExporting = exportStatus === "exporting";
+
+let statusText = "Download your notes as text files";
+
+if (isExporting) {
+  statusText = `Exporting ${exportPercentage}%`;
+} else if (exportStatus === "completed") {
+  statusText = "All notes exported successfully";
+}
+  return (
+    <>
+      <button
+        type="button"
+        onClick={exportAllNotes}
+        disabled={isExporting || notesNum === 0}
+        className="w-full text-left disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+      >
+        <InnerElement
+          icon={Download}
+          iconSize={20}
+          iconClassName="text-notes"
+          iconWrapperClass="bg-notes-bg"
+        >
+          <div className="flex items-center justify-between w-full">
+            <div className="flex items-start justify-center flex-col">
+              <p className="text-sm font-semibold text-text">
+                Export All Notes
+              </p>
+
+              <span className="text-xs text-text-muted">
+                {statusText}
+              </span>
+            </div>
+
+            {isExporting ? (
+              <span className="text-xs text-text-muted">
+                {exportPercentage}%
+              </span>
+            ) : (
+              <ChevronRight
+                size={18}
+                strokeWidth={1.5}
+                className="text-text-muted"
+              />
+            )}
+          </div>
+        </InnerElement>
+      </button>
+
+      {isExporting && (
+        <div className="w-full px-2">
+          <div className="h-1.5 w-full rounded-full bg-primary-lighter overflow-hidden">
+            <div
+              className="h-full bg-primary rounded-full transition-all duration-300"
+              style={{
+                width: `${exportPercentage}%`,
+              }}
+            />
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
+
+function RecentActivity({ recentNotes }) {
+  return (
+    <>
+      {recentNotes.length > 0 ? (
+        recentNotes.map((note) => (
+          <InnerElement
+            key={note.id}
+            icon={FileText}
+            iconClassName="text-text-muted"
+          >
+            <div className="flex justify-between items-between w-full">
+              <p className="text-sm text-text flex flex-col items-start justify-center">
+                {note.title || "Untitled Note"}
+
+                <span className="text-xs text-text-muted">
+                  {formatDate(note.updatedAt || note.createdAt)}
+                </span>
+              </p>
+
+              {note.isPinned && (
+                <Pin size={18} className="text-pin fill-pin" />
+              )}
+            </div>
+          </InnerElement>
+        ))
+      ) : (
+        <p className="text-sm text-text-muted">
+          No recent activity
+        </p>
+      )}
+    </>
+  );
+}
+
+
 function ProfileView() {
   const { openLogoutModal } = useModal();
   const { collapsed } = useSidebar();
@@ -99,6 +233,7 @@ if (profileError) {
     />
   );
 }
+
 
 
   return (
@@ -186,29 +321,7 @@ if (profileError) {
               </div>
             </InnerElement>
         
-            {recentNotes.length > 0 ? (
-  recentNotes.map((note) => (
-    <InnerElement key={note.id} icon={FileText} iconClassName="text-text-muted">
-      <div className="flex justify-between items-between w-full">
-        <p className="text-sm text-text flex flex-col items-start justify-center">
-          {note.title || "Untitled Note"}
-
-          <span className="text-xs text-text-muted">
-            {formatDate(note.updatedAt || note.createdAt)}
-          </span>
-        </p>
-
-        {note.isPinned && (
-          <Pin size={18} className="text-pin fill-pin" />
-        )}
-      </div>
-    </InnerElement>
-  ))
-) : (
-  <p className="text-sm text-text-muted">
-    No recent activity
-  </p>
-)}
+  <RecentActivity recentNotes={recentNotes} />
           </Card>
 
 
@@ -246,37 +359,10 @@ if (profileError) {
     <p className="text-sm text-text">Accent Color</p>
 
  <div className="flex items-center gap-2">
-  <button
-    type="button" aria-pressed={accentColor === "purple"}
-    aria-label="Purple"
-    onClick={() => setAccentColor("purple")}
-    className={`w-7 h-7 rounded-full bg-[#362b4a] ${
-      accentColor === "purple"
-        ? "ring-2 ring-primary/30 ring-offset-2 ring-offset-surface"
-        : ""
-    }`}
-  />
+<AccentColorButtons
+  accentColor={accentColor}
+  setAccentColor={setAccentColor}
 
-  <button
-    type="button" aria-pressed={accentColor === "teal"}
-    aria-label="Deep Teal"
-    onClick={() => setAccentColor("teal")}
-    className={`w-7 h-7 rounded-full bg-[#2C4A47] ${
-      accentColor === "teal"
-        ? "ring-2 ring-primary/30 ring-offset-2 ring-offset-surface"
-        : ""
-    }`}
-  />
-
-  <button
-    type="button" aria-pressed={accentColor === "forest"}
-    aria-label="Muted Forest"
-    onClick={() => setAccentColor("forest")}
-    className={`w-7 h-7 rounded-full bg-[#3D5240] ${
-      accentColor === "forest"
-        ? "ring-2 ring-primary/30 ring-offset-2 ring-offset-surface"
-        : ""
-    }`}
   />
 </div>
   </div>
@@ -361,61 +447,12 @@ if (profileError) {
             >
               <p className="text-sm font-semibold text-text">Account Actions</p>
             </InnerElement>
-<button
-  type="button"
-  onClick={exportAllNotes}
-  disabled={exportStatus === "exporting" || notesNum === 0}
-  className="w-full text-left disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
->
-  <InnerElement
-    icon={Download}
-    iconSize={20}
-    iconClassName="text-notes"
-    iconWrapperClass="bg-notes-bg"
-  >
-    <div className="flex items-center justify-between w-full">
-      <div className="flex items-start justify-center flex-col">
-        <p className="text-sm font-semibold text-text">
-          Export All Notes
-        </p>
-
-        <span className="text-xs text-text-muted">
-          {exportStatus === "exporting"
-            ? `Exporting ${exportPercentage}%`
-            : exportStatus === "completed"
-              ? "All notes exported successfully"
-              : "Download your notes as text files"}
-        </span>
-      </div>
-
-      {exportStatus === "exporting" ? (
-        <span className="text-xs text-text-muted">
-          {exportPercentage}%
-        </span>
-      ) : (
-        <ChevronRight
-          size={18}
-          strokeWidth={1.5}
-          className="text-text-muted"
-        />
-      )}
-    </div>
-  </InnerElement>
-</button>
-
-
-{exportStatus === "exporting" && (
-  <div className="w-full px-2">
-    <div className="h-1.5 w-full rounded-full bg-primary-lighter overflow-hidden">
-      <div
-        className="h-full bg-primary rounded-full transition-all duration-300"
-        style={{
-          width: `${exportPercentage}%`,
-        }}
-      />
-    </div>
-  </div>
-)}
+<ExportNotesButton
+  exportAllNotes={exportAllNotes}
+  exportStatus={exportStatus}
+  exportPercentage={exportPercentage}
+  notesNum={notesNum}
+/>
 
             <button
               type="button"

@@ -43,13 +43,11 @@ function handleSortOrder(newSortOrder) {
       });
     }
   };
-  files.forEach((file) => {
-    const reader = new FileReader();
-
-    reader.onload =() => {
+files.forEach((file) => {
+  file
+    .text()
+    .then((fileContent) => {
       try {
-        const fileContent = reader.result;
-
         if (file.name.endsWith(".json")) {
           const notesFromFile = JSON.parse(fileContent);
 
@@ -57,13 +55,14 @@ function handleSortOrder(newSortOrder) {
             !Array.isArray(notesFromFile) ||
             !notesFromFile.every(
               (note) =>
-                typeof note === "object" && note!==null &&
+                typeof note === "object" &&
+                note !== null &&
                 typeof note.title === "string" &&
                 typeof note.content === "string"
             )
           ) {
             alert(`Invalid notes file: ${file.name}`);
-              processComplete();
+            processComplete();
             return;
           }
 
@@ -75,23 +74,23 @@ function handleSortOrder(newSortOrder) {
           });
         } else {
           alert(`Unsupported file: ${file.name}`);
-            processComplete();
+          processComplete();
           return;
         }
-          processComplete();
-    }catch (error) {
-        alert(`Could not read ${file.name}.`);
+
+        processComplete();
+      } catch (error) {
+        console.error(`Could not process ${file.name}:`, error);
+        alert(`Could not process ${file.name}.`);
         processComplete();
       }
-    };
-
- reader.onerror = () => {
+    })
+    .catch((error) => {
+      console.error(`Could not read ${file.name}:`, error);
       alert(`Could not read ${file.name}.`);
       processComplete();
-    };
-
-    reader.readAsText(file);
-  });
+    });
+});
 
   event.target.value = "";
 }

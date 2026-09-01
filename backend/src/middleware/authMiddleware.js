@@ -19,6 +19,7 @@ req.userId=decodedData.userId;
 next(); //continue to protected controller
 }
 catch(error){
+    logger.warn({ error }, "Invalid or expired JWT token");
     //run for invlaid , expired, or unusable jwt
  return res.status(401).json({
       message: "Invalid or expired token",

@@ -24,7 +24,7 @@ function UserMenu(){
                     >
                       Profile
                     </Link>
-                    <button onClick={openLogoutModal} className="text-text-muted text-sm  hover:bg-primary-light p-2  rounded-xl w-full text-start hover:text-text">
+                    <button type="button" onClick={openLogoutModal} className="text-text-muted text-sm  hover:bg-primary-light p-2  rounded-xl w-full text-start hover:text-text">
                       Logout
                     </button>
                   </nav>

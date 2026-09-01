@@ -5,7 +5,7 @@ function Drawer(){
 const {drawerOpen, setDrawerOpen}=useSidebar();
 return (
     <div className="block md:hidden">
-         <div
+         <button type="button"  aria-label="Close navigation drawer"
                 onClick={() => setDrawerOpen(false)}
                 className={`
                     fixed inset-0

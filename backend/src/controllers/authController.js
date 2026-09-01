@@ -2,7 +2,7 @@ const prisma = require("../config/prisma");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const logger=require("../utilities/logger");
-const crypto = require("crypto");
+const crypto = require("node:crypto");
 
 const emailService = require("../services/emailService");
 
@@ -33,13 +33,18 @@ const signup = async (req, res) => {
   });
 }
 
-const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const emailParts = email.trim().split("@");
 
-if (!emailRegex.test(email.trim())) {
+if (
+  emailParts.length !== 2 ||
+  !emailParts[0] ||
+  !emailParts[1]?.includes(".")
+) {
   return res.status(400).json({
     message: "Please enter a valid email",
   });
 }
+
 
 //different casing or spaces donot create new/duplicated accounts
 const normalizedEmail = email.trim().toLowerCase(); 
@@ -74,7 +79,7 @@ const normalizedEmail = email.trim().toLowerCase();
       },
     });
   } catch (error) {
-     if (error.code === "P2002") {
+     if (error?.code === "P2002") {
     return res.status(409).json({
       message: "Email is already registered",
     });

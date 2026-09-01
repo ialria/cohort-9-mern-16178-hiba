@@ -21,8 +21,7 @@ function DeleteNoteModal({
         Are you sure you want to permanently delete{" "}
         <span className="font-medium text-text">
           "{note?.title}"
-        </span>
-        ? This action cannot be undone.
+        </span> {" "}? This action cannot be undone.
       </p>
 
       <div className="mt-6 flex justify-end gap-3">

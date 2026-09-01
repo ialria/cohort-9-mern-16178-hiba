@@ -1,6 +1,6 @@
 require("@testing-library/jest-dom");
 
-const { TextEncoder, TextDecoder } = require("util");
+const { TextEncoder, TextDecoder } = require("node:util");
 
 global.TextEncoder = TextEncoder;
 global.TextDecoder = TextDecoder;

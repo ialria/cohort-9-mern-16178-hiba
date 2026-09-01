@@ -2,7 +2,26 @@ import { Link } from "react-router-dom";
 import {Pin,Ellipsis, FileText} from "../../../icons/icons.jsx"
 import {useState} from "react";
 import formatDate from "../../../utils/formateDate.js";
+function getPreview(content) {
+  if (!content) return "";
 
+  const text = new DOMParser()
+    .parseFromString(content, "text/html")
+    .body;
+
+  text.querySelectorAll("br").forEach((br) => {
+    br.replaceWith("\n");
+  });
+
+  text.querySelectorAll("p, div, li").forEach((element) => {
+    element.append("\n");
+  });
+
+  return text.textContent
+    .replaceAll("\u00A0", " ")
+    .replace(/\n{2,}/g, "\n")
+    .trim();
+}
 
 function NoteCard({ note, previewLines = 3,
   showDate = true,
@@ -13,12 +32,6 @@ function NoteCard({ note, previewLines = 3,
   onDelete,
 onExport}) {
   const [showMenu, setShowMenu]=useState(false);
-function getPreview(content) {
-  return content
-    ?.replace(/<[^>]*>/g, "")
-    .replace(/&nbsp;/g, " ")
-    .trim();
-}
 
   return (
     <article onMouseLeave={()=>setShowMenu(false)} className={`group flex w-full flex-col border ${compact ? "": "h-40 md:h-52"}  ${showMenu ? "z-50" : "z-0"} border-border rounded-3xl px-6 py-4 md:py-8 bg-surface hover:border-primary-light hover:shadow-lg hover:translate-y-1 duration-150 relative`}>
@@ -37,7 +50,13 @@ function getPreview(content) {
   </div>
 
    <div className="mt-1 md:mt-4 flex justify-between items-center  gap-3 md:gap-8">
-     <p className={` text-text-muted text-sm ${previewLines===1? "line-clamp-1": "line-clamp-3"}`}>{getPreview(note.content)}</p>
+   <p
+  className={`text-text-muted text-sm whitespace-pre-line ${
+    previewLines === 1 ? "line-clamp-1" : "line-clamp-3"
+  }`}
+>
+  {getPreview(note.content)}
+</p>
 {showPin && note.isPinned && ( <Pin size={18} strokeWidth={2} className="shrink-0 text-pin fill-pin cursor-pointer"/>)}
    </div>
   </div>

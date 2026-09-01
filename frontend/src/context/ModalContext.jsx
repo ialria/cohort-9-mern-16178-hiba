@@ -1,28 +1,31 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useState, useCallback, useMemo } from "react";
 
 const ModalContext = createContext();
 
 export function ModalProvider({ children }) {
   const [showLogoutModal, setShowLogoutModal] = useState(false);
 
-  function openLogoutModal() {
-    setShowLogoutModal(true);
-  }
+const openLogoutModal = useCallback(() => {
+  setShowLogoutModal(true);
+}, []);
 
-  function closeLogoutModal() {
-    setShowLogoutModal(false);
-  }
+const closeLogoutModal = useCallback(() => {
+  setShowLogoutModal(false);
+}, []);
+
+const modalContextValue = useMemo(
+  () => ({
+    showLogoutModal,
+    openLogoutModal,
+    closeLogoutModal,
+  }),
+  [showLogoutModal, openLogoutModal, closeLogoutModal]
+);
 
   return (
-    <ModalContext.Provider
-      value={{
-        showLogoutModal,
-        openLogoutModal,
-        closeLogoutModal,
-      }}
-    >
-      {children}
-    </ModalContext.Provider>
+<ModalContext.Provider value={modalContextValue}>
+    {children}
+  </ModalContext.Provider>
   );
 }
 

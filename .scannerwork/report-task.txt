@@ -1,0 +1,6 @@
+projectKey=leaflet-notes-app
+serverUrl=http://localhost:9000
+serverVersion=26.8.0.126808
+dashboardUrl=http://localhost:9000/dashboard?id=leaflet-notes-app
+ceTaskId=66e0329a-eec7-4438-891c-ff22e792cb30
+ceTaskUrl=http://localhost:9000/api/ce/task?id=66e0329a-eec7-4438-891c-ff22e792cb30

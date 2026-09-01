@@ -14,7 +14,7 @@ function AppSidebar() {
     >
 
    <div className="flex items-center gap-2">
-        <button
+        <button  type="button"
           onClick={() => setCollapsed((prev) => !prev)}
           className="bg-primary p-2 rounded-2xl cursor-pointer outline-none"
         >

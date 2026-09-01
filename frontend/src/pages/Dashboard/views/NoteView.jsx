@@ -8,6 +8,7 @@ import { useNotes } from "../../../context/NotesContext.jsx";
 import ErrorPage from "../../ErrorPage.jsx";
 
 function NoteView() {
+  const [errorMessage, setErrorMessage] = useState("");
   const { noteId } = useParams();
    const navigate = useNavigate();
   const editorRef = useRef(null);
@@ -60,7 +61,9 @@ const handleSave = async () => {
   }
 
   //this removes html tags 
-  const plainTextContent = content.replace(/<[^>]*>/g, "").trim();
+  const tempElement = document.createElement("div");
+tempElement.innerHTML = content;
+const plainTextContent = tempElement.textContent.trim();
   if (!plainTextContent) {
       setSaveStatus("validation-error");
     return;
@@ -70,12 +73,11 @@ const handleSave = async () => {
     setErrorMessage("");
     setSaveStatus("saving");
 
-let savedNote;
 
 if(note){
-  savedNote=await updateNote(note.id, title, content,note.updatedAt); //
+await updateNote(note.id, title, content,note.updatedAt); //
 }else if (isNewNote) {
-  savedNote = await createNote(title, content);
+ const savedNote = await createNote(title, content);
   // saved chnges -then open that note - shows note id on url then
   navigate(`/notes/${savedNote.id}`);
 } else {
@@ -109,16 +111,21 @@ const handleTitleChange = (e) => {
  const noteTitle = e.target.value;
   setTitle(noteTitle);
 editRevisionRef.current += 1;
-  if (noteTitle.trim() || content.replace(/<[^>]*>/g, "").trim()) {
-    setSaveStatus("unsaved");
-  }
+ const tempElement = document.createElement("div");
+tempElement.innerHTML = content;
+
+if (noteTitle.trim() || tempElement.textContent.trim()) {
+  setSaveStatus("unsaved");
+}
 };
 
 // to save edited content
 const handleContentChange = (value) => {
   setContent(value);
    editRevisionRef.current += 1;
-  const noteContent = value.replace(/<[^>]*>/g, "").trim();
+ const tempElement = document.createElement("div");
+tempElement.innerHTML = value;
+const noteContent = tempElement.textContent.trim();
   if (noteContent || title.trim()) {
     setSaveStatus("unsaved");
   }
@@ -159,6 +166,11 @@ if (!note && !isNewNote) {
 }
   return (
     <main className="h-screen bg-background flex flex-col">
+        {errorMessage && (
+    <div className="px-6 md:px-16 py-2 text-red-500" role="alert">
+      {errorMessage}
+    </div>
+  )}
       <NoteToolBar onSave={handleSave} onCancel={handleCancel} saveStatus={saveStatus}/>
       <section className="flex-1 overflow-y-auto">
       <article className=" py-8 px-6 md:px-16">

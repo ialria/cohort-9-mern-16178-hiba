@@ -2,7 +2,6 @@ import {
   FileText,
   Pin,
   Trash2,
-  Settings,
   Clock,
   User
 } from "lucide-react";
